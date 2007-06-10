@@ -125,6 +125,12 @@ module SCM
       file = '.' if file == base
       %x{#{e_sh @git} diff #{e_sh file.sub(/^#{Regexp.escape base}\//, '')}}
     end
+
+    def branches(git_file)
+      base = File.expand_path("..", git_dir(git_file))
+      Dir.chdir(base)
+      %x{#{e_sh @git} branch}.split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+    end
   end
 end
 
@@ -132,8 +138,9 @@ if __FILE__ == $0
 
   git = SCM::Git.new
 
-  puts git.diff("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
+  p git.branches("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
 
+  # puts git.diff("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
   # status = git.status(["/Users/duff/Source/Avian_git"])
   # status.each { |e| puts "#{e[:status].short} #{e[:display]}" }
 
