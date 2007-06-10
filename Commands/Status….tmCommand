@@ -17,7 +17,7 @@ puts '&lt;h2&gt;Status for ' + paths.map { |e| "‘#{htmlize(git.shorten(e))}’
 puts '&lt;pre&gt;'
 
 git.status(paths).each do |e|
-  puts "#{htmlize(e[:status].short)} #{htmlize(e[:display])}"
+  puts "&lt;span title='#{htmlize(e[:status].long)}'&gt;#{htmlize(e[:status].short)}&lt;/span&gt; &lt;a href='txmt://open?url=file://#{e_url e[:path]}'&gt;#{htmlize(e[:display])}&lt;/a&gt;"
 end
 </string>
 	<key>input</key>
