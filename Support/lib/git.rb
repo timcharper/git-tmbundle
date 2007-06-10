@@ -91,7 +91,7 @@ module SCM
 
     def nca(files)
       if(files.size == 1)
-        files.first
+        File.directory?(files.first) ? files.first : File.split(files.first).first
       else
         components = files.map { |e| e.split('/') }
         i = 0
@@ -118,6 +118,13 @@ module SCM
         res << %x{#{e_sh @git} ls-files -m --exclude-per-directory=.gitignore#{excl_args}}.split("\n").map { |e| { :path => File.expand_path(e, dir), :display => shorten(File.expand_path(e, dir), base_dir), :status => Status.get('M') } }
       end.flatten
     end
+
+    def diff(file, base = nil)
+      base = File.expand_path("..", git_dir(file)) if base.nil?
+      Dir.chdir(base)
+      file = '.' if file == base
+      %x{#{e_sh @git} diff #{e_sh file.sub(/^#{Regexp.escape base}\//, '')}}
+    end
   end
 end
 
@@ -125,7 +132,9 @@ if __FILE__ == $0
 
   git = SCM::Git.new
 
-  status = git.status(["/Users/duff/Source/Avian_git"])
-  status.each { |e| puts "#{e[:status].short} #{e[:display]}" }
+  puts git.diff("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
+
+  # status = git.status(["/Users/duff/Source/Avian_git"])
+  # status.each { |e| puts "#{e[:status].short} #{e[:display]}" }
 
 end

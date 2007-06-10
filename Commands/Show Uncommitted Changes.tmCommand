@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+
+git = SCM::Git.new
+paths = git.paths(:fallback =&gt; :current_file, :unique =&gt; true)
+base = git.nca(paths)
+
+paths.each do |path|
+  puts '&lt;h2&gt;Uncomitted Changes for ‘' + htmlize(git.shorten(path, base)) + '’&lt;/h2&gt;'
+  puts '&lt;pre&gt;' + htmlize(git.diff(path, base)) + '&lt;/pre&gt;'
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>name</key>
+	<string>Show Uncommitted Changes</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>37CC38F5-AF4C-4915-B925-1DC810C25C8A</string>
+</dict>
+</plist>
