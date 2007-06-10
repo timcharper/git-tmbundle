@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
+
+git = SCM::Git.new
+git_base = File.expand_path('..', git.git_dir(git.paths.first))
+
+branches   = git.branches(git_base)
+parameters = { "branches" =&gt; branches.map { |e| { "name" =&gt; e[:name] } } }
+
+token = open('|"$DIALOG" -a CompareBranches', 'r+') { |io| io &lt;&lt; parameters.to_plist; io.close_write; io.read.chomp }
+res   = open('|"$DIALOG" -w' + token)               { |io| OSX::PropertyList.load(io) }
+        open('|"$DIALOG" -x' + token)               { |io| }
+
+if res &amp;&amp; res['returnArgument']
+  parrent = res['returnArgument'].first['name']
+  current = res['currentBranch'].first['name']
+  puts "&lt;h1&gt;Compare ‘#{parrent}’ With ‘#{current}’&lt;/h1&gt;\n&lt;pre&gt;"
+  Dir.chdir(git_base)
+  puts htmlize(%x{#{e_sh git.git} diff #{e_sh parrent} #{e_sh current}})
+  puts "&lt;/pre&gt;"
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Compare Branches</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>E56D4990-B615-4788-A46C-5D0CDE750D56</string>
+</dict>
+</plist>

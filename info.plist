@@ -2,15 +2,31 @@
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>mainMenu</key>
+	<dict>
+		<key>items</key>
+		<array>
+			<string>41F8764A-63DE-4965-9192-918E49E15907</string>
+			<string>37CC38F5-AF4C-4915-B925-1DC810C25C8A</string>
+			<string>------------------------------------</string>
+			<string>9CAC009F-9536-4FB3-96E5-84813C4A71F8</string>
+			<string>FF012371-E6C2-4D97-BCD2-9B6237C9BF5B</string>
+			<string>7F8D2058-E106-40DC-9FBE-F32A1202D158</string>
+			<string>E56D4990-B615-4788-A46C-5D0CDE750D56</string>
+		</array>
+		<key>submenus</key>
+		<dict/>
+	</dict>
 	<key>name</key>
 	<string>Git</string>
 	<key>ordering</key>
 	<array>
 		<string>41F8764A-63DE-4965-9192-918E49E15907</string>
+		<string>37CC38F5-AF4C-4915-B925-1DC810C25C8A</string>
 		<string>9CAC009F-9536-4FB3-96E5-84813C4A71F8</string>
 		<string>FF012371-E6C2-4D97-BCD2-9B6237C9BF5B</string>
 		<string>7F8D2058-E106-40DC-9FBE-F32A1202D158</string>
-		<string>37CC38F5-AF4C-4915-B925-1DC810C25C8A</string>
+		<string>E56D4990-B615-4788-A46C-5D0CDE750D56</string>
 	</array>
 	<key>uuid</key>
 	<string>EADD4718-EE11-4ABF-A7E6-13351FB3799D</string>

@@ -37,6 +37,8 @@ module SCM
   end
 
   class Git
+    attr_reader :git
+
     def initialize
       @git = e_sh(ENV['TM_GIT'] || 'git')
     end
