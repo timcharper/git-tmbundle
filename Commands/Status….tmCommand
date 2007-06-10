@@ -22,6 +22,8 @@ end
 </string>
 	<key>input</key>
 	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
 	<key>name</key>
 	<string>Status…</string>
 	<key>output</key>

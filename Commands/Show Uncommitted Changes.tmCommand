@@ -21,6 +21,8 @@ end
 </string>
 	<key>input</key>
 	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
 	<key>name</key>
 	<string>Show Uncommitted Changes</string>
 	<key>output</key>

@@ -102,6 +102,13 @@ module SCM
       end
     end
 
+    def rescan_project
+      %x{osascript &>/dev/null \
+        -e 'tell app "SystemUIServer" to activate' \
+        -e 'tell app "TextMate" to activate' &
+      }
+    end
+
     def status(files = nil, options = {})
       files = paths if files.nil?
       base_dir = nca(files)
@@ -130,6 +137,19 @@ module SCM
       base = File.expand_path("..", git_dir(git_file))
       Dir.chdir(base)
       %x{#{e_sh @git} branch}.split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+    end
+
+    def create_branch(name, git_file)
+      base = File.expand_path("..", git_dir(git_file))
+      Dir.chdir(base)
+      %x{#{e_sh @git} branch #{e_sh name} && #{e_sh @git} checkout #{e_sh name}}
+    end
+
+    def switch_to_branch(name, git_file)
+      base = File.expand_path("..", git_dir(git_file))
+      Dir.chdir(base)
+      %x{#{e_sh @git} checkout #{e_sh name}}
+      rescan_project
     end
   end
 end

@@ -9,30 +9,23 @@
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-git = SCM::Git.new
-git_base = File.expand_path('..', git.git_dir(git.paths.first))
-
-puts '&lt;h2&gt;Branches for ‘' + htmlize(git.shorten(git_base)) + '’&lt;/h2&gt;'
-puts '&lt;ol&gt;'
-git.branches(git_base).each do |e|
-  if e[:default]
-    puts "&lt;li&gt;&lt;em&gt;" + e[:name] + "&lt;/em&gt; (current)&lt;/li&gt;\n"
-  else
-    puts "&lt;li&gt;"     + e[:name] + "&lt;/li&gt;\n"
-  end
+if name = TextMate::UI.request_string(:title =&gt; "Create Branch", :prompt =&gt; "Enter the name of the new branch:")
+  git = SCM::Git.new
+  git_base = File.expand_path('..', git.git_dir(git.paths.first))
+  git.create_branch(name, git_base)
 end
-puts '&lt;/ol&gt;'
 </string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Branches</string>
+	<string>Create Branch…</string>
 	<key>output</key>
-	<string>showAsHTML</string>
+	<string>showAsTooltip</string>
 	<key>uuid</key>
-	<string>9CAC009F-9536-4FB3-96E5-84813C4A71F8</string>
+	<string>FF012371-E6C2-4D97-BCD2-9B6237C9BF5B</string>
 </dict>
 </plist>
