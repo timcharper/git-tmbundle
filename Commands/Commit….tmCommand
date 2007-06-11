@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require 'shellwords'
+
+CW    = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
+git   = SCM::Git.new
+paths = git.paths
+base  = git.nca(paths)
+
+puts "&lt;h1&gt;Committing Files in ‘#{htmlize(git.shorten(base))}’&lt;/h1&gt;"
+STDOUT.flush
+
+files, status = [], []
+
+git.status(paths).each do |e|
+  files  &lt;&lt; e_sh(git.shorten(e[:path], base))
+  status &lt;&lt; e_sh(e[:status].short)
+end
+
+res = %x{#{e_sh CW}                \
+  --diff-cmd   'git,diff'          \
+  --action-cmd '?:Add,git,add'     \
+  --status #{status.join ':'}      \
+  #{files.join ' '} 2&gt;/dev/console
+}
+
+if $? != 0
+  puts "&lt;strong&gt;Cancel&lt;/strong&gt;"
+  abort
+end
+
+res   = Shellwords.shellwords(res)
+msg   = res[1]
+files = res[2..-1]
+
+puts "&lt;h2&gt;Commit Files:&lt;/h2&gt;&lt;ul&gt;"
+puts files.map { |e| "&lt;li&gt;#{htmlize(e)}&lt;/li&gt;\n" }.join
+puts "&lt;/ul&gt;"
+
+puts "&lt;h2&gt;Using Message:&lt;/h2&gt;"
+puts "&lt;pre&gt;#{htmlize(msg)}&lt;/pre&gt;"
+STDOUT.flush
+
+unless files.empty?
+  puts "&lt;h2&gt;Result:&lt;/h2&gt;"
+  res = %x{git commit -m #{e_sh msg} #{files.map { |e| e_sh e }.join(' ')}}
+  puts "&lt;pre&gt;#{htmlize(res)}&lt;/pre&gt;"
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Commit…</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>55CCBE51-3C13-46D8-92D9-52EAD7A5D2D6</string>
+</dict>
+</plist>
