@@ -16,6 +16,8 @@ git   = SCM::Git.new
 paths = git.paths
 base  = git.nca(paths)
 
+Dir.chdir(base)
+
 puts "&lt;h1&gt;Committing Files in ‘#{htmlize(git.shorten(base))}’&lt;/h1&gt;"
 STDOUT.flush
 
