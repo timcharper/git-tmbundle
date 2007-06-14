@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+
+git     = SCM::Git.new
+paths   = git.paths(:unique =&gt; true, :fallback =&gt; :current_file)
+
+display = paths.map { |e| File.basename(e) }.join("”, “")
+plural  = (paths.size == 1) ? '' : 's'
+files   = (paths.size == 1) ? "“#{display}”" : 'files'
+
+if 'Revert' == TextMate::UI.alert(:warning, "Revert #{files}?", "Do you really want to revert the file#{plural} “#{display}” and lose all local changes?", 'Revert', 'Cancel')
+  base = git.nca(paths)
+  Dir.chdir(base)
+
+  paths.each do |e|
+    puts %x{git checkout #{e_sh git.shorten(e, base)}}
+  end
+
+  git.rescan_project
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Revert…</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>uuid</key>
+	<string>CDEA521C-8963-414F-8F8E-F9B81EF79ADA</string>
+</dict>
+</plist>
