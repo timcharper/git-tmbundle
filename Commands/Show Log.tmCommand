@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+
+git   = SCM::Git.new
+paths = git.paths(:fallback =&gt; :current_file, :unique =&gt; true)
+base  = git.nca(paths)
+
+Dir.chdir(base)
+
+paths.each do |path|
+
+  puts "&lt;h1&gt;Log for ‘#{htmlize(git.shorten(path, base))}’&lt;/h1&gt;"
+  colors = %w[ white lightsteelblue ]
+
+  file = if path == base then '.' else git.shorten(path, base) end
+  open("|git log #{e_sh file}") do |io|
+    io.read.scan(/^commit (.+)$\n((?:\w+: .*\n)*)((?m:.*?))(?=^commit|\z)/) do |e|
+      commit, msg = $1, $3
+      headers = $2.scan(/(\w+):\s+(.+)/)
+
+      puts "&lt;div style='background: #{colors[0]};'&gt;"
+      puts "&lt;h2&gt;Commit #{htmlize commit.sub(/^(.{8})(.{10}.*)/, '\1…')}&lt;/h2&gt;"
+      puts headers.map { |e| "&lt;dt&gt;#{htmlize e[0]}&lt;/dt&gt;\n&lt;dd&gt;#{htmlize e[1]}&lt;/dd&gt;\n" }
+      puts "&lt;p&gt;#{htmlize msg.gsub(/\A\n+|\n+\z/, '').gsub(/^    /, '')}&lt;/p&gt;"
+      puts "&lt;/div&gt;"
+
+      colors = [colors[1], colors[0]]
+    end
+  end
+
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Show Log</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>46662F92-7739-42A7-B7CD-0527A0474BDC</string>
+</dict>
+</plist>
