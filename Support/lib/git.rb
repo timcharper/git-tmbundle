@@ -148,6 +148,10 @@ module SCM
       Dir.chdir(base)
       %x{#{e_sh @git} branch #{e_sh name} && #{e_sh @git} checkout #{e_sh name}}
     end
+    
+    def commit(msg, files = ["./"])
+      %x{#{e_sh @git} commit -m #{e_sh msg} #{files.map { |e| e_sh e }.join(' ')}}
+    end
 
     def switch_to_branch(name, git_file)
       base = File.expand_path("..", git_dir(git_file))
