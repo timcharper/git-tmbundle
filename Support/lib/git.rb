@@ -88,7 +88,7 @@ module SCM
       file = %x{
         cd #{e_sh dir_part(file_or_dir)}
         #{@git} rev-parse --git-dir;
-        cd -;
+        cd - > /dev/null;
       }.chomp
       File.expand_path(file, dir_part(file_or_dir))
     end
