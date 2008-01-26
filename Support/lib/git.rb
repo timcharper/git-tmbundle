@@ -159,6 +159,10 @@ module SCM
       %x{#{e_sh @git} checkout #{e_sh name}}
       rescan_project
     end
+    
+    def log(file_or_directory)
+      %x{#{e_sh @git} log #{e_sh file_or_directory}}
+    end
   end
 end
 
