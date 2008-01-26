@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>beforeRunningCommand</key>
@@ -19,12 +19,8 @@ plural  = (paths.size == 1) ? '' : 's'
 files   = (paths.size == 1) ? "“#{display}”" : 'files'
 
 if 'Revert' == TextMate::UI.alert(:warning, "Revert #{files}?", "Do you really want to revert the file#{plural} “#{display}” and lose all local changes?", 'Revert', 'Cancel')
-  base = git.nca(paths)
-  Dir.chdir(base)
 
-  paths.each do |e|
-    puts %x{git checkout #{e_sh git.shorten(e, base)}}
-  end
+  puts git.revert(paths)
 
   git.rescan_project
 end

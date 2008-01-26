@@ -163,6 +163,18 @@ module SCM
     def log(file_or_directory)
       %x{#{e_sh @git} log #{e_sh file_or_directory}}
     end
+    
+    def revert(paths = [])
+      output = ""
+      
+      base = nca(paths)
+      Dir.chdir(base)
+      
+      paths.each do |e|
+        output << %x{#{e_sh @git} checkout #{e_sh shorten(e, base)}}
+      end
+      output
+    end
   end
 end
 
