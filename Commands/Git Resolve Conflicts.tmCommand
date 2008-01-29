@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+require "FileUtils"
+
+def e_sh(arg)
+  arg.to_s.inspect
+end
+
+state = :both
+
+input_filepath = ENV['TM_SELECTED_FILE']
+input_filename = File.basename(input_filepath)
+
+input = File.read(input_filepath)
+
+left = ""
+right = ""
+
+input.each { |line|
+  if /^(&lt;{7}|={7}|&gt;{7})($| )/.match(line)
+    state = 
+      case $1
+      when "&lt;&lt;&lt;&lt;&lt;&lt;&lt;" then :left
+      when "=======" then :right
+      when "&gt;&gt;&gt;&gt;&gt;&gt;&gt;" then :both
+      end
+    next
+  end
+  left &lt;&lt; line if state == :left || state == :both
+  right &lt;&lt; line if state == :right || state == :both
+}
+
+filename = "git-conflict-resolve"
+tmp_path = "/tmp/git-conflict-resolve/"
+
+FileUtils.rm_rf(tmp_path)
+FileUtils.mkdir_p(tmp_path)
+
+left_file =  "#{tmp_path}left-#{input_filename}.rb"
+right_file = "#{tmp_path}right-#{input_filename}.rb"
+File.open(left_file, "w") { |f| f.puts left }
+File.open(right_file, "w") { |f| f.puts right }
+
+%x{opendiff #{e_sh left_file} #{e_sh right_file} -merge #{e_sh input_filepath}}
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Resolve Conflicts</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>uuid</key>
+	<string>7CE2C842-EBC4-443C-8DDB-3B16AC593D9A</string>
+</dict>
+</plist>
