@@ -7,6 +7,10 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 
+# Resolve conflicts command for git/FileMerge
+# By Tim Harper
+# http://code.leadmediapartners.com/
+
 require "FileUtils"
 
 def e_sh(arg)
