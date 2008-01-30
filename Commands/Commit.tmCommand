@@ -30,7 +30,6 @@ end
 
 res = %x{#{e_sh CW}                \
   --diff-cmd   '#{git.git},diff'          \
-  --action-cmd '?:Add,#{git.git},add'     \
   --status #{status.join ':'}      \
   #{files.join ' '} 2&gt;/dev/console
 }
