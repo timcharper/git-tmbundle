@@ -12,6 +12,7 @@
 # http://code.leadmediapartners.com/
 
 require "FileUtils"
+FM="/Developer/Applications/Utilities/FileMerge.app/Contents/MacOS/FileMerge"
 
 def e_sh(arg)
   arg.to_s.inspect
@@ -19,13 +20,15 @@ end
 
 state = :both
 
-input_filepath = ENV['TM_SELECTED_FILE']
+
+input_filepath = ENV['TM_FILEPATH']
 input_filename = File.basename(input_filepath)
 
-input = File.read(input_filepath)
+input = $&lt;.read
 
 left = ""
 right = ""
+
 
 input.each { |line|
   if /^(&lt;{7}|={7}|&gt;{7})($| )/.match(line)
@@ -41,6 +44,11 @@ input.each { |line|
   right &lt;&lt; line if state == :right || state == :both
 }
 
+if left==right
+  puts "No conflicts to resolve in #{input_filepath}."
+  exit
+end
+
 filename = "git-conflict-resolve"
 tmp_path = "/tmp/git-conflict-resolve/"
 
@@ -52,10 +60,10 @@ right_file = "#{tmp_path}right-#{input_filename}.rb"
 File.open(left_file, "w") { |f| f.puts left }
 File.open(right_file, "w") { |f| f.puts right }
 
-%x{opendiff #{e_sh left_file} #{e_sh right_file} -merge #{e_sh input_filepath}}
+%x{#{FM} -left #{e_sh left_file} -right #{e_sh right_file} -merge #{e_sh input_filepath} &amp;&gt;/dev/null &amp; }
 </string>
 	<key>input</key>
-	<string>none</string>
+	<string>document</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
