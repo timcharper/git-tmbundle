@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
+require 'erb'
+
+include ERB::Util
+Dir.chdir(ENV['TM_BUNDLE_PATH'])
+
+g = SCM::Git.new
+
+puts &lt;&lt;-EOF
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Update Git Bundle&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;pre&gt;
+EOF
+
+puts "Updating git bundle"
+puts h(%x{#{g.git} pull})
+puts &lt;&lt;-EOF
+  &lt;/pre&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+EOF
+</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>name</key>
+	<string>Update Git Bundle</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>9EAEC1C1-9979-4DB8-9877-A619580412AA</string>
+</dict>
+</plist>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+
+git = SCM::Git.new
+git_base = File.expand_path('..', git.git_dir(git.paths.first))
+
+branches = git.branches(git_base)
+current = branches.find { |e| e[:default] }[:name]
+items = branches.reject { |e| e[:default] }.map { |e| e[:name] }
+
+TextMate::UI.request_item(:title =&gt; "Switch to Branch", :prompt =&gt; "Current branch is ‘#{current}’.\nSelect a new branch to switch to:", :items =&gt; [current] + items) do |name|
+  puts git.switch_to_branch(name, git_base)
+end
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Switch to Branch…</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>uuid</key>
+	<string>7F8D2058-E106-40DC-9FBE-F32A1202D158</string>
+</dict>
+</plist>

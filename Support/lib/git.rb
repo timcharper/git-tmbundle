@@ -152,6 +152,10 @@ module SCM
     def commit(msg, files = ["./"])
       %x{#{e_sh @git} commit -m #{e_sh msg} #{files.map { |e| e_sh e }.join(' ')}}
     end
+    
+    def add(files = ["."])
+      %x{#{e_sh @git} add #{files.map { |e| e_sh e }.join(' ')}}
+    end
 
     def switch_to_branch(name, git_file)
       base = File.expand_path("..", git_dir(git_file))

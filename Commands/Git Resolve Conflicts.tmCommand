@@ -13,13 +13,10 @@
 
 require "FileUtils"
 FM="/Developer/Applications/Utilities/FileMerge.app/Contents/MacOS/FileMerge"
-
-def e_sh(arg)
-  arg.to_s.inspect
-end
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 
 state = :both
-
 
 input_filepath = ENV['TM_FILEPATH']
 input_filename = File.basename(input_filepath)
