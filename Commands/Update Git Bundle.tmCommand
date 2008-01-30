@@ -33,7 +33,8 @@ puts &lt;&lt;-EOF
 &lt;/body&gt;
 &lt;/html&gt;
 EOF
-</string>
+
+%x{osascript -e 'tell app "TextMate" to reload bundles'}</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>name</key>
