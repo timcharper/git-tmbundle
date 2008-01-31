@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>beforeRunningCommand</key>
@@ -14,11 +14,45 @@ git = SCM::Git.new
 paths = git.paths(:fallback =&gt; :current_file, :unique =&gt; true)
 base = git.nca(paths)
 
+puts &lt;&lt;-EOF
+&lt;html&gt;
+&lt;head&gt;
+  &lt;title&gt;Uncomitted changes&lt;/title&gt;
+&lt;style&gt;
+  h2 { font-size:20px; padding-bottom:20px; }
+  code .diff_cmd { font-color: #aaa; padding: 5px 0px; border-color: black; border-style: dashed; border-width: 1px 0px 0px 0px; margin-top: 10px; }
+  code .addition { background-color: #cfc; }
+  code .deletion { background-color: #fcc; }
+  code .info {background-color: #ccc;  }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+EOF
 paths.each do |path|
-  puts '&lt;h2&gt;Uncomitted Changes for ‘' + htmlize(git.shorten(path, base)) + '’&lt;/h2&gt;'
-  puts '&lt;pre&gt;' + htmlize(git.diff(path, base)) + '&lt;/pre&gt;'
+  puts "&lt;h2&gt;Uncomitted Changes for ‘#{htmlize(git.shorten(path, base))}’&lt;/h2&gt;"
+  puts '&lt;code&gt;'
+  git.diff(path, base).split("\n").each do |line|
+    css_class = case line
+    when /^(diff |index |@@|\+\+\+|\-\-\-)/
+      "info"
+    when /^\+/
+      "addition"
+    when /^\-/
+      "deletion"
+    when /^diff /
+      "diff_cmd"
+    else
+      ""
+    end
+    puts "&lt;div class='#{css_class}'&gt;#{htmlize(line)}&lt;/div&gt;"
+  end
+  puts '&lt;/code&gt;'
 end
-</string>
+
+puts &lt;&lt;-EOF
+&lt;/body&gt;
+&lt;/html&gt;
+EOF</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
