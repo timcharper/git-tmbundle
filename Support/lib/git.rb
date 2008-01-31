@@ -166,7 +166,7 @@ module SCM
     end
     
     def sources
-      commit("remote").split("\n")
+      command("remote").split("\n")
     end
     
     def push(source)
@@ -182,7 +182,7 @@ module SCM
     end
     
     def command(*args)
-      %x{#{e_sh @git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+      %x{#{e_sh @git} #{args.map{ |arg| e_sh(arg) } * ' '} 2>&1 }
     end
     
     def switch_to_branch(name, git_file)
