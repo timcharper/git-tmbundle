@@ -165,23 +165,35 @@ module SCM
       %x{#{e_sh @git} commit -m #{e_sh msg} #{files.map { |e| e_sh e }.join(' ')}}
     end
     
+    def sources
+      commit("remote").split("\n")
+    end
+    
+    def push(source)
+      command("push", source)
+    end
+    
     def add(files = ["."])
-      %x{#{e_sh @git} add #{files.map { |e| e_sh e }.join(' ')}}
+      command("add", *files)
     end
     
     def rm(files = ["."])
-      %x{#{e_sh @git} rm #{files.map { |e| e_sh e }.join(' ')}}
+      command("rm", *files)
     end
-
+    
+    def command(*args)
+      %x{#{e_sh @git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+    end
+    
     def switch_to_branch(name, git_file)
       base = File.expand_path("..", git_dir(git_file))
       Dir.chdir(base)
-      %x{#{e_sh @git} checkout #{e_sh name}}
+      command("checkout", name)
       rescan_project
     end
     
     def log(file_or_directory)
-      %x{#{e_sh @git} log #{e_sh file_or_directory}}
+      command("log", file_or_directory)
     end
     
     def revert(paths = [])
@@ -191,7 +203,7 @@ module SCM
       Dir.chdir(base)
       
       paths.each do |e|
-        output << %x{#{e_sh @git} checkout #{e_sh shorten(e, base)}}
+        output << command("checkout", shorten(e, base))
       end
       output
     end
