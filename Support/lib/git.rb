@@ -112,22 +112,34 @@ module SCM
         -e 'tell app "TextMate" to activate' &
       }
     end
+    
+    def list_files(dir, options = {})
+      options[:exclude_file] ||= File.exists?(excl_file = git_dir(dir) + '/info/exclude') ? excl_file : nil
+      excl_args = options[:exclude_file] ? " --exclude-from=#{e_sh options[:exclude_file]}" : ''
+      options[:type] ||= nil
+      type_arg = options[:type] && "-#{options[:type]}"
+       %x{#{e_sh @git} ls-files #{type_arg} --exclude-per-directory=.gitignore#{excl_args}}.split("\n")
+    end
 
-    def status(files = nil, options = {})
-      files = paths if files.nil?
-      base_dir = nca(files)
-
-      files.map do |file_or_dir|
-        excl_file = git_dir(file_or_dir) + '/info/exclude'
-        excl_args = if File.exists?(excl_file) then " --exclude-from=#{e_sh excl_file}"; else ''; end
-
+    def status(files_or_dirs = nil, options = {})
+      files_or_dirs = paths if files_or_dirs.nil?
+      base_dir = nca(files_or_dirs)
+      
+      file_statuses = {}
+      
+      files_or_dirs.each do |file_or_dir|
         dir = dir_part(file_or_dir)
         Dir.chdir(dir)
-
+        
         res = []
-        res << %x{#{e_sh @git} ls-files -o --exclude-per-directory=.gitignore#{excl_args}}.split("\n").map { |e| { :path => File.expand_path(e, dir), :display => shorten(File.expand_path(e, dir), base_dir), :status => Status.get('?') } }
-        res << %x{#{e_sh @git} ls-files -m --exclude-per-directory=.gitignore#{excl_args}}.split("\n").map { |e| { :path => File.expand_path(e, dir), :display => shorten(File.expand_path(e, dir), base_dir), :status => Status.get('M') } }
-      end.flatten
+        [['o', '?'], ['d', 'D'], ['m', 'M']].each do |file_type, display_status|
+          res << list_files(file_or_dir, :type => file_type).map { |e| file_statuses[File.expand_path(e, dir)] ||= display_status }
+        end
+      end
+      
+      file_statuses.sort.map do |filepath, display_status|
+        {:path => filepath, :display => shorten(filepath, base_dir), :status => Status.get(display_status)}
+      end
     end
 
     def diff(file, base = nil)
@@ -149,12 +161,16 @@ module SCM
       %x{#{e_sh @git} branch #{e_sh name} && #{e_sh @git} checkout #{e_sh name}}
     end
     
-    def commit(msg, files = ["./"])
+    def commit(msg, files = ["."])
       %x{#{e_sh @git} commit -m #{e_sh msg} #{files.map { |e| e_sh e }.join(' ')}}
     end
     
     def add(files = ["."])
       %x{#{e_sh @git} add #{files.map { |e| e_sh e }.join(' ')}}
+    end
+    
+    def rm(files = ["."])
+      %x{#{e_sh @git} rm #{files.map { |e| e_sh e }.join(' ')}}
     end
 
     def switch_to_branch(name, git_file)
