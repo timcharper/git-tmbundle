@@ -16,9 +16,9 @@ git_base = git.git_base
 
 Dir.chdir(git_base)
 
-TextMate::UI.request_item(:title =&gt; "Push", :prompt =&gt; "Select a remote source to push to:", :items =&gt; git.sources) do |name|
-  puts "&lt;p&gt;Pushing to remote source '#{name}'\n&lt;/p&gt;"
-  puts htmlize(git.push(name))
+TextMate::UI.request_item(:title =&gt; "Pull", :prompt =&gt; "Select a remote source to pull from:", :items =&gt; git.sources) do |name|
+  puts "&lt;p&gt;Pulling from remote source '#{name}'\n&lt;/p&gt;"
+  puts htmlize(git.pull(name))
 end
 </string>
 	<key>input</key>
@@ -26,10 +26,10 @@ end
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Push</string>
+	<string>Pull</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>
-	<string>3F84F9EB-027A-4200-B29B-C99EFA09F453</string>
+	<string>6494E41A-04CE-4D30-BD9A-B50056A7C13F</string>
 </dict>
 </plist>

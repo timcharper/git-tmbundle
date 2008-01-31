@@ -65,6 +65,10 @@ module SCM
         raise "No selected files." # FIXME throw an object with more info
       end
     end
+    
+    def git_base
+       File.expand_path('..', git_dir(paths.first))
+     end
 
     def shorten(path, base = nil)
       if base && path =~ /^#{Regexp.escape base}\/(.+)$/
@@ -171,6 +175,10 @@ module SCM
     
     def push(source)
       command("push", source)
+    end
+    
+    def pull(source)
+      command("pull", source)
     end
     
     def add(files = ["."])
