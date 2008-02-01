@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>beforeRunningCommand</key>
@@ -8,18 +8,8 @@
 	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-
-git = SCM::Git.new
-paths = git.paths
-
-puts '&lt;h2&gt;Status for ' + paths.map { |e| "‘#{htmlize(git.shorten(e))}’" }.join(', ') + '&lt;/h2&gt;'
-puts '&lt;pre&gt;'
-
-git.status(paths).each do |e|
-  puts "&lt;span title='#{htmlize(e[:status].long)}'&gt;#{htmlize(e[:status].short)}&lt;/span&gt; &lt;a href='txmt://open?url=file://#{e_url e[:path]}'&gt;#{htmlize(e[:display])}&lt;/a&gt;"
-end
-</string>
+git = SCM::Git::Status.new
+git.run</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
