@@ -8,60 +8,15 @@
 	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require 'shellwords'
 
-CW    = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
-git   = SCM::Git.new
-paths = git.paths
-base  = git.nca(paths)
+commit_dialog  = SCM::Git::Commit.new
 
-Dir.chdir(base)
-
-puts "&lt;h1&gt;Committing Files in ‘#{htmlize(git.shorten(base))}’&lt;/h1&gt;"
-STDOUT.flush
-
-files, status = [], []
-
-git.status(paths).each do |e|
-puts "#{e}&lt;br /&gt;"
-  files  &lt;&lt; e_sh(git.shorten(e[:path], base))
-  status &lt;&lt; e_sh(e[:status].short)
+if commit_dialog.clean_directory?
+  puts "Working directory is clean (nothing to commit)"
+  exit
 end
 
-res = %x{#{e_sh CW}                \
-  --diff-cmd   '#{git.git},diff'          \
-  --status #{status.join ':'}      \
-  #{files.join ' '} 2&gt;/dev/console
-}
-
-if $? != 0
-  puts "&lt;strong&gt;Cancel&lt;/strong&gt;"
-  abort
-end
-
-res   = Shellwords.shellwords(res)
-msg   = res[1]
-files = res[2..-1]
-
-puts "&lt;h2&gt;Commit Files:&lt;/h2&gt;&lt;ul&gt;"
-puts files.map { |e| "&lt;li&gt;#{htmlize(e)}&lt;/li&gt;\n" }.join
-puts "&lt;/ul&gt;"
-
-puts "&lt;h2&gt;Using Message:&lt;/h2&gt;"
-puts "&lt;pre&gt;#{htmlize(msg)}&lt;/pre&gt;"
-STDOUT.flush
-
-unless files.empty?
-  puts "&lt;h2&gt;Result:&lt;/h2&gt;"
-  add_files = files.select{ |f| File.exists?(f) }
-  remove_files = files.reject{ |f| File.exists?(f) }
-  res = git.add(add_files) unless add_files.empty?
-  res = git.rm(remove_files) unless remove_files.empty?
-  res = git.commit(msg)
-  puts "&lt;pre&gt;#{htmlize(res)}&lt;/pre&gt;"
-end
-</string>
+commit_dialog.run</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
