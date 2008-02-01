@@ -5,11 +5,18 @@ require 'set'
 module SCM
   class Git
     module CommonCommands
+      def flush; STDOUT.flush; end;
+      
       def command_str(*args)
         %{#{e_sh SCM::Git.git} #{args.map{ |arg| e_sh(arg) } * ' '}}
       end
+      
       def command(*args)
         %x{#{command_str(*args)} 2>&1 }
+      end
+      
+      def sources
+        command("remote").split("\n")
       end
       
       def git
@@ -116,27 +123,11 @@ module SCM
       %x{#{command_str("branch", name)} && #{command_str("checkout", name)}}
     end
     
-    def sources
-      command("remote").split("\n")
-    end
-    
-    def push(source)
-      command("push", source)
-    end
-    
-    def pull(source)
-      command("pull", source)
-    end
-    
     def switch_to_branch(name, git_file)
       base = File.expand_path("..", git_dir(git_file))
       Dir.chdir(base)
       command("checkout", name)
       rescan_project
-    end
-    
-    def log(file_or_directory)
-      command("log", file_or_directory)
     end
     
     def revert(paths = [])
@@ -152,6 +143,10 @@ module SCM
     end
     
     def self.const_missing(name)
+      @last_try||=nil
+      raise if @last_try==name
+      @last_try = name
+      
       file = File.dirname(__FILE__) + "/commands/#{name.to_s.downcase}.rb"
       require file
       klass = const_get(name)

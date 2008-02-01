@@ -8,19 +8,8 @@
 	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
-
-git = SCM::Git.new
-git_base = git.git_base
-
-Dir.chdir(git_base)
-
-TextMate::UI.request_item(:title =&gt; "Pull", :prompt =&gt; "Select a remote source to pull from:", :items =&gt; git.sources) do |name|
-  puts "&lt;p&gt;Pulling from remote source '#{name}'\n&lt;/p&gt;"
-  puts htmlize(git.pull(name))
-end
-</string>
+git = SCM::Git::Pull.new
+git.run</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>keyEquivalent</key>
