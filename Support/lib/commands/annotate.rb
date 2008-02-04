@@ -20,10 +20,11 @@ class SCM::Git::Annotate
     input.split("\n").each do |line|
       if /#{match_item}\(#{match_item}#{match_item}#{match_last_item}(.*)$/i.match(line)
         rev,author,date,ln,text = $1,$2,$3,$4,$5
+        nc = /^0+$/.match(rev)
         output << {
-          :rev => /^0+$/.match(rev) ? "-" : rev,
-          :author => /Not Committed Yet/.match(author) ? "-" : author.strip,
-          :date => Time.parse(date),
+          :rev => nc ? "-none-" : rev,
+          :author => nc ? "-none-" : author.strip,
+          :date => nc ? "-pending-" : Time.parse(date),
           :ln => ln.to_i,
           :text => text
         }

@@ -50,6 +50,41 @@ class Formatters::Annotate
     EOF
   end
   
+  def distance_of_time_in_words(from_time, to_time = 0, include_seconds = false)
+    from_time = from_time.to_time if from_time.respond_to?(:to_time)
+    to_time = to_time.to_time if to_time.respond_to?(:to_time)
+    distance_in_minutes = (((to_time - from_time).abs)/60).round
+    distance_in_seconds = ((to_time - from_time).abs).round
+    
+    case distance_in_minutes
+      when 0..1
+        return (distance_in_minutes == 0) ? 'less than a minute' : '1 minute' unless include_seconds
+        case distance_in_seconds
+          when 0..4   then 'less than 5 seconds'
+          when 5..9   then 'less than 10 seconds'
+          when 10..19 then 'less than 20 seconds'
+          when 20..39 then 'half a minute'
+          when 40..59 then 'less than a minute'
+          else             '1 minute'
+        end
+      
+      when 2..44           then "#{distance_in_minutes} minutes"
+      when 45..89          then 'about 1 hour'
+      when 90..1439        then "about #{(distance_in_minutes.to_f / 60.0).round} hours"
+      when 1440..2879      then '1 day'
+      when 2880..43199     then "#{(distance_in_minutes / 1440).round} days"
+      when 43200..86399    then 'about 1 month'
+      when 86400..525599   then "#{(distance_in_minutes / 43200).round} months"
+      when 525600..1051199 then 'about 1 year'
+      else                      "over #{(distance_in_minutes / 525600).round} years"
+    end
+  end
+  
+  def friendly_date(date)
+    return date if date.is_a?(String)
+    distance_of_time_in_words(Time.now, date)
+  end
+  
   def content(annotations, log_entries = nil)
     if log_entries
       puts select_box(
@@ -78,21 +113,25 @@ class Formatters::Annotate
     annotations.each do |annotation|
       col_class = []
       col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-      col_class << "ins" if annotation[:rev] == "-"      
+      col_class << "ins" if annotation[:rev] == "-none-"      
       col_class = col_class * " "
-      formatted_line = {:rev => annotation[:rev], :author => annotation[:author], :date => annotation[:date].to_friendly, :ln => annotation[:ln]}
+      formatted_line = {
+        :rev => annotation[:rev], 
+        :author => annotation[:author], 
+        :date => friendly_date(annotation[:date]), 
+        :ln => annotation[:ln], 
+        :text => annotation[:text]
+      }
       display = formatted_line.dup
-      [:rev, :author, :date, :ln].each do |k|
-        display[k] = "" if display[k]==last_formatted_line[k]
-      end
       
+      [:rev, :author, :date].each { |k| display[k] = "…" } if display[:rev]==last_formatted_line[:rev]
       puts <<-EOF
         <tr>
-          <td class="line-numbers">#{make_non_breaking annotation[:rev]}</td>
-          <td class="line-numbers">#{make_non_breaking annotation[:author]}</td>
-          <td class="line-numbers">#{make_non_breaking annotation[:date].to_friendly}</td>
-          <td class="line-numbers">#{make_non_breaking annotation[:ln]}</td>
-          <td class="code #{col_class}">#{htmlize(annotation[:text])}</td>
+          <td class="line-numbers">#{make_non_breaking display[:rev]}</td>
+          <td class="line-numbers">#{make_non_breaking display[:author]}</td>
+          <td class="line-numbers">#{make_non_breaking display[:date]}</td>
+          <td class="line-numbers">#{make_non_breaking display[:ln]}</td>
+          <td class="code #{col_class}">#{htmlize(display[:text])}</td>
         </tr>
       EOF
       last_formatted_line = formatted_line
