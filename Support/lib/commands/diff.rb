@@ -21,9 +21,10 @@ class SCM::Git::Diff
     diff_content.split("\n").each do |line|
       case line
       when /^diff \-\-git/
-      when /^index ([0-9a-f]+)\.\.([0-9a-f]+) ([0-9]*)/i
+      when /^index(.*)$/i
         current = {:left => {}, :right => {}, :lines => []}
         output << current
+        /([0-9a-f]+)\.\.([0-9a-f]+) ([0-9]+)/i.match($1)
         current[:index_start] = $1
         current[:index_end] = $2
         current[:index_mode] = $3
