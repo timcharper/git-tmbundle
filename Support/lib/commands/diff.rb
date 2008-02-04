@@ -6,11 +6,11 @@ class SCM::Git::Diff
     parse_diff(command("diff", branch_left, branch_right))
   end
   
-  def diff_file(file, base = nil)
-    base = File.expand_path("..", git_dir(file)) if base.nil?
-    Dir.chdir(base)
-    file = '.' if file == base
-    parse_diff(command("diff", file.sub(/^#{Regexp.escape base}\//, '')))
+  def diff_file(fullpath)
+    path = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+    Dir.chdir(git_base)
+    path = '.' if path == ""
+    parse_diff(command("diff", path))
   end
   
   def parse_diff(diff_content)
