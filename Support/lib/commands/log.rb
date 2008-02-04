@@ -66,7 +66,7 @@ class SCM::Git::Log
   end
 
   # on failure: returns nil
-  def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1)
+  def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1, options = {})
     path = make_local_path(path)
     # Validate file
     # puts command("status", path)
@@ -88,21 +88,19 @@ class SCM::Git::Log
     # Display progress dialog
     # Show the log
     revision = 0
+    log_data = nil
+    
     TextMate::UI.dialog(:nib => ListNib,
                             :center => true,
                             :parameters => {'title' => prompt,'entries' => [], 'hideProgressIndicator' => false}) do |dialog|
 
       # Parse the log
-      plist = []
       log_data = stringify(log(path, :limit => 200))
       dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
 
       dialog.wait_for_input do |params|
-        # puts "<br/>" * 10
         revision = params['returnArgument']
         button_clicked = params['returnButton']
-        # STDERR.puts params['returnButton']
-#        STDERR.puts "Want:#{number_of_revisions} got:#{revision.length}"
 
         if (button_clicked != nil) and (button_clicked == 'Cancel')
           false # exit
@@ -115,12 +113,17 @@ class SCM::Git::Log
           end
         end
       end
-
-#      dialog.close
     end
 
     # Return the revision number or nil
     revision = nil if revision == 0
+    if options[:sort] && revision
+      time_revision_pairs = []
+      selected_entries = log_data.select{ |l| revision.include?(l["rev"]) }
+      selected_entries.sort!{ |a,b| a["date"] <=> b["date"] } # sorts them descending (latest on the bottom)
+      selected_entries.reverse! if options[:sort] == :asc
+      revision = selected_entries.map{|se| se["rev"]}
+    end
     revision
   end
 
