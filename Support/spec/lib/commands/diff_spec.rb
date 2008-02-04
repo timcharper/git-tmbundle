@@ -40,4 +40,16 @@ describe SCM::Git::Diff do
       @lines.last[:ln_left].should == nil
     end
   end
+  
+  describe "when parse a diff with line breaks" do
+    TEST_OUTPUT_BREAKS = File.read("#{FIXTURES_DIR}/changed_files_with_break.diff")
+    before(:each) do
+      @results = @diff.parse_diff(TEST_OUTPUT_BREAKS)
+      @lines = @results.first[:lines]
+    end
+    
+    it "should insert a line break" do
+      @lines.map{|t| t[:type]}.should include(:cut)
+    end
+  end
 end

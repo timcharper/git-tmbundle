@@ -1,8 +1,8 @@
 class Formatters::Diff
   include Formatters::FormatterHelpers
   
-  def initialize(base, &block)
-    @base = base
+  def initialize(base = nil, &block)
+    @base = base || ENV["TM_PROJECT_DIRECTORY"]
     
     puts <<-EOF
     <html>
@@ -27,7 +27,11 @@ class Formatters::Diff
   def content(diff_results)
     puts '<code>'
     diff_results.each do |diff_result|
-      files = [:left, :right].map{|lr| diff_result[lr][:filepath] || " - none - "}
+      files = [:left, :right].map do |lr|
+        filepath = diff_result[lr][:filepath]
+        start_line_right = diff_result[:right][:ln_start]
+        filepath ? "<a href='txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
+      end
       puts <<-EOF
       <h4>#{files.uniq * ' / '}</h4>
       <table class='codediff inline'>
@@ -41,16 +45,17 @@ class Formatters::Diff
         <tbody>
 EOF
       diff_result[:lines].each do |line|
-        row_class = case line[:type]
-        when :deletion then "del"
-        when :insertion then "ins"
+        line_num_class, row_class = case line[:type]
+        when :deletion then ["", "del"]
+        when :insertion then ["", "ins"]
+        when :cut then ["line-num-cut", "cut-line"]
         else
-          "unchanged"
+          ["", "unchanged"]
         end
         puts <<-EOF
           <tr>
-            <td class="line-numbers">#{line[:ln_left]}</td>
-            <td class="line-numbers">#{line[:ln_right]}</td>
+            <td class="line-numbers #{line_num_class}">#{line[:ln_left]}</td>
+            <td class="line-numbers #{line_num_class}">#{line[:ln_right]}</td>
             <td class="code #{row_class}">#{htmlize(line[:text])}</td></tr>
         EOF
       end

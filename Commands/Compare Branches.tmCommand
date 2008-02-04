@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>beforeRunningCommand</key>
@@ -8,10 +8,9 @@
 	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 
-git = SCM::Git.new
+git = SCM::Git::Diff.new
 git_base = File.expand_path('..', git.git_dir(git.paths.first))
 
 branches   = git.branches(git_base)
@@ -22,12 +21,14 @@ res   = open('|"$DIALOG" -w' + token)               { |io| OSX::PropertyList.loa
         open('|"$DIALOG" -x' + token)               { |io| }
 
 if res &amp;&amp; res['returnArgument']
-  parrent = res['returnArgument'].first['name']
+  parent = res['returnArgument'].first['name']
   current = res['currentBranch'].first['name']
-  puts "&lt;h1&gt;Compare ‘#{parrent}’ With ‘#{current}’&lt;/h1&gt;\n&lt;pre&gt;"
-  Dir.chdir(git_base)
-  puts htmlize(%x{#{e_sh git.git} diff #{e_sh parrent} #{e_sh current}})
-  puts "&lt;/pre&gt;"
+
+  results = git.diff_branches(parent, current)
+  Formatters::Diff.new do |f|
+    f.header "Compare ‘#{parent}’ With ‘#{current}’"
+    f.content(results)
+  end
 end
 </string>
 	<key>input</key>
