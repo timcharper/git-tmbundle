@@ -73,8 +73,19 @@ class Formatters::Annotate
         </thead>
         <tbody>
     EOF
+    last_formatted_line = {}
+    
     annotations.each do |annotation|
-      col_class = (ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i) ? "selected" : ""
+      col_class = []
+      col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
+      col_class << "ins" if annotation[:rev] == "-"      
+      col_class = col_class * " "
+      formatted_line = {:rev => annotation[:rev], :author => annotation[:author], :date => annotation[:date].to_friendly, :ln => annotation[:ln]}
+      display = formatted_line.dup
+      [:rev, :author, :date, :ln].each do |k|
+        display[k] = "" if display[k]==last_formatted_line[k]
+      end
+      
       puts <<-EOF
         <tr>
           <td class="line-numbers">#{make_non_breaking annotation[:rev]}</td>
@@ -84,6 +95,7 @@ class Formatters::Annotate
           <td class="code #{col_class}">#{htmlize(annotation[:text])}</td>
         </tr>
       EOF
+      last_formatted_line = formatted_line
     end
       
     puts <<-EOF

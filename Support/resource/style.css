@@ -703,7 +703,9 @@ table.codediff .cut-line {
 table.codediff td.hidden del { display:none; }
 table.codediff td.del { background: #fdd; }
 table.codediff td.ins { background: #dfd; }
-table.codediff td.selected { background: #ddf; }
+table.codediff td.selected { 
+		border: 5px solid #aaf !important;
+	}
 table.sidebyside tbody.mod td { background: #fe9; }
 table.sidebyside tbody.mod td { background: #fe9; }
 table.sidebyside tbody.mod td ins, table.sidebyside tbody.mod td del{ background: #fd4; }
