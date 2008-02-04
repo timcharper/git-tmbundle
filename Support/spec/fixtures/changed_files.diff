@@ -1,0 +1,58 @@
+diff --git a/Support/lib/commands/diff.rb b/Support/lib/commands/diff.rb
+index 2e44996..3820608 100644
+--- a/Support/lib/commands/diff.rb
++++ b/Support/lib/commands/diff.rb
+@@ -5,6 +5,25 @@ class SCM::Git::Diff
+     base = File.expand_path("..", git_dir(file)) if base.nil?
+     Dir.chdir(base)
+     file = '.' if file == base
+-    command("diff", file.sub(/^#{Regexp.escape base}\//, ''))
++    parse_diff(command("diff", file.sub(/^#{Regexp.escape base}\//, '')))
++  end
++  
++  def parse_diff(output)
++    output.split("\n").each do |line|
++      css_class = case line
++      when /^(diff |index |@@|\+\+\+|\-\-\-)/
++        "info"
++      when /^\+/
++        "addition"
++      when /^\-/
++        "deletion"
++      when /^diff /
++        "diff_cmd"
++      else
++        ""
++      end
++      puts "<div class='#{css_class}'>#{htmlize(line)}</div>"
++    end
++    
+   end
+ end
+\ No newline at end of file
+diff --git a/Support/lib/formatters/diff.rb b/Support/lib/formatters/diff.rb
+index b0faae6..2ac2101 100644
+--- a/Support/lib/formatters/diff.rb
++++ b/Support/lib/formatters/diff.rb
+@@ -30,21 +30,6 @@ class Formatters::Diff
+   
+   def content(diff_result)
+     puts '<code>'
+-    diff_result.split("\n").each do |line|
+-      css_class = case line
+-      when /^(diff |index |@@|\+\+\+|\-\-\-)/
+-        "info"
+-      when /^\+/
+-        "addition"
+-      when /^\-/
+-        "deletion"
+-      when /^diff /
+-        "diff_cmd"
+-      else
+-        ""
+-      end
+-      puts "<div class='#{css_class}'>#{htmlize(line)}</div>"
+-    end
+     
+     puts '</code>'
+   end

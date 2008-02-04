@@ -1,0 +1,777 @@
+/* reset */
+/*
+Copyright (c) 2007, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.3.1
+*/
+body { color:#000;background:#FFF; }
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,
+ input,textarea,p,blockquote,th,td { margin:0;padding:0; } 
+table { border-collapse:collapse;border-spacing:0; }
+fieldset,img { border:0; }
+address,caption,cite,code,dfn,em,strong,th,var {font-style:normal;font-weight:normal; }
+li { list-style:none;} 
+caption,th { text-align:left; }
+h1,h2,h3,h4,h5,h6 { font-size:100%;font-weight:normal; } 
+q:before,q:after{ content:''; }
+abbr,acronym { border:0;font-variant:normal; }
+sup,sub { line-height:-1px;vertical-align:text-top; }
+sub{ vertical-align:text-bottom; } 
+input, textarea, select { font-family:inherit;font-size:inherit;font-weight:inherit; }
+
+/* CSS taken from gitorious.org */
+
+body {
+	font-size: 13px;
+	line-height: 1.461em;
+  background: #fff;
+  color: #000;
+  font-family: Georgia, Times, "Times new Roman", serif;
+  margin: 0;
+  padding: 0;
+}
+h1, h2, h3, h4, h5, h6 {
+  color: #09460f;
+  font-weight:  normal;
+}
+h1 {
+	margin: 0;
+	font-size: 1.615em;
+	line-height: 0.904em;
+	margin-bottom: 0.904em;
+}
+h2 {
+	margin: 0;
+	font-size: 1.461em;
+	line-height: 1em;
+	margin-bottom: 1em;
+}
+h3 {
+	margin: 0;
+	font-size: 1.307em;
+	line-height: 1.117em;
+	margin-bottom: 1.117em;
+}
+h4 {
+	margin: 0;
+	font-size: 1.153em;
+	line-height: 1.266em;
+	margin-bottom: 1.266em;
+}
+p, ul, blockquote, pre, td, th, label {
+	margin: 0;
+	font-size: 1em;
+	line-height: 1.461em;
+	margin-bottom: 1.461em;
+}
+p, ul, blockquote, td, th, label {
+	font-family: "Bitstream Vera Serif", Georgia, Times, "Times new Roman", serif;
+}
+
+p.small {
+	margin: 0;
+	font-size: 0.846em;
+	line-height: 1.727em;
+	margin-bottom: 1.727em;
+}
+table {
+	border-collapse: collapse;
+	margin-bottom: 1.461em;
+}
+code, pre, tt {
+  font: 95%/105%  "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+a {
+/*  color: #630;*/
+  color: #811E00;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+strong, b {
+  font-weight: bold;
+}
+em, i {
+  font-style: italic;
+}
+ul {
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+pre {
+  margin-left: 2em;
+  margin-right: 2em;
+}
+
+ul li h1, ul li h2, ul li h3, ul li h4 {
+  margin-bottom: 0.5em;
+}
+
+abbr {
+  border-bottom: 1px dotted #333;
+}
+/* boxes */
+
+.clear {
+  clear: both;
+  height: 0;
+}
+
+#container {
+  width: 90%;
+}
+
+#header {
+  /*background: #C7BA99;*/
+  padding-left: 0.5em;
+}
+
+#container #logo {
+  margin: 0.5em 0.5em 1em 2em;
+}
+
+#container #logo h1   { line-height: 100%; }
+#container #logo h1 a { color: #666; }
+
+.login-logout {
+  float: right;
+}
+
+#container #menu {
+  height: 21px;
+  border-bottom: 1px solid #333;
+}
+
+#container #main {
+  min-height: 300px;
+  width:100%;
+  float:left;
+  margin-right: -160px;
+}
+#container #content { /* when there's no sidebar*/
+  margin: 0 0 1em 2.5em;
+}
+#container #main #content { /* when there's sidebar contents */
+  margin:0;
+  margin-right: 160px;
+  margin-top: 20px;
+  padding: 0 1em 1em 2em;
+}
+#container #sidebar {
+  margin-top: 20px;
+  padding-left: 5px;
+  min-height: 300px;
+  width: 150px;
+  float:right;
+  border-left: 1px dotted #333;
+}
+
+#sidebar ul.links {
+  margin-left: -5px;
+  padding:0;
+}
+#sidebar ul.links li {
+  border-bottom: 1px dotted #888;
+}
+#sidebar ul.links li a {
+  display:block;
+  padding: 5px 5px 5px 10px; 
+}
+#sidebar ul.links li a:hover {
+  color: #fff;
+  background: #630;
+  text-decoration: none;
+}
+
+#container #footer {
+  padding: 10px 30px 0 10px;
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  clear:both;
+}
+
+#container #footer ul li {
+  display: inline;
+}
+
+.flash_message {
+  clear: both;
+  padding: 5px 5px 5px 20px;
+  margin-bottom: 20px;
+  border-top:1px solid #ccc;
+  border-bottom:1px solid #ccc;
+}
+.flash_message p { margin: 0; }
+.flash_message.notice {
+  color: #588e03;
+  background: #e9fad9;
+  border-color: #588e03; 
+}
+
+.flash_message.error {
+  color: #c30000;
+  background: #f2dcdc;
+  border-color: #c30000;
+}
+
+/* menu */
+
+#menu ul {
+  list-style: none;
+  margin-left: 2em;
+  padding-top: 2px;
+}
+
+#menu ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+#menu ul li a { 
+  font-size: 16px;
+}
+
+#menu ul li a:hover {
+  text-decoration: none;
+  border-bottom: 4px solid #630;
+}
+
+/* submenu */
+#submenu {
+  margin-bottom: 1.5em;
+  margin-top: 2px;
+  border-top: 1px dotted #666;
+  border-bottom: 1px solid #ccc;
+  font-size: 90%;
+  min-height: 2px;
+}
+#submenu ul {
+  list-style: none;
+  padding: 2px 0 1px 0;
+  margin: 0 0 0 2em;
+}
+
+#submenu ul li {
+  display: inline;
+  margin-right: 20px;
+}
+
+#submenu ul li a { 
+/*  font-size: 12px;*/
+}
+
+#submenu ul li a:hover {
+  text-decoration: none;
+  border-bottom: 3px solid #630;
+}
+
+/* Forms */
+
+textarea {
+  width: 90%;
+}
+
+fieldset { 
+  padding: 3px; 
+  margin: 0 0 10px 0; 
+  width: 100%;
+}
+
+legend { 
+  font-weight: bold; 
+  font-size:12px; 
+}
+
+label { 
+  font-weight: bold; 
+}
+
+.required {
+  color: #aaa;
+  font-size: 10px;
+  font-weight: normal;
+}
+
+form {
+  margin-bottom: 1.5em;
+}
+
+input.text { 
+  padding: 3px; 
+  width: 350px; 
+}
+
+textarea { 
+  width: 350px; 
+  height: 150px; 
+  padding: 3px; 
+}
+textarea.text { height: 60px; }
+textarea.wide { width: 100%; }
+textarea.tall { height: 500px; }
+textarea.medium { width: 450px; height: 250px; }
+select        { width: 200px; }
+
+input.text, textarea, select {
+  margin: 5px 0 10px 0;
+  border: 1px solid #bbb;
+}
+
+input.text:focus, input.title:focus,
+textarea:focus, select:focus {
+  border: 1px solid #666;
+}
+
+.fieldWithErrors { margin: 0; display: block;}
+.fieldWithErrors input, .fieldWithErrors textarea,
+.fieldWithErrors select {
+  border: 1px solid #c30000;
+}
+
+.errorExplanation {
+  background: #fbe3e4; 
+  border: 1px solid #c30000;
+  width: 400px;
+  margin: 0 0 10px 0;
+}
+
+.errorExplanation h2 {
+  font-size: 120%;
+  line-height: 120%;
+  font-weight: normal;
+  padding: 5px;
+  color: #fff;
+  background: #c30000;
+  margin-bottom: 0.2em;
+}
+.errorExplanation p { 
+  padding: 2px 2px 2px 5px;
+  margin-bottom: 0;
+  margin-top: 0;
+}
+.errorExplanation ul {
+  padding: 5px 10px 10px 25px;
+  margin-bottom: 0;
+}
+.errorExplanation ul li{
+    list-style-type: disc;
+}
+
+table.listing {
+  width: 100%;
+}
+
+table.listing tr.odd {
+  background: #efefef;
+}
+table.listing thead th {
+  font-weight: bold;
+  padding: 3px;
+  border-bottom: 2px solid #222;
+}
+
+table.repository_list tr.mainline {
+  margin: 10px 0 0 0;
+  padding: 10px;
+}
+table.repository_list tr.mainline td { 
+  border-top: 1px solid #408000;
+  border-bottom: 1px solid #408000;
+  background: #dbf7b3;
+  font-weight: bold;
+}
+table.repository_list td {
+  margin: 0;
+  padding: 5px;
+  border-bottom: 1px solid #ccc;
+}
+table.repository_list tr.clone td.name {
+  background: url("/images/clone_indent.png") 10px 50% no-repeat;
+  padding-left: 20px;
+}
+
+.infobox {
+  background: #efefef;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.infobox li {
+  margin-bottom: 0.2em;
+}
+
+pre.commit_message {
+  margin-top: 10px;
+  margin-left: 10px;
+}
+
+ul.project_list li {
+  padding-bottom: 1em;
+  margin-bottom: 1em;
+  border-bottom: 1px solid #dedede;
+}
+
+ul.bullet_list li {
+  list-style: disc;
+  margin-left: 2.5em;
+}
+
+.pagination {
+  padding: 3px;
+  margin: 3px;
+  text-align: center;
+}
+.pagination a {
+  padding: 1px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #ddd;
+  text-decoration: none;
+}
+.pagination a:hover, .pagination a:active {
+  border-bottom: 1px solid #333;
+  background: #630;
+  color: #fff;
+}
+.pagination span.current {
+  padding: 1px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #999;
+  font-weight: bold;
+  color: #000;
+}
+.pagination span.disabled {
+  padding: 1px 5px 2px 5px;
+  margin: 2px;
+  border: 1px solid #eee;
+  color: #ddd;
+}
+
+.section {
+  margin-bottom: 3em;
+}
+
+ul.path_breadcrumbs li {
+  display: inline;
+  margin:0;
+}
+
+/* tags */
+
+ul.tag_list li {
+  display:inline;
+}
+
+.tag_size_1 { font-size: 1.0em; }
+.tag_size_2 { font-size: 1.2em; }
+.tag_size_3 { font-size: 1.4em; }
+.tag_size_4 { font-size: 1.6em; }
+
+.large_tags .tag_size_1 { font-size: 1.0em; }
+.large_tags .tag_size_2 { font-size: 1.3em; }
+.large_tags .tag_size_3 { font-size: 1.6em; }
+.large_tags .tag_size_4 { font-size: 1.9em; }
+
+/* "un-ready" objects */
+
+.constructing {
+  color: #999;
+  background: transparent;
+}
+
+div.being_constructed p {
+  padding: 0;
+  padding-top: 2px;
+  margin: 0;
+  color: #333;
+	font-family: "Lucida Grande", Helvetica, Arial, Verdana, sans-serif;
+	font-size: 90%;
+}
+
+div.being_constructed {
+  text-align:center;
+  margin: 1em;
+  padding: 1em;
+  border: 1px solid #A74B42;
+  background: #eee;
+}
+
+
+/* auto completions */
+
+div.auto_complete {
+  width: 350px;
+  background: #fff;
+}
+div.auto_complete ul {
+  border:1px solid #888;
+  margin:0;
+  padding:0;
+  width:100%;
+  list-style-type:none;
+}
+div.auto_complete ul li {
+  margin:0;
+  padding:3px;
+}
+div.auto_complete ul li.selected { 
+  background-color: #ffb; 
+}
+div.auto_complete ul strong.highlight { 
+  color: #800; 
+  margin:0;
+  padding:0;
+}
+
+span.tag {
+  border: 1px solid #999;
+  background: #dedede;
+  padding: 0 4px 2px 4px;
+}
+
+table.shortlog tr td, table.tree tr td {
+  padding: 2px 5px 4px 5px;
+}
+table.shortlog tr td.link_to_more {
+  border-top: 1px solid #aaa;
+  padding: 2px;
+}
+table.shortlog tr td.link_to_more span {
+  float:right;
+}
+
+table.tree tr td.node {
+  width: 75%;
+}
+table.tree tr td.node a {
+  padding-left:25px;
+  background-position: 4px 50%;
+  background-repeat: no-repeat;
+}
+table.tree tr td.file a { background-image: url("/images/icon_file.gif"); }
+table.tree tr td.tree a { background-image: url("/images/folder_grey.png"); }
+
+#site_intro {
+  width: 65%;
+  margin: 2em auto 2em auto;
+  font-size: 1.5em;
+}
+#site_project_list .tag_list{
+  text-align: center;
+}
+
+ul.tab_menu {
+  border-bottom: 1px solid #888;
+  list-style: none;
+  padding: 3px;
+  margin-top: 2em;
+  margin-bottom: 1em;
+}
+
+ul.tab_menu li {
+  display:inline; 
+  margin-right: 1em;
+  border-top: 1px solid #888;
+  border-left: 1px solid #888;
+  border-right: 1px solid #888;
+  padding: 5px;
+}
+ul.tab_menu li.selected {
+  border-bottom: 1px solid #fff;
+  color: #666;
+}
+
+div.comment {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1em;
+  width: 63%;
+}
+div.comment .body {
+  margin-bottom: 0.2em;
+}
+div.comment p.byline {
+  font-size: 85%;
+}
+
+.hint {
+  color: #666;
+  font-size: 90%;
+}
+small.hint { font-size: 83%;}
+
+.info_hint {
+  font-size: 95%;
+  color: #666;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-top: 1px dotted #888;
+  border-bottom: 1px dotted #888;
+}
+
+.info_hint pre {
+  margin-bottom: 5px;
+}
+
+/* diff mode selector */
+ul.mode_selector { float: right;}
+ul.mode_selector li {
+  display:inline;
+  margin-left: 1em;
+}
+ul.mode_selector li.list_header { font-weight: bold; }
+ul.mode_selector li.selected    { border-bottom: 1px solid #666; }
+
+/* Diff rendering */ 
+
+.toggle_diff {
+  
+}
+
+table tr .line-numbers {
+ text-align: right;
+ vertical-align: top;
+ background: #eee;
+ color: #555;
+ font-size: 90%;  
+ padding: 2px;
+ padding-top: 0;
+ width: 35px;
+ border-right: 1px solid #ccc;
+ border-bottom: 1px solid #ddd;
+}
+table tr td.code {
+ width: 95%;
+ padding-left: 10px;
+ /*white-space: pre;*/
+ white-space: pre-wrap;       /* CSS-3                  */
+ white-space: -moz-pre-wrap;  /* Mozilla, since 1999    */
+ white-space: -pre-wrap;      /* Opera 4-6              */
+ white-space: -o-pre-wrap;    /* Opera 7                */
+ word-wrap: break-word;       /* Internet Explorer 5.5+ */
+ background: #fff;
+ font: 95%/110% "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+
+table tr td.unwrapped {
+ white-space: pre;
+}
+
+table tr td.softwrapped {
+  white-space: pre-wrap;       /* CSS-3                  */
+  white-space: -moz-pre-wrap;  /* Mozilla, since 1999    */
+  white-space: -pre-wrap;      /* Opera 4-6              */
+  white-space: -o-pre-wrap;    /* Opera 7                */
+  word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+table tr td.highlighted {
+  background: #ffc;
+}
+
+table.sidebyside {
+  empty-cells: show;
+  table-layout: fixed;
+}
+table.sidebyside tr td.code {
+  white-space: normal;
+  padding: 2px;
+}
+
+table.codediff {
+  border: 1px solid #ccc;
+  width: 100%;
+  border-collapse: collapse;
+  font: 95%/105% "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
+}
+table.codediff .line-num-cut { 
+  background: #ccc; 
+  border-top: 1px dashed #ccc; 
+  border-bottom: 1px dashed #ccc; 
+}
+
+table.codediff thead .line-numbers, table.codediff thead { background: #ddd; }
+table.codediff td.code { padding-left: 2px; }
+table.codediff .cut-line { 
+  background: #eee; 
+  border-top: 1px dashed #aaa; 
+  border-bottom: 1px dashed #aaa; 
+}
+table.codediff td.hidden del { display:none; }
+table.codediff td.del { background: #fdd; }
+table.codediff td.ins { background: #dfd; }
+table.sidebyside tbody.mod td { background: #fe9; }
+table.sidebyside tbody.mod td { background: #fe9; }
+table.sidebyside tbody.mod td ins, table.sidebyside tbody.mod td del{ background: #fd4; }
+table.codediff td.del del { text-decoration: none; }
+table.codediff td.ins ins { text-decoration: none; }
+table.sidebyside td.del del { background: #fbb; }
+table.sidebyside td.ins ins { background: #afa; }
+table.codediff col.lines {
+  width: 3em;
+}
+
+#newest_projects, #site_project_list {
+  margin-bottom: 3em;
+}
+
+#newest_projects ul li {
+  margin-left: 5px;
+  margin-bottom: 5px;
+}
+
+#site_overview {
+  text-align: center;
+  margin-bottom: 4em;
+}
+
+#site_overview p.create_account_hint {
+  margin-top: 1.5em;
+}
+
+
+#site #recent_comments {
+  width: 48%;
+  float: left;
+  padding-right: 10px;
+  border-right: 1px dotted #dedede;
+}
+#site #recent_comments .comment { width: 100%;}
+#site #recent_comments .comment .body {
+  font-size: 90%;
+}
+
+#site #clone_list {
+  width: 49%;
+  float: right;
+}
+
+#system_message {
+  background: #ffc;
+  border-bottom: 1px solid #aaa;
+  margin-bottom: 1em;
+}
+#system_message p {
+  text-align: center;
+  margin-bottom:0;
+  padding: 5px;
+}
+
+.project_list_item p {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+#left {
+  float:left;
+  width: 48%; 
+}
+
+#right {
+  float:right;
+  width: 48%;
+  clear:right; 
+}

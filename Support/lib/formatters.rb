@@ -1,4 +1,9 @@
 class Formatters
+  module FormatterHelpers
+    def resource_url(filename)
+      "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
+    end
+  end
   def self.const_missing(name)
     @last_try||=nil
     raise if @last_try==name

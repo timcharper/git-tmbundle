@@ -1,18 +1,14 @@
 class Formatters::Diff
+  include Formatters::FormatterHelpers
   
   def initialize(base, &block)
     @base = base
+    
     puts <<-EOF
     <html>
     <head>
       <title>Uncomitted changes</title>
-    <style>
-      h2 { font-size:20px; padding-bottom:20px; }
-      code .diff_cmd { font-color: #aaa; padding: 5px 0px; border-color: black; border-style: dashed; border-width: 1px 0px 0px 0px; margin-top: 10px; }
-      code .addition { background-color: #cfc; }
-      code .deletion { background-color: #fcc; }
-      code .info {background-color: #ccc;  }
-    </style>
+      <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
     </head>
     <body>
     EOF
@@ -28,24 +24,42 @@ class Formatters::Diff
     puts "<h2>#{text}</h2>"
   end
   
-  def content(diff_result)
+  def content(diff_results)
     puts '<code>'
-    diff_result.split("\n").each do |line|
-      css_class = case line
-      when /^(diff |index |@@|\+\+\+|\-\-\-)/
-        "info"
-      when /^\+/
-        "addition"
-      when /^\-/
-        "deletion"
-      when /^diff /
-        "diff_cmd"
-      else
-        ""
+    diff_results.each do |diff_result|
+      files = [:left, :right].map{|lr| diff_result[lr][:filepath] || " - none - "}
+      puts <<-EOF
+      <h4>#{files.uniq * ' / '}</h4>
+      <table class='codediff inline'>
+        <thead>
+          <tr>
+            <td class='line-numbers'>left</td>
+            <td class='line-numbers'>right</td>
+            <td/>
+          </tr>
+        </thead>
+        <tbody>
+EOF
+      diff_result[:lines].each do |line|
+        row_class = case line[:type]
+        when :deletion then "del"
+        when :insertion then "ins"
+        else
+          "unchanged"
+        end
+        puts <<-EOF
+          <tr>
+            <td class="line-numbers">#{line[:ln_left]}</td>
+            <td class="line-numbers">#{line[:ln_right]}</td>
+            <td class="code #{row_class}">#{htmlize(line[:text])}</td></tr>
+        EOF
       end
-      puts "<div class='#{css_class}'>#{htmlize(line)}</div>"
+      
+      puts <<-EOF
+        </tbody>
+      </table>
+      EOF
     end
-    
     puts '</code>'
   end
 
