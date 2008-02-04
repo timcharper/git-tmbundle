@@ -24,20 +24,20 @@ describe SCM::Git::Diff do
         [8] + 
         ([nil] * 20) + 
         (9..10).to_a + 
-        [nil]
+        ["EOF"]
       
       @lines.map{|r| r[:ln_right]}.should == 
         (5..7).to_a + 
         [nil] + 
         (8..27).to_a + 
         (28..29).to_a + 
-        [nil]
+        ["EOF"]
     end
     
     it "shouldn't count the (\\ No newline at end of file) line" do
       @lines.last[:text].should == "No newline at end of file"
-      @lines.last[:ln_right].should == nil
-      @lines.last[:ln_left].should == nil
+      @lines.last[:ln_right].should == "EOF"
+      @lines.last[:ln_left].should == "EOF"
     end
   end
   
@@ -50,6 +50,19 @@ describe SCM::Git::Diff do
     
     it "should insert a line break" do
       @lines.map{|t| t[:type]}.should include(:cut)
+    end
+  end
+  describe "when parse a diff with line breaks" do
+    TEST_OUTPUT_NEW_LINE = File.read("#{FIXTURES_DIR}/new_line_at_end.diff")
+    before(:each) do
+      @results = @diff.parse_diff(TEST_OUTPUT_NEW_LINE)
+      @lines = @results.first[:lines]
+    end
+    
+    it "should show EOF as occuring for the side that previously had line-numbers" do
+      eof_line = @lines.find{|l| l[:type]==:eof}
+      eof_line[:ln_left].should == "EOF"
+      eof_line[:ln_right].should == nil
     end
   end
 end

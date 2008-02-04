@@ -714,6 +714,15 @@ table.codediff col.lines {
   width: 3em;
 }
 
+table.codediff td.eof {
+	font-style: italic !important;
+	color: #aaa;
+}
+
+table.codediff td.line-num-eof {
+	font-style: italic !important;
+}
+
 #newest_projects, #site_project_list {
   margin-bottom: 3em;
 }

@@ -1,0 +1,12 @@
+diff --git a/hey hey.rb b/hey hey.rb
+index 477c371..19dbd58 100644
+--- a/hey hey.rb	
++++ b/hey hey.rb	
+@@ -10,5 +10,4 @@ asdf
+ 
+ asdf
+ 
+-
+-asdf
+\ No newline at end of file
++boogy!

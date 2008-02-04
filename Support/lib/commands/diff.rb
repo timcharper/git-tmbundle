@@ -53,7 +53,12 @@ class SCM::Git::Diff
         ln_left += 1
         ln_right += 1
       when /^\\ (No newline at end of file)/
-        current[:lines] << { :text => $1}
+        last_line = current[:lines].last
+        current[:lines] << { 
+          :type => :eof,
+          :ln_left => (last_line[:ln_left] && "EOF"), 
+          :ln_right => (last_line[:ln_right] && "EOF"), 
+          :text => $1}
       end
     end
     output

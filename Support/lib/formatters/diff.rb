@@ -48,6 +48,7 @@ EOF
         line_num_class, row_class = case line[:type]
         when :deletion then ["", "del"]
         when :insertion then ["", "ins"]
+        when :eof then ["line-num-eof", "eof"]
         when :cut then ["line-num-cut", "cut-line"]
         else
           ["", "unchanged"]
