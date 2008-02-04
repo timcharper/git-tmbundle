@@ -2,6 +2,8 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'shellwords'
 require 'set'
 require File.dirname(__FILE__) + '/formatters.rb'
+require File.dirname(__FILE__) + '/ruby_tm_helpers.rb'
+
 module SCM
   class Git
     module CommonCommands

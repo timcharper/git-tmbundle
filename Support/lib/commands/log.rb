@@ -35,7 +35,7 @@ class SCM::Git::Log
     else
       title = "View revision of file #{File.basename(path)}"
     end
-    revisions = choose_revision(path, title, 1)
+    revisions = choose_revision(path, title, :multiple)
     return if revisions.nil?
 
     files            = []
