@@ -28,7 +28,36 @@ class Formatters::Annotate
     htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
   end
   
-  def content(annotations)
+  def select_options_tag(select_options = [])
+    output = ""
+    
+    select_options.each do |name, val|
+      output << "<option value='#{val}'>#{htmlize(name)}</option>"
+    end
+    
+    output
+  end
+  
+  def select_box(name, select_options = [], options = {})
+    options[:name] ||= name
+    options[:id] ||= name
+    # puts select_options.inspect
+    puts <<-EOF
+      Previous revisions
+      <select name='#{options[:name]}' id='#{options[:id]} onchange="#{options[:onchange]}"'>
+        #{select_options_tag(select_options)}
+      </select>
+    EOF
+  end
+  
+  def content(annotations, log_entries = nil)
+    if log_entries
+      puts select_box(
+        "rev",
+        [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{le[:date].to_friendly}", le[:rev]] },
+        :onchange => "alert('hi');"
+      )
+    end
     # puts annotations.inspect
     puts '<code>'
     puts <<-EOF

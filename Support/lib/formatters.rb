@@ -3,6 +3,10 @@ class Formatters
     def resource_url(filename)
       "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
     end
+    
+    def short_rev(rev)
+      rev.to_s[0..7]
+    end
   end
   def self.const_missing(name)
     @last_try||=nil

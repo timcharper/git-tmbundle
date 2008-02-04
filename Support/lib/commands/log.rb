@@ -157,6 +157,7 @@ class SCM::Git::Log
   # end
   
   def log(file_or_directory, options = {})
+    file_or_directory = make_local_path(file_or_directory)
     params = ["log"]
     params += ["-n", options[:limit]] if options[:limit]
     params << file_or_directory
