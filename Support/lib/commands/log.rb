@@ -31,10 +31,11 @@ class SCM::Git::Log
     path = fullpath.gsub(/#{git_base}\/{0,1}/, "")
     # Get the desired revision number
     if File.directory?(fullpath)
-      TextMate::UI.alert(:warning, "“#{fullpath}” is a directory.", "Please select a file in the project drawer.")
-      return nil
+      title = "View revision of Directory #{path}"
+    else
+      title = "View revision of file #{File.basename(path)}"
     end
-    revisions = choose_revision(path, "View revision of #{File.basename(path)}", 1)
+    revisions = choose_revision(path, title, 1)
     return if revisions.nil?
 
     files            = []
