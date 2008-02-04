@@ -24,49 +24,72 @@ class Formatters::Annotate
     puts "<h2>#{text}</h2>"
   end
   
+  def make_non_breaking(output)
+    htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
+  end
+  
   def content(annotations)
+    # puts annotations.inspect
     puts '<code>'
-    diff_results.each do |diff_result|
-      files = [:left, :right].map do |lr|
-        filepath = diff_result[lr][:filepath]
-        start_line_right = diff_result[:right][:ln_start]
-        filepath ? "<a href='txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
-      end
-      puts <<-EOF
-      <h4>#{files.uniq * ' --- '}</h4>
+    puts <<-EOF
       <table class='codediff inline'>
         <thead>
           <tr>
-            <td class='line-numbers'>left</td>
-            <td class='line-numbers'>right</td>
+            <td class='line-numbers'>revision</td>
+            <td class='line-numbers'>author</td>
+            <td class='line-numbers'>date</td>
+            <td class='line-numbers'>line</td>
             <td/>
           </tr>
         </thead>
         <tbody>
-EOF
-      diff_result[:lines].each do |line|
-        line_num_class, row_class = case line[:type]
-        when :deletion then ["", "del"]
-        when :insertion then ["", "ins"]
-        when :eof then ["line-num-eof", "eof"]
-        when :cut then ["line-num-cut", "cut-line"]
-        else
-          ["", "unchanged"]
-        end
-        puts <<-EOF
-          <tr>
-            <td class="line-numbers #{line_num_class}">#{line[:ln_left]}</td>
-            <td class="line-numbers #{line_num_class}">#{line[:ln_right]}</td>
-            <td class="code #{row_class}">#{htmlize(line[:text])}</td></tr>
-        EOF
-      end
-      
+    EOF
+    annotations.each do |annotation|
+      col_class = (ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i) ? "selected" : ""
       puts <<-EOF
-        </tbody>
-      </table>
+        <tr>
+          <td class="line-numbers">#{make_non_breaking annotation[:rev]}</td>
+          <td class="line-numbers">#{make_non_breaking annotation[:author]}</td>
+          <td class="line-numbers">#{make_non_breaking annotation[:date].to_friendly}</td>
+          <td class="line-numbers">#{make_non_breaking annotation[:ln]}</td>
+          <td class="code #{col_class}">#{htmlize(annotation[:text])}</td>
+        </tr>
       EOF
     end
+      
+    puts <<-EOF
+        </tbody>
+      </table>
+    EOF
     puts '</code>'
   end
 
 end
+
+
+module FriendlyTime
+  def to_friendly(time=true)
+    time=false if Date==self.class
+    
+    ret_val = if time
+      strftime "%b %d, %Y %I:%M %p" + (time=="zone"? " %Z" : "")
+    else
+      strftime "%b %d, %Y"
+    end
+    
+    ret_val.gsub(" 0", " ")
+  end
+end
+
+class Time
+  include FriendlyTime
+end
+
+class Date
+  include FriendlyTime
+end
+
+class DateTime
+  include FriendlyTime
+end
+

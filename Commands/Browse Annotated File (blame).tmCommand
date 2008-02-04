@@ -10,10 +10,16 @@
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 git = SCM::Git::Annotate.new
 filepath = ENV['TM_FILEPATH']
+annotations = git.annotate(filepath)
 
-Formatters::Blame.new do |f|
+if annotations.nil?
+  puts "Error.  Aborting"
+  abort
+end
+
+Formatters::Annotate.new do |f|
   f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
-  f.content(git.annotate(path))
+  f.content(annotations)
 end</string>
 	<key>input</key>
 	<string>none</string>
