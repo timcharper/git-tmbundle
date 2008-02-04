@@ -33,6 +33,8 @@ class SCM::Git::Status
       Dir.chdir(dir)
       
       res = []
+      # a note about the following:
+      # the order of these parameter is important.  Deleted files are also listed when querying git ls-files -m.  Therefore, if we list the deleted files first, then add any modified files that weren't listed by delete, we get a less-suprising result (for the commit dialog)
       [['o', '?'], ['d', 'D'], ['m', 'M']].each do |file_type, display_status|
         res << list_files(file_or_dir, :type => file_type).map { |e| file_statuses[File.expand_path(e, dir)] ||= display_status }
       end
