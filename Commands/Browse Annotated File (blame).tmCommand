@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+git = SCM::Git::Annotate.new
+filepath = ENV['TM_FILEPATH']
+
+Formatters::Blame.new do |f|
+  f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+  f.content(git.annotate(path))
+end</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Browse Annotated File (blame)</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>B3577B4D-A3F1-4CB4-94B0-7A87CA658664</string>
+</dict>
+</plist>

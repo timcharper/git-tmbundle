@@ -70,7 +70,6 @@ class SCM::Git::Log
     path = make_local_path(path)
     # Validate file
     # puts command("status", path)
-    path = "." if path==""
     if /error: pathspec .+ did not match any file.+ known to git./.match(command("status", path))
       TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
       return nil

@@ -1,0 +1,166 @@
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	1)require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	2)require 'shellwords'
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	3)require 'set'
+2aedd4e3	(Tim Harper	2008-02-04 04:51:39 -0700	4)require File.dirname(__FILE__) + '/formatters.rb'
+d26a240f	(Tim Harper	2008-02-04 10:56:24 -0700	5)require File.dirname(__FILE__) + '/ruby_tm_helpers.rb'
+d26a240f	(Tim Harper	2008-02-04 10:56:24 -0700	6)
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	7)module SCM
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	8)  class Git
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	9)    module CommonCommands
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	10)      def flush; STDOUT.flush; end;
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	11)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	12)      def command_str(*args)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	13)        %{#{e_sh SCM::Git.git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	14)      end
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	15)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	16)      def command(*args)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	17)        %x{#{command_str(*args)} 2>&1 }
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	18)      end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	19)      
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	20)      def sources
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	21)        command("remote").split("\n")
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	22)      end
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	23)
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	24)      def branches(git_file)
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	25)        base = File.expand_path("..", git_dir(git_file))
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	26)        Dir.chdir(base)
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	27)        %x{#{e_sh git} branch}.split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	28)      end
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	29)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	30)      def git
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	31)        git ||= e_sh(ENV['TM_GIT'] || 'git')
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	32)      end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	33)    
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	34)      def git_base
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	35)         File.expand_path('..', git_dir(paths.first))
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	36)      end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	37)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	38)      def dir_part(file_or_dir)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	39)        File.directory?(file_or_dir) ? file_or_dir : File.split(file_or_dir).first
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	40)      end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	41)      
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	42)      def make_local_path(fullpath)
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	43)        fullpath = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	44)        fullpath = "." if fullpath == ""
+66c83a3a	(Tim Harper	2008-02-04 13:54:29 -0700	45)        fullpath
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	46)      end
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	47)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	48)      def shorten(path, base = nil)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	49)        if base && path =~ /^#{Regexp.escape base}\/(.+)$/
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	50)          $1
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	51)        elsif path == ENV['TM_PROJECT_DIRECTORY']
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	52)          File.basename(path)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	53)        elsif path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	54)          $1
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	55)        elsif path =~ /^#{Regexp.escape ENV['HOME']}\/(.+)$/
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	56)          '~/' + $1
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	57)        else
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	58)          $1
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	59)        end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	60)      end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	61)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	62)      def paths(options = { :unique => true, :fallback => :project })
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	63)        if ENV.has_key? 'TM_SELECTED_FILES'
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	64)          res = Shellwords.shellwords(ENV['TM_SELECTED_FILES'])
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	65)          if(options[:unique])
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	66)            ancestors = Set.new(res)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	67)            res = res.reject do |path|
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	68)              !path.split('/')[0...-1].inject('') do |base, dir|
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	69)                ancestors.include?(base + dir) ? false : base + dir + '/' if base
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	70)              end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	71)            end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	72)          end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	73)          res
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	74)        elsif options[:fallback] == :project && ENV.has_key?('TM_PROJECT_DIRECTORY')
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	75)          ENV['TM_PROJECT_DIRECTORY'].to_a
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	76)        elsif options[:fallback] == :current_file && ENV.has_key?('TM_FILEPATH')
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	77)          ENV['TM_FILEPATH'].to_a
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	78)        elsif ENV.has_key?('TM_DIRECTORY')
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	79)          ENV['TM_DIRECTORY'].to_a
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	80)        else
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	81)          raise "No selected files." # FIXME throw an object with more info
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	82)        end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	83)      end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	84)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	85)      def git_dir(file_or_dir)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	86)        file = %x{
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	87)          cd #{e_sh dir_part(file_or_dir)}
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	88)          #{git} rev-parse --git-dir;
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	89)          cd - > /dev/null;
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	90)        }.chomp
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	91)        File.expand_path(file, dir_part(file_or_dir))
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	92)      end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	93)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	94)      def nca(files = nil)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	95)        files||=paths
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	96)        if(files.size == 1)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	97)          File.directory?(files.first) ? files.first : File.split(files.first).first
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	98)        else
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	99)          components = files.map { |e| e.split('/') }
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	100)          i = 0
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	101)          while components.all? { |e| e.size > i && e[i] == components[0][i] }
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	102)            i += 1
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	103)          end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	104)          i == 0 ? '/' : components[0][0...i].join('/')
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	105)        end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	106)      end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	107)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	108)      def rescan_project
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	109)        %x{osascript &>/dev/null \
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	110)          -e 'tell app "SystemUIServer" to activate' \
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	111)          -e 'tell app "TextMate" to activate' &
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	112)        }
+4967bd06	(Tim Harper	2008-01-30 21:54:39 -0700	113)      end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	114)
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	115)    end
+42c224ad	(      duff	2007-06-10 18:19:19 +0000	116)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	117)    include CommonCommands
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	118)    extend CommonCommands
+6734403d	(      duff	2007-06-10 18:55:17 +0000	119)
+0a609871	(      duff	2007-06-10 19:22:49 +0000	120)    def create_branch(name, git_file)
+0a609871	(      duff	2007-06-10 19:22:49 +0000	121)      base = File.expand_path("..", git_dir(git_file))
+0a609871	(      duff	2007-06-10 19:22:49 +0000	122)      Dir.chdir(base)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	123)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	124)      %x{#{command_str("branch", name)} && #{command_str("checkout", name)}}
+7ef2e703	(Tim Harper	2008-01-25 16:51:39 -0700	125)    end
+b89db032	(Tim Harper	2008-01-30 13:24:14 -0700	126)    
+0a609871	(      duff	2007-06-10 19:22:49 +0000	127)    def switch_to_branch(name, git_file)
+0a609871	(      duff	2007-06-10 19:22:49 +0000	128)      base = File.expand_path("..", git_dir(git_file))
+0a609871	(      duff	2007-06-10 19:22:49 +0000	129)      Dir.chdir(base)
+43616adf	(Tim Harper	2008-01-30 22:17:42 -0700	130)      command("checkout", name)
+0a609871	(      duff	2007-06-10 19:22:49 +0000	131)      rescan_project
+0a609871	(      duff	2007-06-10 19:22:49 +0000	132)    end
+7356dd90	(Tim Harper	2008-01-26 00:33:19 -0700	133)    
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	134)    def revert(paths = [])
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	135)      output = ""
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	136)      
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	137)      base = nca(paths)
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	138)      Dir.chdir(base)
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	139)      
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	140)      paths.each do |e|
+43616adf	(Tim Harper	2008-01-30 22:17:42 -0700	141)        output << command("checkout", shorten(e, base))
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	142)      end
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	143)      output
+4c00c914	(Tim Harper	2008-01-26 01:01:25 -0700	144)    end
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	145)    
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	146)    def self.const_missing(name)
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	147)      @last_try||=nil
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	148)      raise if @last_try==name
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	149)      @last_try = name
+0b547437	(Tim Harper	2008-02-01 10:12:35 -0700	150)      
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	151)      file = File.dirname(__FILE__) + "/commands/#{name.to_s.downcase}.rb"
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	152)      require file
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	153)      klass = const_get(name)
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	154)    rescue
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	155)      raise "Class not found: #{name}"
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	156)    end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	157)  end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	158)end
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	159)
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	160)if __FILE__ == $0
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	161)
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	162)  git = SCM::Git.new
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	163)
+6734403d	(      duff	2007-06-10 18:55:17 +0000	164)  p git.branches("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
+42c224ad	(      duff	2007-06-10 18:19:19 +0000	165)
+4c47a64b	(      duff	2007-06-10 15:41:03 +0000	166)end
