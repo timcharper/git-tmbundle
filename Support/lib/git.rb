@@ -39,6 +39,11 @@ module SCM
         File.directory?(file_or_dir) ? file_or_dir : File.split(file_or_dir).first
       end
       
+      def make_local_path(fullpath)
+        fullpath = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+        fullpath = "." if fullpath == ""
+      end
+      
       def shorten(path, base = nil)
         if base && path =~ /^#{Regexp.escape base}\/(.+)$/
           $1

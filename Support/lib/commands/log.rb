@@ -28,7 +28,7 @@ class SCM::Git::Log
   end
 
   def run(fullpath = paths.first)
-    path = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+    path = make_local_path(fullpath)
     # Get the desired revision number
     if File.directory?(fullpath)
       title = "View revision of Directory #{path}"
@@ -67,6 +67,7 @@ class SCM::Git::Log
 
   # on failure: returns nil
   def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1)
+    path = make_local_path(path)
     # Validate file
     # puts command("status", path)
     path = "." if path==""
@@ -98,7 +99,6 @@ class SCM::Git::Log
 
       dialog.wait_for_input do |params|
         # puts "<br/>" * 10
-        puts params.inspect
         revision = params['returnArgument']
         button_clicked = params['returnButton']
         # STDERR.puts params['returnButton']

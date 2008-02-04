@@ -3,14 +3,25 @@ class SCM::Git::Diff
   
   def diff_branches(branch_left, branch_right)
     Dir.chdir(git_base)
-    parse_diff(command("diff", branch_left, branch_right))
+    diff(branch_left, branch_right)
+  end
+  
+  def diff_revisions(fullpath, rev_left, rev_right)
+    path = make_local_path(fullpath)
+    Dir.chdir(git_base)
+    diff("#{rev_left}..#{rev_right}", path)
   end
   
   def diff_file(fullpath)
-    path = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+    path = make_local_path(fullpath)
     Dir.chdir(git_base)
-    path = '.' if path == ""
-    parse_diff(command("diff", path))
+    diff(path)
+  end
+  
+  def diff(*args)
+    output = command("diff", *args)
+    File.open("/tmp/output.diff", "w") {|f| f.puts output }
+    parse_diff(output)
   end
   
   def parse_diff(diff_content)
