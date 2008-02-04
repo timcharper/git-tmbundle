@@ -1,0 +1,33 @@
+commit 2762e1264c439dced7f05eacd33fc56499b8b779
+Author: Tim Harper <timcharper@domain.com>
+Date:   Mon Feb 4 07:51:25 2008 -0700
+
+    bugfix - diff was not parsing the index line sometimes because it varies on deleted files
+    
+    made more failproof
+
+commit d31fffa9df961f057019d9845c5984a264d3d574
+Author: Tim Harper <timcharper@domain.com>
+Date:   Mon Feb 4 07:44:08 2008 -0700
+
+    diff-rendering of if there is a new-line at the end of a file or not.
+
+commit bd481e454a9639e8fe554aacdff91154709e11cd
+Author: Tim Harper <timcharper@domain.com>
+Date:   Mon Feb 4 07:31:18 2008 -0700
+
+    Diff mode:
+      now with "cut" visuals, links to files.  Compare branches now uses the sexy diff mode.
+
+commit 198fc930b5b1aaa93ba29a9535a768b5c120ea49
+Author: Tim Harper <timcharper@domain.com>
+Date:   Mon Feb 4 06:45:47 2008 -0700
+
+    new style for diff implemented.  diff returns parsed data, which is then passed to the formatter.
+
+commit 2aedd4e30f077a6712ede1f1bd328e812839913f
+Author: Tim Harper <timcharper@domain.com>
+Date:   Mon Feb 4 04:51:39 2008 -0700
+
+    Broke out diff command into it's own class, and seperated the view code into a new Formatters::Diff object
+
