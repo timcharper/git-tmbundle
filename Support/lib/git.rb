@@ -42,6 +42,7 @@ module SCM
       def make_local_path(fullpath)
         fullpath = fullpath.gsub(/#{git_base}\/{0,1}/, "")
         fullpath = "." if fullpath == ""
+        fullpath
       end
       
       def shorten(path, base = nil)
