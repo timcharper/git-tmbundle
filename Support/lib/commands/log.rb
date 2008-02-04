@@ -93,7 +93,7 @@ class SCM::Git::Log
 
       # Parse the log
       plist = []
-      log_data = stringify(log(path))
+      log_data = stringify(log(path, :limit => 200))
       dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
 
       dialog.wait_for_input do |params|
@@ -154,8 +154,11 @@ class SCM::Git::Log
   #   end
   # end
   
-  def log(file_or_directory)
-    parse_log(command("log", file_or_directory))
+  def log(file_or_directory, options = {})
+    params = ["log"]
+    params += ["-n", options[:limit]] if options[:limit]
+    params << file_or_directory
+    parse_log(command(*params))
   end
   
   def parse_log(log_content)
