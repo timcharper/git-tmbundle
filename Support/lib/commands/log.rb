@@ -27,9 +27,13 @@ class SCM::Git::Log
     "#{filename.sub(extname, '')}-r#{rev}#{extname}"
   end
 
-  def run(path = paths.first)
-    path = path.gsub(/#{git_base}\/{0,1}/, "")
+  def run(fullpath = paths.first)
+    path = fullpath.gsub(/#{git_base}\/{0,1}/, "")
     # Get the desired revision number
+    if File.directory?(fullpath)
+      TextMate::UI.alert(:warning, "“#{fullpath}” is a directory.", "Please select a file in the project drawer.")
+      return nil
+    end
     revisions = choose_revision(path, "View revision of #{File.basename(path)}", 1)
     return if revisions.nil?
 
@@ -64,6 +68,7 @@ class SCM::Git::Log
   def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1)
     # Validate file
     # puts command("status", path)
+    path = "." if path==""
     if /error: pathspec .+ did not match any file.+ known to git./.match(command("status", path))
       TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
       return nil
