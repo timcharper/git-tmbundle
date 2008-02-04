@@ -1,7 +1,7 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'shellwords'
 require 'set'
-
+require File.dirname(__FILE__) + '/formatters.rb'
 module SCM
   class Git
     module CommonCommands
@@ -102,13 +102,6 @@ module SCM
 
     include CommonCommands
     extend CommonCommands
-    
-    def diff(file, base = nil)
-      base = File.expand_path("..", git_dir(file)) if base.nil?
-      Dir.chdir(base)
-      file = '.' if file == base
-      %x{#{e_sh git} diff #{e_sh file.sub(/^#{Regexp.escape base}\//, '')}}
-    end
 
     def branches(git_file)
       base = File.expand_path("..", git_dir(git_file))
@@ -152,10 +145,6 @@ module SCM
       klass = const_get(name)
     rescue
       raise "Class not found: #{name}"
-    end
-    
-    def self.const_missing?(name)
-      
     end
   end
 end
