@@ -22,7 +22,7 @@ END
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Show Log</string>
+	<string>Log</string>
 	<key>output</key>
 	<string>discard</string>
 	<key>uuid</key>
