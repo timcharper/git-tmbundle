@@ -50,6 +50,15 @@ def tm_open(file, line = nil)
   %x|open '#{url}'|
 end
 
+
+def rescan_project
+  %x{osascript &>/dev/null \
+     -e 'tell app "SystemUIServer" to activate' \
+     -e 'tell app "TextMate" to activate' &
+     }
+end
+
+
 # this method only applies when the whole document contents are sent in
 def tm_expanded_selection(options = {})
   text=ENV['TM_SELECTED_TEXT'].to_s

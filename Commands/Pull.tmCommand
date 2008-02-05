@@ -9,7 +9,9 @@
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 git = SCM::Git::Pull.new
-git.run</string>
+git.run
+
+rescan_project</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>keyEquivalent</key>
