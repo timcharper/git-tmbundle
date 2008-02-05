@@ -24,6 +24,10 @@ class SCM::Git::Stash
     SCM::Git::Diff.parse_diff(command("stash", "show", "-p", name))
   end
   
+  def apply_stash(name)
+    command("stash", "apply", name)
+  end
+  
   def clear_with_confirmation
     response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stashes.map{|s| s[:id] + ' - ' + s[:description]} * "\n"}", 'Yes', 'Cancel') 
     if response == 'Yes'

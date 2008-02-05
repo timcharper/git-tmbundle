@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+stash = SCM::Git::Stash.new
+stash_name = stash.select_stash(:prompt =&gt; "Select a stash to apply")
+if stash_name.nil?
+  puts "Cancelled"
+  abort
+end
+
+puts stash.apply_stash(stash_name)</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Apply Stash</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>uuid</key>
+	<string>47EB2C81-B093-4627-9DE7-454A60C3A98C</string>
+</dict>
+</plist>
