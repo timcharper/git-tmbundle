@@ -21,10 +21,13 @@ module SCM
         command("remote").split("\n")
       end
 
-      def branches(git_file)
-        base = File.expand_path("..", git_dir(git_file))
-        Dir.chdir(base)
+      def branches
+        Dir.chdir(git_base)
         %x{#{e_sh git} branch}.split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+      end
+      
+      def current_branch
+        branches.find { |b| b[:default] }[:name]
       end
       
       def git
