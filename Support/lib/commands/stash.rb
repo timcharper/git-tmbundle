@@ -6,8 +6,10 @@ class SCM::Git::Stash
     Dir.chdir(git_base)
   end
   
-  def stashes
-    @stashes = command("stash", "list").split("\n").map do |line|
+  def stash_list(reload = false)
+    @stash_list = nil if reload
+    
+    @stash_list ||= command("stash", "list").split("\n").map do |line|
       /^(.+?):(.+)$/.match(line)
       name = $1
       description = $2
@@ -16,8 +18,10 @@ class SCM::Git::Stash
     end
   end
   
-  def stash
-    command("stash")
+  def stash_save(desciption = "")
+    params = []
+    params << desciption unless desciption.nil? || desciption.empty?
+    command("stash", "save", *params)
   end
   
   def stash_diff(name)
@@ -29,7 +33,7 @@ class SCM::Git::Stash
   end
   
   def clear_with_confirmation
-    stash_text_list = stashes.map{|s| "#{s[:id]} - #{s[:description]}"} * "\n"
+    stash_text_list = stash_list.map{|s| "#{s[:id]} - #{s[:description]}"} * "\n"
     response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stash_text_list}", 'Yes', 'Cancel') 
     if response == 'Yes'
       clear
@@ -44,10 +48,10 @@ class SCM::Git::Stash
   end
   
   def select_stash(options={})
-    @stashes = stashes
-    options = {:title => "Select stash", :prompt => "Select a stash", :items => stashes.map{|s| "#{s[:id]} - #{s[:description]}"}}.merge(options)
+    options = {:title => "Select stash", :prompt => "Select a stash", :items => stash_list.map{|s| "#{s[:id]} - #{s[:description]}"}}.merge(options)
     TextMate::UI.request_item(options) do |stash_id|
-      return @stashes.find { |s| s[:id].to_i == stash_id.to_i}[:name]
+      selected_stash_entry = stash_list.find { |s| s[:id].to_i == stash_id.to_i}
+      return selected_stash_entry[:name]
     end
     
     nil

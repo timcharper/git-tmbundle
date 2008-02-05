@@ -9,7 +9,16 @@
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 stash = SCM::Git::Stash.new
-puts stash.stash
+
+stash_description = TextMate::UI.request_string(:title =&gt; "Stash", :prompt =&gt; "Describe stash: (blank yields intelligent default):")
+
+if stash_description.nil?
+  puts "Aborted"
+  abort
+end
+
+puts stash.stash_save(stash_description)
+
 rescan_project</string>
 	<key>input</key>
 	<string>none</string>

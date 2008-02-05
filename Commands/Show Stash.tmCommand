@@ -10,7 +10,7 @@
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 stash = SCM::Git::Stash.new
 
-if stash.stashes.empty?
+if stash.stash_list.empty?
   puts "Stash list is empty"
 end
 
