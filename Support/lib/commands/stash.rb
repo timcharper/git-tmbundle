@@ -29,7 +29,8 @@ class SCM::Git::Stash
   end
   
   def clear_with_confirmation
-    response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stashes.map{|s| s[:id] + ' - ' + s[:description]} * "\n"}", 'Yes', 'Cancel') 
+    stash_text_list = stashes.map{|s| "#{s[:id]} - #{s[:description]}"} * "\n"
+    response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stash_text_list}", 'Yes', 'Cancel') 
     if response == 'Yes'
       clear
       true
