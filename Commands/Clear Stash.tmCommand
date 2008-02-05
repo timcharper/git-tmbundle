@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby -wKU
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+stash = SCM::Git::Stash.new
+
+if stash.stashes.empty?
+  puts "No stashes for current branch (#{stash.current_branch})"
+  abort
+end
+
+if stash.clear_with_confirmation
+  puts "Stash cleared"
+else
+  puts "Cancelled"
+end</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Clear Stash</string>
+	<key>output</key>
+	<string>showAsTooltip</string>
+	<key>uuid</key>
+	<string>6AA96188-1428-4E09-94D8-755107CFC48E</string>
+</dict>
+</plist>
