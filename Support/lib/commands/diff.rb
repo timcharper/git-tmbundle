@@ -24,7 +24,8 @@ class SCM::Git::Diff
     parse_diff(output)
   end
   
-  def parse_diff(diff_content)
+  def parse_diff(*args); self.class.parse_diff(*args); end
+  def self.parse_diff(diff_content)
     output = []
     current = nil
     ln_left, ln_right = 0,0
