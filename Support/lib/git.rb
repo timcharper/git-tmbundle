@@ -108,13 +108,6 @@ module SCM
         end
       end
 
-      def rescan_project
-        %x{osascript &>/dev/null \
-          -e 'tell app "SystemUIServer" to activate' \
-          -e 'tell app "TextMate" to activate' &
-        }
-      end
-
     end
 
     include CommonCommands
