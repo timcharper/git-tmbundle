@@ -15,7 +15,7 @@ puts stash.stash</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Stash Current Changes</string>
+	<string>Stash</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>
