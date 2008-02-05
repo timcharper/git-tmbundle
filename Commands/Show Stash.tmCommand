@@ -18,7 +18,7 @@ stash_name = stash.select_stash
 
 if stash_name.nil?
   puts "Aborted"
-  abort
+  exit_show_tool_tip
 end
 
 base = stash.git_base
@@ -26,7 +26,8 @@ base = stash.git_base
 Formatters::Diff.new(base) do |f|
   f.header("Diff for stash ‘#{stash_name}’")
   f.content(stash.stash_diff(stash_name))
-end</string>
+end
+exit_show_html</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
@@ -34,7 +35,7 @@ end</string>
 	<key>name</key>
 	<string>Show Stash</string>
 	<key>output</key>
-	<string>showAsHTML</string>
+	<string>showAsTooltip</string>
 	<key>uuid</key>
 	<string>5E37F050-85A0-4CAE-91D1-DC50E2F65024</string>
 </dict>
