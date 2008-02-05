@@ -15,7 +15,8 @@ if stash_name.nil?
   abort
 end
 
-puts stash.apply_stash(stash_name)</string>
+puts stash.apply_stash(stash_name)
+rescan_project</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

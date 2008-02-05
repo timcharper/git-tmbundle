@@ -9,7 +9,8 @@
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 stash = SCM::Git::Stash.new
-puts stash.stash</string>
+puts stash.stash
+rescan_project</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
