@@ -9,7 +9,10 @@ class SCM::Git::Stash
   def stashes
     @stashes = command("stash", "list").split("\n").map do |line|
       /^(.+?):(.+)$/.match(line)
-      {:name => $1, :description => $2}
+      name = $1
+      description = $2
+      /([0-9]+)/.match(name)
+      {:id => $1.to_i, :name => name, :description => description}
     end
   end
   
@@ -22,7 +25,7 @@ class SCM::Git::Stash
   end
   
   def clear_with_confirmation
-    response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stashes.map{|s| s[:name]} * "\n"}", 'Yes', 'Cancel') 
+    response = TextMate::UI.alert(:warning, "Clear all stashes?", "Do you really want to clear the following stashes? \n#{stashes.map{|s| s[:id] + ' - ' + s[:description]} * "\n"}", 'Yes', 'Cancel') 
     if response == 'Yes'
       clear
       true
@@ -36,9 +39,10 @@ class SCM::Git::Stash
   end
   
   def select_stash(options={})
-    options = {:title => "Select stash", :prompt => "Select a stash", :items => stashes.map{|s| "#{s[:name]} - #{s[:description]}"}}.merge(options)
-    TextMate::UI.request_item(options) do |name|
-      return name
+    @stashes = stashes
+    options = {:title => "Select stash", :prompt => "Select a stash", :items => stashes.map{|s| "#{s[:id]} - #{s[:description]}"}}.merge(options)
+    TextMate::UI.request_item(options) do |stash_id|
+      return @stashes.find { |s| s[:id].to_i == stash_id.to_i}[:name]
     end
     
     nil
