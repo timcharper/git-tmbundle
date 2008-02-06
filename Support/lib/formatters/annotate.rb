@@ -14,8 +14,6 @@ class Formatters::Annotate
     <head>
       <title>#{@header}</title>
       <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
-      <script type='text/javascript' src="#{resource_url('prototype.js')}"></script>
-      <script type='text/javascript' src="#{resource_url('rb_gateway.js')}"></script>
     </head>
     <body id='body'>
     EOF
@@ -23,6 +21,15 @@ class Formatters::Annotate
     
     puts <<-EOF
     </body>
+    <script type='text/javascript' src="#{resource_url('prototype.js')}"></script>
+    <script type='text/javascript' src="#{resource_url('rb_gateway.js')}"></script>
+    <script language='JavaScript'>
+      function show_revision(revision)
+      {
+        $('body').update(gateway_command('annotate.rb', [revision]));
+      }
+      
+    </script>
     </html>
     EOF
   end
@@ -105,13 +112,6 @@ class Formatters::Annotate
     # puts annotations.inspect
     puts '<code>'
     puts <<-EOF
-    <script language='JavaScript'>
-      function show_revision(revision)
-      {
-        $('body').update(gateway_command('annotate.rb', [revision]));
-      }
-      
-    </script>
     
       <table class='codediff inline'>
         <thead>
