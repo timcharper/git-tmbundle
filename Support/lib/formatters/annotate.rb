@@ -17,7 +17,7 @@ class Formatters::Annotate
     </head>
     <body id='body'>
       <div id='debug'></div>
-      <div id='content'>
+      <div id='content' style='margin-top:50px;'>
     EOF
     yield self
     
@@ -80,7 +80,8 @@ class Formatters::Annotate
   end
   
   def header(text)
-    puts "<h2>#{text}</h2>"
+    @header = text
+    # puts "<h2>#{text}</h2>"
   end
   
   def make_non_breaking(output)
@@ -103,10 +104,12 @@ class Formatters::Annotate
     options[:id] ||= name
     # puts select_options.inspect
     <<-EOF
-      Revision<br/>
+      <div style='position:fixed; top:0px; background: #fff'>
+      #{@header}<br/>
       <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
         #{select_options}
       </select>
+      </div>
       
       <div>
         Keys: n - next revision, p - previous revision, N - current, P - earliest revision
