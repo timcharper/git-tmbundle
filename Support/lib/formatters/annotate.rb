@@ -55,11 +55,11 @@ class Formatters::Annotate
               $('rev').onchange();
             }
             break;
-          case 99: // c
+          case 78: // P
             $('rev').selectedIndex = 0;
             $('rev').onchange();
             break;
-          case 115: // s
+          case 80: // N
             $('rev').selectedIndex = $('rev').options.length - 1;
             $('rev').onchange();
             break;
@@ -109,7 +109,7 @@ class Formatters::Annotate
       </select>
       
       <div>
-        Keys: n - next revision, p - previous revision, c - current, s - starting revision (the earliest)
+        Keys: n - next revision, p - previous revision, N - current, P - earliest revision
       </div>
     EOF
   end
