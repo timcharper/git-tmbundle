@@ -4,13 +4,20 @@ class Formatters::Annotate
   def initialize(base = nil, options = {}, &block)
     @base = base || ENV["TM_PROJECT_DIRECTORY"]
     @header = options[:header] || "Annotate / Blame"
+    
+    layout(&block) if block_given?
+  end
+  
+  def layout(&block)
     puts <<-EOF
     <html>
     <head>
       <title>#{@header}</title>
       <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
+      <script type='text/javascript' src="#{resource_url('prototype.js')}"></script>
+      <script type='text/javascript' src="#{resource_url('rb_gateway.js')}"></script>
     </head>
-    <body>
+    <body id='body'>
     EOF
     yield self
     
@@ -28,11 +35,12 @@ class Formatters::Annotate
     htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
   end
   
-  def select_options_tag(select_options = [])
+  def options_for_select(select_options = [], selected_value = nil)
     output = ""
     
     select_options.each do |name, val|
-      output << "<option value='#{val}'>#{htmlize(name)}</option>"
+      selected = (val == selected_value) ? "selected='true'" : ""
+      output << "<option value='#{val}' #{selected}>#{htmlize(name)}</option>"
     end
     
     output
@@ -42,10 +50,10 @@ class Formatters::Annotate
     options[:name] ||= name
     options[:id] ||= name
     # puts select_options.inspect
-    puts <<-EOF
+    <<-EOF
       Previous revisions
-      <select name='#{options[:name]}' id='#{options[:id]} onchange="#{options[:onchange]}"'>
-        #{select_options_tag(select_options)}
+      <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}">
+        #{select_options}
       </select>
     EOF
   end
@@ -85,17 +93,26 @@ class Formatters::Annotate
     distance_of_time_in_words(Time.now, date)
   end
   
-  def content(annotations, log_entries = nil)
+  def content(annotations, log_entries = nil, selected_revision = nil)
     if log_entries
+      formatted_options = [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{le[:date].to_friendly}", short_rev(le[:rev])] }
       puts select_box(
         "rev",
-        [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{le[:date].to_friendly}", le[:rev]] },
-        :onchange => "alert('hi');"
+        options_for_select(formatted_options, selected_revision),
+        :onchange => "show_revision($F(this))"
       )
     end
     # puts annotations.inspect
     puts '<code>'
     puts <<-EOF
+    <script language='JavaScript'>
+      function show_revision(revision)
+      {
+        $('body').update(gateway_command('annotate.rb', [revision]));
+      }
+      
+    </script>
+    
       <table class='codediff inline'>
         <thead>
           <tr>
@@ -113,7 +130,7 @@ class Formatters::Annotate
     annotations.each do |annotation|
       col_class = []
       col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-      col_class << "ins" if annotation[:rev] == "-none-"      
+      col_class << "ins" if annotation[:rev] == "-current-"      
       col_class = col_class * " "
       formatted_line = {
         :rev => annotation[:rev], 
@@ -127,7 +144,7 @@ class Formatters::Annotate
       [:rev, :author, :date].each { |k| display[k] = "…" } if display[:rev]==last_formatted_line[:rev]
       puts <<-EOF
         <tr>
-          <td class="line-numbers">#{make_non_breaking display[:rev]}</td>
+          <td class="line-numbers"><a href='javascript:show_revision("#{display[:rev]}"); return false;'>#{make_non_breaking display[:rev]}</a></td>
           <td class="line-numbers">#{make_non_breaking display[:author]}</td>
           <td class="line-numbers">#{make_non_breaking display[:date]}</td>
           <td class="line-numbers">#{make_non_breaking display[:ln]}</td>

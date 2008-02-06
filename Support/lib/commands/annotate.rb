@@ -2,10 +2,12 @@ require 'time.rb'
 require 'date.rb'
 class SCM::Git::Annotate
   include SCM::Git::CommonCommands
-  def annotate(filepath)
+  def annotate(filepath, revision = nil)
     file = make_local_path(filepath)
+    args = [file]
+    args << revision unless revision.nil? || revision.empty?
     Dir.chdir(git_base)
-    output = command("annotate", file)
+    output = command("annotate", *args)
     if output.match(/^fatal:/)
       puts output 
       return nil
@@ -22,7 +24,7 @@ class SCM::Git::Annotate
         rev,author,date,ln,text = $1,$2,$3,$4,$5
         nc = /^0+$/.match(rev)
         output << {
-          :rev => nc ? "-none-" : rev,
+          :rev => nc ? "-current-" : rev,
           :author => nc ? "-none-" : author.strip,
           :date => nc ? "-pending-" : Time.parse(date),
           :ln => ln.to_i,
