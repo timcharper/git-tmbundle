@@ -13,7 +13,7 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 git = SCM::Git::Diff.new
 git_base = File.expand_path('..', git.git_dir(git.paths.first))
 
-branches   = git.branches(git_base)
+branches   = git.branches
 parameters = { "branches" =&gt; branches.map { |e| { "name" =&gt; e[:name] } } }
 
 token = open('|"$DIALOG" -a CompareBranches', 'r+') { |io| io &lt;&lt; parameters.to_plist; io.close_write; io.read.chomp }
