@@ -1,11 +1,14 @@
 class Formatters::Annotate
   include Formatters::FormatterHelpers
   
-  def initialize(base = nil, options = {}, &block)
-    @base = base || ENV["TM_PROJECT_DIRECTORY"]
+  def initialize(options = {}, &block)
+    @base = options[:base] || ENV["TM_PROJECT_DIRECTORY"]
     @header = options[:header] || "Annotate / Blame"
+    @log_entries = options[:log_entries]
+    @selected_revision = options[:selected_revision]
+    @as_partial = options[:as_partial]
     
-    layout(&block) if block_given?
+    layout {yield self} if block_given?
   end
   
   def layout(&block)
@@ -16,13 +19,10 @@ class Formatters::Annotate
       <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
     </head>
     <body id='body'>
-      <div id='debug'></div>
-      <div id='content' style='margin-top:50px;'>
     EOF
-    yield self
+    yield
     
     puts <<-EOF
-      </div>
     </body>
     <script type='text/javascript' src="#{resource_url('prototype.js')}"></script>
     <script type='text/javascript' src="#{resource_url('rb_gateway.js')}"></script>
@@ -104,16 +104,9 @@ class Formatters::Annotate
     options[:id] ||= name
     # puts select_options.inspect
     <<-EOF
-      <div style='position:fixed; top:0px; background: #fff'>
-      #{@header}<br/>
       <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
         #{select_options}
       </select>
-      </div>
-      
-      <div>
-        Keys: n - next revision, p - previous revision, N - current, P - earliest revision
-      </div>
     EOF
   end
   
@@ -152,19 +145,39 @@ class Formatters::Annotate
     distance_of_time_in_words(Time.now, date)
   end
   
-  def content(annotations, log_entries = nil, selected_revision = nil)
-    if log_entries
-      formatted_options = [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{friendly_date(le[:date])} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
-      puts select_box(
-        "rev",
-        options_for_select(formatted_options, selected_revision),
-        :onchange => "show_revision($F(this))"
-      )
-    end
+  def navigate_box
+    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{friendly_date(le[:date])} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+    select_box_html = select_box(
+      "rev",
+      options_for_select(formatted_options, @selected_revision),
+      :onchange => "show_revision($F(this))"
+    )
+    
+    puts <<-EOF
+      <div style='position:fixed; top:0px; background: #fff'>
+        <div id='debug'></div>
+        <div style='float:right'>
+          <b>Keys</b>: n - <em>next revision</em>, p - <em>previous revision</em>, N - <em>current</em>, P - <em>earliest revision</em>
+        </div>
+        #{@header}
+        <br clear='both'/>
+        #{select_box_html}
+        <div>
+          
+        </div>
+      </div>
+    EOF
+    
+    puts 
+  end
+  
+  def content(annotations)
     # puts annotations.inspect
     puts '<code>'
-    puts <<-EOF
     
+    puts "<div id='content' style='margin-top:50px;'>" unless @as_partial
+    
+    puts <<-EOF
       <table class='codediff inline'>
         <thead>
           <tr>
@@ -182,7 +195,7 @@ class Formatters::Annotate
     annotations.each do |annotation|
       col_class = []
       col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-      col_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == selected_revision
+      col_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
       col_class = col_class * " "
       formatted_line = {
         :rev => annotation[:rev], 
@@ -210,7 +223,20 @@ class Formatters::Annotate
         </tbody>
       </table>
     EOF
+    
+    puts "</div><!-- end div#content -->" unless @as_partial
+    puts js_select_current_revision
     puts '</code>'
+  end
+  
+  def js_select_current_revision
+    <<-EOF
+    <script language="JavaScript">
+      selected_map = $A($('rev').options).map(function(o) { return o.value == '#{@selected_revision}'});
+      // $('debug').update(selected_map.join(", "));
+      $('rev').selectedIndex = selected_map.indexOf(true);
+    </script>
+    EOF
   end
 
 end

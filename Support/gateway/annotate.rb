@@ -6,7 +6,6 @@ revision = ARGV[0]
 
 Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
 git = SCM::Git::Annotate.new
-log = SCM::Git::Log.new
 annotations = git.annotate(filepath, revision)
 
 if annotations.nil?
@@ -14,8 +13,6 @@ if annotations.nil?
   abort
 end
 
-log_entries = log.log(filepath)
-
-f = Formatters::Annotate.new
+f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
 f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
-f.content(annotations, log_entries, revision)
+f.content(annotations)
