@@ -16,17 +16,54 @@ class Formatters::Annotate
       <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
     </head>
     <body id='body'>
+      <div id='debug'></div>
+      <div id='content'>
     EOF
     yield self
     
     puts <<-EOF
+      </div>
     </body>
     <script type='text/javascript' src="#{resource_url('prototype.js')}"></script>
     <script type='text/javascript' src="#{resource_url('rb_gateway.js')}"></script>
     <script language='JavaScript'>
       function show_revision(revision)
       {
-        $('body').update(gateway_command('annotate.rb', [revision]));
+        $('content').update(gateway_command('annotate.rb', [revision]));
+      }
+      
+      function keypress_listener(e) 
+      {
+        // if (e.keyCode==Event.KEY_LEFT)
+        //   $('debug').update('escape!!!');
+        // else
+        //   $('debug').update(e.keyCode)
+          
+        switch(e.keyCode) {
+          case 110: // n
+            if ($('rev').selectedIndex >= 1)
+            {
+              $('rev').selectedIndex = $('rev').selectedIndex - 1
+              $('rev').onchange();
+            }
+              
+            break;
+          case 112: // p
+            if ($('rev').selectedIndex < $('rev').options.length - 1)
+            {
+              $('rev').selectedIndex = $('rev').selectedIndex + 1
+              $('rev').onchange();
+            }
+            break;
+        }
+        
+      }
+      
+      try {
+        Event.observe(document, "keypress", keypress_listener.bindAsEventListener());
+      }
+      catch (e) {
+        $('debug').update(e)
       }
       
     </script>
