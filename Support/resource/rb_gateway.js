@@ -18,7 +18,7 @@ function gateway_command(command, params) {
 	// var cmd = arguments.shift
 	// var params = arguments
 	try {
-		command = "cd " + e_sh(TM_BUNDLE_PATH) + " && ruby Support/gateway/" + command
+		command = "ruby " + e_sh(TM_BUNDLE_PATH) + "/Support/gateway/" + command
 		return exec(command, params).outputString
 	}
 	catch(err) {

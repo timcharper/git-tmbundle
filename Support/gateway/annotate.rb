@@ -4,6 +4,7 @@ require File.dirname(__FILE__) + '/../lib/git.rb'
 filepath = ENV['TM_FILEPATH']
 revision = ARGV[0]
 
+Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
 git = SCM::Git::Annotate.new
 log = SCM::Git::Log.new
 annotations = git.annotate(filepath, revision)
