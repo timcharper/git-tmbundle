@@ -182,7 +182,7 @@ class Formatters::Annotate
     annotations.each do |annotation|
       col_class = []
       col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-      col_class << "ins" if annotation[:rev] == "-current-"      
+      col_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == selected_revision
       col_class = col_class * " "
       formatted_line = {
         :rev => annotation[:rev], 
