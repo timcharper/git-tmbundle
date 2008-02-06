@@ -14,7 +14,7 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 git = SCM::Git.new
 git_base = File.expand_path('..', git.git_dir(git.paths.first))
 
-branches = git.branches(git_base)
+branches = git.branches
 current = branches.find { |e| e[:default] }[:name]
 items = branches.reject { |e| e[:default] }.map { |e| e[:name] }
 
