@@ -58,8 +58,8 @@ class Formatters::Annotate
     options[:id] ||= name
     # puts select_options.inspect
     <<-EOF
-      Previous revisions
-      <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}">
+      Revision<br/>
+      <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
         #{select_options}
       </select>
     EOF
@@ -102,7 +102,7 @@ class Formatters::Annotate
   
   def content(annotations, log_entries = nil, selected_revision = nil)
     if log_entries
-      formatted_options = [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{le[:date].to_friendly}", short_rev(le[:rev])] }
+      formatted_options = [["current", ""]] + log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{friendly_date(le[:date])} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
       puts select_box(
         "rev",
         options_for_select(formatted_options, selected_revision),
