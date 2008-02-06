@@ -146,7 +146,7 @@ class Formatters::Annotate
   end
   
   def navigate_box
-    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{le[:author]} - #{friendly_date(le[:date])} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{friendly_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
     select_box_html = select_box(
       "rev",
       options_for_select(formatted_options, @selected_revision),
