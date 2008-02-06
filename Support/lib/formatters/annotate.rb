@@ -162,9 +162,6 @@ class Formatters::Annotate
         #{@header}
         <br clear='both'/>
         #{select_box_html}
-        <div>
-          
-        </div>
       </div>
     EOF
     
@@ -175,7 +172,7 @@ class Formatters::Annotate
     # puts annotations.inspect
     puts '<code>'
     
-    puts "<div id='content' style='margin-top:50px;'>" unless @as_partial
+    puts "<div id='content' style='margin-top:60px;'>" unless @as_partial
     
     puts <<-EOF
       <table class='codediff inline'>
