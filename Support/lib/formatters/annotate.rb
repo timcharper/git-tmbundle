@@ -55,8 +55,16 @@ class Formatters::Annotate
               $('rev').onchange();
             }
             break;
+          case 99: // c
+            $('rev').selectedIndex = 0;
+            $('rev').onchange();
+            break;
+          case 115: // s
+            $('rev').selectedIndex = $('rev').options.length - 1;
+            $('rev').onchange();
+            break;
         }
-        
+        // $('debug').update(e.keyCode);
       }
       
       try {
@@ -99,6 +107,10 @@ class Formatters::Annotate
       <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
         #{select_options}
       </select>
+      
+      <div>
+        Keys: n - next revision, p - previous revision, c - current, s - starting revision (the earliest)
+      </div>
     EOF
   end
   
