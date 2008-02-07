@@ -15,6 +15,7 @@ if name = TextMate::UI.request_string(:title =&gt; "Create Tag", :prompt =&gt; "
   git = SCM::Git.new
   git_base = File.expand_path('..', git.git_dir(git.paths.first))
   git.create_tag(name, git_base)
+  puts "Tag #{name} created"
 end
 </string>
 	<key>input</key>
@@ -24,7 +25,7 @@ end
 	<key>name</key>
 	<string>Create Tag</string>
 	<key>output</key>
-	<string>showAsHTML</string>
+	<string>showAsTooltip</string>
 	<key>uuid</key>
 	<string>C6CD5A2A-E1DA-4D94-B561-331A2366AAC8</string>
 </dict>
