@@ -127,6 +127,13 @@ module SCM
       rescan_project
     end
     
+    def create_tag(name, git_file)
+      base = File.expand_path("..", git_dir(git_file))
+      Dir.chdir(base)
+      
+      %x{#{command_str("tag", name)}}
+    end
+    
     def revert(paths = [])
       output = ""
       
