@@ -35,7 +35,7 @@ module SCM
       end
     
       def git_base
-         File.expand_path('..', git_dir(paths.first))
+        File.expand_path('..', git_dir(paths.first))
       end
 
       def dir_part(file_or_dir)
