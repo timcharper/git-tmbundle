@@ -2,7 +2,7 @@
 # Author: Tim Harper with Lead Media Partners.
 # http://code.google.com/p/productivity-bundle/
 
-
+public
 def exit_discard
   exit 200;
 end

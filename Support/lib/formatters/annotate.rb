@@ -140,13 +140,17 @@ class Formatters::Annotate
     end
   end
   
-  def friendly_date(date)
+  def relative_date(date)
     return date if date.is_a?(String)
     distance_of_time_in_words(Time.now, date)
   end
   
+  def htmlize_attr(str)
+    str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
+  end
+  
   def navigate_box
-    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{friendly_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
     select_box_html = select_box(
       "rev",
       options_for_select(formatted_options, @selected_revision),
@@ -154,7 +158,7 @@ class Formatters::Annotate
     )
     
     puts <<-EOF
-      <div style='position:fixed; top:0px; background: #fff'>
+      <div style='position:fixed; top:0px; background: #fff; width: 100%;'>
         <div id='debug'></div>
         <div style='float:right'>
           <b>Keys</b>: n - <em>next revision</em>, p - <em>previous revision</em>, N - <em>current</em>, P - <em>earliest revision</em>
@@ -197,19 +201,32 @@ class Formatters::Annotate
       formatted_line = {
         :rev => annotation[:rev], 
         :author => annotation[:author], 
-        :date => friendly_date(annotation[:date]), 
+        :date => relative_date(annotation[:date]), 
         :ln => annotation[:ln], 
         :text => annotation[:text]
       }
       display = formatted_line.dup
       
       [:rev, :author, :date].each { |k| display[k] = "…" } if display[:rev]==last_formatted_line[:rev]
+      
+      friendly_date = annotation[:date].is_a?(Time) ? annotation[:date].to_friendly : annotation[:date]
+      
+      rev_hover_message = <<EOF
+Revision: #{annotation[:rev]}
+Date: #{friendly_date} (#{display[:date]})
+Author: #{annotation[:author]}
+EOF
+      
+      date_line = make_non_breaking(display[:date])
+      date_line = %Q{<abbr title="#{annotation[:date].to_friendly}\nasdf">#{date_line}</abbr>} unless display[:date]=="…" if annotation[:date].is_a?(Time)
+      rev_line = make_non_breaking display[:rev]
+      rev_line = %Q{<a title="#{htmlize_attr(rev_hover_message)}" href='javascript:show_revision("#{annotation[:rev]}"); return false;'>#{rev_line}</a>} unless display[:rev]=="…"
       puts <<-EOF
         <tr>
-          <td class="line-numbers"><a href='javascript:show_revision("#{display[:rev]}"); return false;'>#{make_non_breaking display[:rev]}</a></td>
+          <td class="line-numbers">#{rev_line}</td>
           <td class="line-numbers">#{make_non_breaking display[:author]}</td>
-          <td class="line-numbers">#{make_non_breaking display[:date]}</td>
-          <td class="line-numbers">#{make_non_breaking display[:ln]}</td>
+          <td class="line-numbers">#{date_line}</td>
+          <td class="line-numbers">#{display[:ln]}</td>
           <td class="code #{col_class}">#{htmlize(display[:text])}</td>
         </tr>
       EOF
