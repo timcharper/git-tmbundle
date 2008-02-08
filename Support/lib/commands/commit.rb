@@ -60,7 +60,7 @@ class SCM::Git::Commit
       puts "remove_files - #{remove_files.inspect}"
       res = add(add_files) unless add_files.empty?
       res = rm(remove_files) unless remove_files.empty?
-      res = commit(msg, files)
+      res = commit(msg)
       puts "<pre>#{htmlize(res)}</pre>"
     end
   end
