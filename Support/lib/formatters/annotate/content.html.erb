@@ -15,9 +15,16 @@
   <tbody>
     <% for display in formatted_annotations %>
       <tr>
-        <td class="line-numbers"><%= display[:rev] %></td>
-        <td class="line-numbers"><%= make_non_breaking(display[:author]) %></td>
-        <td class="line-numbers"><%= display[:date] %></td>
+      
+        <td class="line-numbers">
+          <% if display[:rev]=="…" %>
+            <%= display[:rev] %>
+          <% else %>
+            <a title="<%= htmlize_attr(display[:rev_tooltip]) %>" href='javascript:show_revision("<%= display[:rev] %>"); return false;'><%= display[:rev] %></a>
+          <% end %>
+        </td>
+        <td class="line-numbers"><%= make_non_breaking display[:author] %></td>
+        <td class="line-numbers"><%= make_non_breaking display[:date] %></td>
         <td class="line-numbers"><%= display[:ln] %></td>
         <td class="code <%= display[:col_class] %>"><%= htmlize(display[:text]) %></td>
       </tr>

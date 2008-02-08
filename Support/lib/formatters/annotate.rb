@@ -84,12 +84,11 @@ class Formatters
       
         friendly_date = annotation[:date].is_a?(Time) ? annotation[:date].to_friendly : annotation[:date]
       
-        rev_hover_message = <<EOF
+        display[:rev_tooltip] = <<EOF
   Revision: #{annotation[:rev]}
   Date: #{friendly_date} (#{display[:date]})
   Author: #{annotation[:author]}
 EOF
-        display[:rev_tooltip] = rev_hover_message
         display[:line_col_class] = col_class
         
         last_formatted_line = formatted_line
