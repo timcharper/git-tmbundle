@@ -1,0 +1,35 @@
+<code>
+
+<% unless @as_partial %><div id='content' style='margin-top:60px;'><% end %>
+
+<table class='codediff inline'>
+  <thead>
+    <tr>
+      <td class='line-numbers'>revision</td>
+      <td class='line-numbers'>author</td>
+      <td class='line-numbers'>date</td>
+      <td class='line-numbers'>line</td>
+      <td/>
+    </tr>
+  </thead>
+  <tbody>
+    <% for display in formatted_annotations %>
+      <tr>
+        <td class="line-numbers"><%= display[:rev] %></td>
+        <td class="line-numbers"><%= make_non_breaking(display[:author]) %></td>
+        <td class="line-numbers"><%= display[:date] %></td>
+        <td class="line-numbers"><%= display[:ln] %></td>
+        <td class="code <%= display[:col_class] %>"><%= htmlize(display[:text]) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% unless @as_partial %></div><!-- end div#content --><% end %>
+
+<script language="JavaScript">
+  selected_map = $A($('rev').options).map(function(o) { return o.value == '<%= @selected_revision %>'});
+  // $('debug').update(selected_map.join(", "));
+  $('rev').selectedIndex = selected_map.indexOf(true);
+</script>
+
+</code>

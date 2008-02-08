@@ -15,7 +15,10 @@ class Formatters
       sub_dir = self.class.to_s.gsub("::", "/")
       template = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
       
-      eval(options[:locals].keys * ", " + " = options[:locals].values") if options[:locals]
+      if options[:locals]
+        eval(options[:locals].keys * ", " + ", stub = options[:locals].values + [1]") 
+      end
+      
       ERB.new(template, nil, "-").result(binding)
     end
     

@@ -64,26 +64,9 @@ class Formatters
   
     def content(annotations)
       # puts annotations.inspect
-      output = '<code>'
-    
-      output << "<div id='content' style='margin-top:60px;'>" unless @as_partial
-    
-      output << <<-EOF
-        <table class='codediff inline'>
-          <thead>
-            <tr>
-              <td class='line-numbers'>revision</td>
-              <td class='line-numbers'>author</td>
-              <td class='line-numbers'>date</td>
-              <td class='line-numbers'>line</td>
-              <td/>
-            </tr>
-          </thead>
-          <tbody>
-      EOF
       last_formatted_line = {}
     
-      annotations.each do |annotation|
+      formatted_annotations = annotations.map do |annotation|
         col_class = []
         col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
         col_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
@@ -106,41 +89,18 @@ class Formatters
   Date: #{friendly_date} (#{display[:date]})
   Author: #{annotation[:author]}
 EOF
-      
-        date_line = make_non_breaking(display[:date])
-        date_line = %Q{<abbr title="#{annotation[:date].to_friendly}\nasdf">#{date_line}</abbr>} unless display[:date]=="…" if annotation[:date].is_a?(Time)
-        rev_line = make_non_breaking display[:rev]
-        rev_line = %Q{<a title="#{htmlize_attr(rev_hover_message)}" href='javascript:show_revision("#{annotation[:rev]}"); return false;'>#{rev_line}</a>} unless display[:rev]=="…"
-        output << <<-EOF
-          <tr>
-            <td class="line-numbers">#{rev_line}</td>
-            <td class="line-numbers">#{make_non_breaking display[:author]}</td>
-            <td class="line-numbers">#{date_line}</td>
-            <td class="line-numbers">#{display[:ln]}</td>
-            <td class="code #{col_class}">#{htmlize(display[:text])}</td>
-          </tr>
-        EOF
+        display[:rev_tooltip] = rev_hover_message
+        display[:line_col_class] = col_class
+        
         last_formatted_line = formatted_line
+        display
       end
       
-      output << <<-EOF
-          </tbody>
-        </table>
-      EOF
-    
-      output << "</div><!-- end div#content -->" unless @as_partial
-      output << js_select_current_revision
-      output << '</code>'
-      output
+      render("content", :locals => {:formatted_annotations => formatted_annotations})
     end
   
     def js_select_current_revision
       <<-EOF
-      <script language="JavaScript">
-        selected_map = $A($('rev').options).map(function(o) { return o.value == '#{@selected_revision}'});
-        // $('debug').update(selected_map.join(", "));
-        $('rev').selectedIndex = selected_map.indexOf(true);
-      </script>
       EOF
     end
   end
