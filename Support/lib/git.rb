@@ -33,7 +33,7 @@ module SCM
       end
     
       def git_base
-         File.expand_path('..', git_dir(paths.first))
+        File.expand_path('..', git_dir(paths.first))
       end
 
       def dir_part(file_or_dir)
@@ -125,6 +125,13 @@ module SCM
       rescan_project
     end
     
+    def create_tag(name, git_file)
+      base = File.expand_path("..", git_dir(git_file))
+      Dir.chdir(base)
+      
+      %x{#{command_str("tag", name)}}
+    end
+    
     def revert(paths = [])
       output = ""
       
@@ -158,3 +165,4 @@ if __FILE__ == $0
   p git.branches("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
 
 end
+
