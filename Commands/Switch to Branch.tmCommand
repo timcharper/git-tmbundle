@@ -28,7 +28,7 @@ rescan_project</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Switch to Branch…</string>
+	<string>Branches (show/switch)…</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>
