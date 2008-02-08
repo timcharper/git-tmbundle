@@ -1,5 +1,3 @@
-
-
 class Formatters
   class Annotate
     include Formatters::FormatterHelpers
@@ -61,23 +59,7 @@ class Formatters
   
     def navigate_box
       formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
-      select_box_html = select_box(
-        "rev",
-        options_for_select(formatted_options, @selected_revision),
-        :onchange => "show_revision($F(this))"
-      )
-    
-      <<-EOF
-        <div style='position:fixed; top:0px; background: #fff; width: 100%;'>
-          <div id='debug'></div>
-          <div style='float:right'>
-            <b>Keys</b>: n - <em>next revision</em>, p - <em>previous revision</em>, N - <em>current</em>, P - <em>earliest revision</em>
-          </div>
-          #{@header}
-          <br clear='both'/>
-          #{select_box_html}
-        </div>
-      EOF
+      render("navigate_box", :locals => {:formatted_options => formatted_options, :selected_revision => @selected_revision, } )
     end
   
     def content(annotations)

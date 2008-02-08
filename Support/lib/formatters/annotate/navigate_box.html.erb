@@ -1,0 +1,12 @@
+<div style='position:fixed; top:0px; background: #fff; width: 100%;'>
+  <div id='debug'></div>
+  <div style='float:right'>
+    <b>Keys</b>: n - <em>next revision</em>, p - <em>previous revision</em>, N - <em>current</em>, P - <em>earliest revision</em>
+  </div>
+  <%= @header %>
+  <br clear='both'/>
+  <%= select_box( "rev",
+    options_for_select(formatted_options, selected_revision),
+    :onchange => "show_revision($F(this))"
+  ) %>
+</div>
