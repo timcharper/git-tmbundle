@@ -3,6 +3,11 @@ class Formatters::Diff < Formatters
   def initialize(base = nil, options = {}, &block)
     @base = ENV["TM_PROJECT_DIRECTORY"]
     @header = options[:header] || "Uncomitted changes"
+    
+    super
+  end
+  
+  def layout(&block)
     puts <<-EOF
     <html>
     <head>
@@ -12,7 +17,7 @@ class Formatters::Diff < Formatters
     <body>
       <a href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open in TextMate</a>
     EOF
-    yield self
+    yield
     
     puts <<-EOF
     </body>
