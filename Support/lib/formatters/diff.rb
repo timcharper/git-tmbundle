@@ -1,5 +1,4 @@
-class Formatters::Diff
-  include Formatters::FormatterHelpers
+class Formatters::Diff < Formatters
   
   def initialize(base = nil, options = {}, &block)
     @base = ENV["TM_PROJECT_DIRECTORY"]

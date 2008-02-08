@@ -14,8 +14,5 @@ if annotations.nil?
 end
 
 f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
-
-output = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
-output = f.content(annotations)
-
-puts output
+f.header "Annotations for ‘#{htmlize(git.shorten(filepath))}’"
+f.content annotations

@@ -1,69 +1,96 @@
 require 'erb'
 
+class ERBStdout < ERB
+  def set_eoutvar(compiler, eoutvar = 'STDOUT')
+    compiler.put_cmd = "#{eoutvar} << "
+    compiler.insert_cmd = "#{eoutvar} << "
+    compiler.pre_cmd = "#{eoutvar}.flush"
+    compiler.post_cmd = "#{eoutvar}.flush; ''"
+  end
+  
+  def run(b=TOPLEVEL_BINDING)
+    self.result(b)
+  end
+end
+
 class Formatters
-  module FormatterHelpers
-    def resource_url(filename)
-      "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
+  
+  def initialize(*params, &block)
+    layout {yield self} if block_given?
+  end
+  
+  def layout(&block)
+    render("layout", &block)
+  end
+
+  def header(text)
+    @header = text
+  end
+  
+  
+protected  
+  def resource_url(filename)
+    "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
+  end
+  
+  def short_rev(rev)
+    rev.to_s[0..7]
+  end
+  
+  def render(name, options = {}, &block)
+    name = "#{name}.html.erb" unless name.include?(".")
+    sub_dir = self.class.to_s.gsub("::", "/")
+    ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+    
+    if options[:locals]
+      __v__ = options[:locals].values
+      eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
     end
     
-    def short_rev(rev)
-      rev.to_s[0..7]
-    end
-    
-    def render(name, options = {}, &block)
-      name = "#{name}.html.erb" unless name.include?(".")
-      sub_dir = self.class.to_s.gsub("::", "/")
-      ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
-      
-      if options[:locals]
-        __v__ = options[:locals].values
-        eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
-      end
-      
-      ERB.new(___template___, nil, "-").result(binding)
-    end
-    
-    def select_box(name, select_options = [], options = {})
-      options[:name] ||= name
-      options[:id] ||= name
-      # puts select_options.inspect
-      <<-EOF
-        <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
-          #{select_options}
-        </select>
-      EOF
+    ERBStdout.new(___template___, nil, "-", "STDOUT").run(binding)
+  end
+  
+  
+  def select_box(name, select_options = [], options = {})
+    options[:name] ||= name
+    options[:id] ||= name
+    # puts select_options.inspect
+    <<-EOF
+      <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
+        #{select_options}
+      </select>
+    EOF
+  end
+
+  def options_for_select(select_options = [], selected_value = nil)
+    output = ""
+  
+    select_options.each do |name, val|
+      selected = (val == selected_value) ? "selected='true'" : ""
+      output << "<option value='#{val}' #{selected}>#{htmlize(name)}</option>"
     end
   
-    def options_for_select(select_options = [], selected_value = nil)
-      output = ""
-    
-      select_options.each do |name, val|
-        selected = (val == selected_value) ? "selected='true'" : ""
-        output << "<option value='#{val}' #{selected}>#{htmlize(name)}</option>"
-      end
-    
-      output
-    end
-    
-    def make_non_breaking(output)
-      htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
-    end
-    
-    
-    def htmlize_attr(str)
-      str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
-    end
-    
-    def e_js(str)
-      str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
-    end
-    
-    def javascript_include_tag(*params)
-      file_names = []
-      params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
-      params.map do |p|
-        %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
-      end
+    output
+  end
+  
+  def make_non_breaking(output)
+    htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
+  end
+  
+  
+  def htmlize_attr(str)
+    str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
+  end
+  
+  def e_js(str)
+    str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
+  end
+  
+  def javascript_include_tag(*params)
+    file_names = []
+    params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
+    params.map do |p|
+      %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
     end
   end
   
