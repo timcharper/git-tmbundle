@@ -5,27 +5,22 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby
+	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+git = SCM::Git::SVNDcommit.new
+git.run
 
-commit_dialog  = SCM::Git::Commit.new
-
-if commit_dialog.clean_directory?
-  puts "Working directory is clean (nothing to commit)"
-  exit
-end
-
-commit_dialog.run</string>
+rescan_project</string>
 	<key>input</key>
-	<string>none</string>
+	<string>selection</string>
 	<key>keyEquivalent</key>
-	<string>^G</string>
+	<string>^@g</string>
 	<key>name</key>
-	<string>Commit…</string>
+	<string>SVN Dcommit</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>
-	<string>55CCBE51-3C13-46D8-92D9-52EAD7A5D2D6</string>
+	<string>8FD8CC00-0A38-4472-9C3A-F22AE289B3A9</string>
 </dict>
 </plist>

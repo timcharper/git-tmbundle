@@ -1,28 +1,17 @@
 require File.dirname(__FILE__) + '/../date_helpers.rb'
 class Formatters
-  class Annotate
-    include Formatters::FormatterHelpers
+  class Annotate < Formatters
   
     def initialize(options = {}, &block)
       @base = options[:base] || ENV["TM_PROJECT_DIRECTORY"]
-      @header = options[:header] || "Annotate / Blame"
+      @header = options[:header] || ""
       @log_entries = options[:log_entries]
       @selected_revision = options[:selected_revision]
       @as_partial = options[:as_partial]
     
-      layout {yield self} if block_given?
+      super
     end
   
-    def layout(&block)
-      render("layout", &block)
-    end
-  
-    def header(text)
-      @header = text
-      ""
-      # puts "<h2>#{text}</h2>"
-    end
-    
     include DateHelpers
     def navigate_box
       formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
