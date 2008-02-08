@@ -2,7 +2,7 @@ class Formatters::Diff
   include Formatters::FormatterHelpers
   
   def initialize(base = nil, options = {}, &block)
-    @base = base || ENV["TM_PROJECT_DIRECTORY"]
+    @base = ENV["TM_PROJECT_DIRECTORY"]
     @header = options[:header] || "Uncomitted changes"
     puts <<-EOF
     <html>
