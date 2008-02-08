@@ -20,9 +20,8 @@ items = branches.reject { |e| e[:default] }.map { |e| e[:name] }
 
 TextMate::UI.request_item(:title =&gt; "Switch to Branch", :prompt =&gt; "Current branch is ‘#{current}’.\nSelect a new branch to switch to:", :items =&gt; [current] + items) do |name|
   puts git.switch_to_branch(name, git_base)
-end
-
-rescan_project</string>
+  rescan_project
+end</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
