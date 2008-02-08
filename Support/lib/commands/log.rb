@@ -26,6 +26,12 @@ class SCM::Git::Log
 
     "#{filename.sub(extname, '')}-r#{rev}#{extname}"
   end
+  
+  def show(fullpath, revision)
+    path = make_local_path(fullpath)
+    path = "" if path=="."
+    command("show", "#{revision}:#{path}")
+  end
 
   def run(fullpath = paths.first)
     path = make_local_path(fullpath)
@@ -48,9 +54,7 @@ class SCM::Git::Log
         dialog.parameters = {'summary' => "Retrieving revision #{revision}…"}
 
         temp_name = '/tmp/' + human_readable_mktemp(path, revision)
-        File.open(temp_name, "w") {|f| f.puts command("show", "#{revision}:#{path}") }
-        # 
-        # svn_cmd("cat -r#{revision} #{e_sh path} > #{e_sh temp_name}")
+        File.open(temp_name, "w") {|f| f.puts show(path, revision) }
         files << temp_name
       end
     end
@@ -59,7 +63,7 @@ class SCM::Git::Log
     ### mate -w doesn't work on multiple files, so we'll do one file at a time...
     files.each do |file|
       fork do 
-        %x{"#{ENV['TM_SUPPORT_PATH']}/bin/mate" -w #{e_sh(file)}}
+        tm_open(file, :wait => true)
         File.delete(file)
       end
     end
@@ -125,36 +129,6 @@ class SCM::Git::Log
     end
     revision
   end
-
-
-  # def run_old
-  #   git   = SCM::Git.new
-  #   paths = paths(:fallback => :current_file, :unique => true)
-  #   base  = nca(paths)
-  # 
-  #   Dir.chdir(base)
-  # 
-  #   paths.each do |path|
-  # 
-  #     puts "<h1>Log for ‘#{htmlize(shorten(path, base))}’</h1>"
-  #     colors = %w[ white lightsteelblue ]
-  # 
-  #     file = if path == base then '.' else shorten(path, base) end
-  #     output = log(file)
-  #     output.scan(/^commit (.+)$\n((?:\w+: .*\n)*)((?m:.*?))(?=^commit|\z)/) do |e|
-  #         commit, msg = $1, $3
-  #         headers = $2.scan(/(\w+):\s+(.+)/)
-  # 
-  #         puts "<div style='background: #{colors[0]};'>"
-  #         puts "<h2>Commit #{htmlize commit.sub(/^(.{8})(.{10}.*)/, '\1…')}</h2>"
-  #         puts headers.map { |e| "<dt>#{htmlize e[0]}</dt>\n<dd>#{htmlize e[1]}</dd>\n" }
-  #         puts "<p>#{htmlize msg.gsub(/\A\n+|\n+\z/, '').gsub(/^    /, '')}</p>"
-  #         puts "</div>"
-  # 
-  #         colors = [colors[1], colors[0]]
-  #     end
-  #   end
-  # end
   
   def log(file_or_directory, options = {})
     file_or_directory = make_local_path(file_or_directory)
