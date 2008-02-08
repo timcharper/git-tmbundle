@@ -10,10 +10,12 @@ class Formatters
       rev.to_s[0..7]
     end
     
-    def render(name, &block)
+    def render(name, options = {}, &block)
       name = "#{name}.html.erb" unless name.include?(".")
       sub_dir = self.class.to_s.gsub("::", "/")
       template = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+      
+      eval(options[:locals].keys * ", " + " = options[:locals].values") if options[:locals]
       ERB.new(template, nil, "-").result(binding)
     end
     
