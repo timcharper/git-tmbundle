@@ -13,13 +13,14 @@ class Formatters
     def render(name, options = {}, &block)
       name = "#{name}.html.erb" unless name.include?(".")
       sub_dir = self.class.to_s.gsub("::", "/")
-      template = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+      ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
       
       if options[:locals]
-        eval(options[:locals].keys * ", " + ", stub = options[:locals].values + [1]") 
+        __v__ = options[:locals].values
+        eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
       end
       
-      ERB.new(template, nil, "-").result(binding)
+      ERB.new(___template___, nil, "-").result(binding)
     end
     
     def select_box(name, select_options = [], options = {})
