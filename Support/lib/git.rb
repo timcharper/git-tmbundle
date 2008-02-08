@@ -7,8 +7,6 @@ require File.dirname(__FILE__) + '/ruby_tm_helpers.rb'
 module SCM
   class Git
     module CommonCommands
-      def flush; STDOUT.flush; end;
-      
       def command_str(*args)
         %{#{e_sh SCM::Git.git} #{args.map{ |arg| e_sh(arg) } * ' '}}
       end

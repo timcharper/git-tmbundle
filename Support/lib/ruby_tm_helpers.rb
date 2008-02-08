@@ -37,6 +37,8 @@ def exit_create_new_document
   exit 207;
 end
 
+def flush; $>.flush; STDOUT.flush; end;
+
 def tm_open(file, options = {})
   line = options[:line]
   wait = options[:wait]
