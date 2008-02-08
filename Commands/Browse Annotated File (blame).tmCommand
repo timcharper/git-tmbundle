@@ -22,11 +22,14 @@ end
 log_entries = log.log(filepath)
 
 f = Formatters::Annotate.new(:log_entries =&gt; log_entries)
-f.layout do
-  f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
-  f.navigate_box
-  f.content(annotations)
-end</string>
+output = f.layout do
+  p = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+  p &lt;&lt; f.navigate_box
+  p &lt;&lt; f.content(annotations)
+  p
+end
+
+puts output</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

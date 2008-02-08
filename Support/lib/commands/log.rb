@@ -32,6 +32,12 @@ class SCM::Git::Log
     path = "" if path=="."
     command("show", "#{revision}:#{path}")
   end
+  
+  def show_to_tmp_file(filename, revision)
+    temp_name = '/tmp/' + human_readable_mktemp(path, revision)
+    File.open(temp_name, "w") {|f| f.puts show(path, revision) }
+    temp_name
+  end
 
   def run(fullpath = paths.first)
     path = make_local_path(fullpath)
@@ -53,9 +59,7 @@ class SCM::Git::Log
         # Get the file at the desired revision
         dialog.parameters = {'summary' => "Retrieving revision #{revision}…"}
 
-        temp_name = '/tmp/' + human_readable_mktemp(path, revision)
-        File.open(temp_name, "w") {|f| f.puts show(path, revision) }
-        files << temp_name
+        files << show_to_tmp_file(path, revision)
       end
     end
 
