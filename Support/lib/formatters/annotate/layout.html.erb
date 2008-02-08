@@ -9,7 +9,7 @@
 <!-- we put the script at the end because it messes up TextMate's html rendering, for some reason -->
 <%= javascript_include_tag "prototype", "rb_gateway" %>
 <script language='JavaScript'>
-  function show_revision(revision)
+  function show_annotation(revision)
   {
     $('content').update(gateway_command('annotate.rb', [revision]));
   }
@@ -44,6 +44,10 @@
       case 80: // N
         $('rev').selectedIndex = $('rev').options.length - 1;
         $('rev').onchange();
+        break;
+      case 111: // o
+        gateway_command('show.rb', ["<%=e_js ENV['TM_FILEPATH'] %>", $F('rev')] )
+        // 
         break;
     }
     // $('debug').update(e.keyCode);

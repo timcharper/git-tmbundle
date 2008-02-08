@@ -33,9 +33,9 @@ class SCM::Git::Log
     command("show", "#{revision}:#{path}")
   end
   
-  def show_to_tmp_file(filename, revision)
-    temp_name = '/tmp/' + human_readable_mktemp(path, revision)
-    File.open(temp_name, "w") {|f| f.puts show(path, revision) }
+  def show_to_tmp_file(fullpath, revision)
+    temp_name = '/tmp/' + human_readable_mktemp(fullpath, revision)
+    File.open(temp_name, "w") {|f| f.puts show(fullpath, revision) }
     temp_name
   end
 

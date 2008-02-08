@@ -20,7 +20,7 @@
           <% if display[:rev]=="…" %>
             <%= display[:rev] %>
           <% else %>
-            <a title="<%= htmlize_attr(display[:rev_tooltip]) %>" href='javascript:show_revision("<%= display[:rev] %>"); return false;'><%= display[:rev] %></a>
+            <a title="<%= htmlize_attr(display[:rev_tooltip]) %>" href='javascript:show_annotation("<%= display[:rev] %>"); return false;'><%= display[:rev] %></a>
           <% end %>
         </td>
         <td class="line-numbers"><%= make_non_breaking display[:author] %></td>

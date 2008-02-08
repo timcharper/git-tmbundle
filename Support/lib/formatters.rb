@@ -54,6 +54,10 @@ class Formatters
       str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
     end
     
+    def e_js(str)
+      str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
+    end
+    
     def javascript_include_tag(*params)
       file_names = []
       params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
