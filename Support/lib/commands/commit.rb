@@ -7,8 +7,6 @@ class SCM::Git::Commit
     @paths = paths
     @base  = nca
     Dir.chdir(@base)
-    
-    command("reset")
   end
 
   def status(*args)
