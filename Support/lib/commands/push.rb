@@ -9,73 +9,69 @@ class SCM::Git::Push
   end
   
   def run
-    TextMate::UI.request_item(:title => "Push", :prompt => "Select a remote source to push to:", :items => sources) do |name|
-      puts "<p>Pushing to remote source '#{name}'\n</p>"
-      flush
-      puts htmlize(push(name))
+    f = Formatters::Push.new
+    
+    f.layout do
+      TextMate::UI.request_item(:title => "Push", :prompt => "Select a remote source to push to:", :items => sources) do |name|
+        puts "<p>Pushing to remote source '#{name}'\n</p>"
+        flush
+        output = push(name, 
+          :start => lambda { |state, count| f.progress_start(state, count) }, 
+          :progress => lambda { |state, percentage, index, count| f.progress(state, percentage, index, count)},
+          :end => lambda { |state, count| f.progress_end(state, count) }
+        )
+      
+        if ! output[:pushes].empty?
+          f.diffs(output[:pushes])
+        elsif output[:nothing_to_push]
+          puts "There's nothing to push!"
+          puts output[:text]
+        else
+          puts "<h3>Error:</h3>"
+          puts output[:text]
+        end
+      end
     end
   end
   
   def push(source, callbacks = {})
     args = ["push", source]
-    if callbacks.empty?
-      p = popen(command_str(*args))
-      process_push(p, callbacks)
-      true
-    else
-      command(*args)
-    end
+    cmd = command_str(*args)
+    p = IO.popen("#{cmd} 2>&1", "r")
+    process_push(p, callbacks)
   end
   
   def process_push(stream, callbacks = {})
-    output = {:pushes => {}, :text => ""}
+    output = {:pushes => {}, :text => "", :nothing_to_push => false}
     state = nil
+    callbacks[:deltifying] ||= {}
+    callbacks[:writing] ||= {}
     
-    while !stream.eof
-      input = stream.read
-      input.split("\n").each do |line|
-        output[:text] << "#{line}\n"
-        case line
-        when /Deltifying [0-9]+ objects/
-          state = :deltifying
-        when /Writing [0-9]+ objects/
-          state = :writing
-        when /^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
-          state = nil
-          output[:pushes][$1] = [$2,$3]
+    stream.each_line do |line|
+      # puts "hi!"
+      # puts "line read: #{line.inspect}<br/>"
+      case line
+      when /^Everything up\-to\-date/
+        output[:nothing_to_push] = true
+      when /(Deltifying|Writing) ([0-9]+) objects/
+        state = $1
+        callbacks[:start] && callbacks[:start].call(state, $2.to_i)
+        percentage, index, count = 0, 0, $2.to_i
+      when /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
+        percentage, index, count = $1.to_i, $2.to_i, $3.to_i
+      when /^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
+        state = nil
+        output[:pushes][$1] = [$2,$3]
+      else
+        output[:text] << line
+      end
+      
+      if state
+        callbacks[:progress] && callbacks[:progress].call(state, percentage, index, count)
+        if percentage == 100
+          callbacks[:end] && callbacks[:end].call(state, count)
+          state = nil 
         end
-        
-        case state
-        when :deltifying
-          case line
-          when /Deltifying ([0-9]+) objects/
-            count = $1.to_i
-            percentage = 0
-            index = 0
-          when /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
-            percentage = $1.to_i
-            count = $3.to_i
-            index = $2.to_i
-          end
-          callbacks[:deltifying] && callbacks[:deltifying].call(percentage, index, count)
-          state = nil if percentage == 100
-        when :writing
-          case line
-          when /Writing ([0-9]+) objects/
-            count = $1.to_i
-            percentage = 0
-            index = 0
-          when /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
-            percentage = $1.to_i
-            count = $3.to_i
-            index = $2.to_i
-          end
-          callbacks[:writing] && callbacks[:writing].call(percentage, index, count)
-          state = nil if percentage == 100
-        else
-        end
-        
-        
       end
     end
     output

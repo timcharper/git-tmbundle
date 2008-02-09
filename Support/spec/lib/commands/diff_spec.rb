@@ -5,10 +5,13 @@ describe SCM::Git::Diff do
     @diff = SCM::Git::Diff.new
   end
   
+  def diff_outputs(filename)
+    File.read("#{FIXTURES_DIR}/#{filename}")
+  end
+  
   describe "when parsing a diff" do
-    TEST_OUTPUT = File.read("#{FIXTURES_DIR}/changed_files.diff")
     before(:each) do
-      @results = @diff.parse_diff(TEST_OUTPUT)
+      @results = @diff.parse_diff(diff_outputs("changed_files.diff"))
       @lines = @results.first[:lines]
     end
     
@@ -42,9 +45,8 @@ describe SCM::Git::Diff do
   end
   
   describe "when parse a diff with line breaks" do
-    TEST_OUTPUT_BREAKS = File.read("#{FIXTURES_DIR}/changed_files_with_break.diff")
     before(:each) do
-      @results = @diff.parse_diff(TEST_OUTPUT_BREAKS)
+      @results = @diff.parse_diff(diff_outputs("changed_files_with_break.diff"))
       @lines = @results.first[:lines]
     end
     
@@ -53,9 +55,8 @@ describe SCM::Git::Diff do
     end
   end
   describe "when parse a diff with line breaks" do
-    TEST_OUTPUT_NEW_LINE = File.read("#{FIXTURES_DIR}/new_line_at_end.diff")
     before(:each) do
-      @results = @diff.parse_diff(TEST_OUTPUT_NEW_LINE)
+      @results = @diff.parse_diff(diff_outputs("new_line_at_end.diff"))
       @lines = @results.first[:lines]
     end
     
@@ -63,6 +64,18 @@ describe SCM::Git::Diff do
       eof_line = @lines.find{|l| l[:type]==:eof}
       eof_line[:ln_left].should == "EOF"
       eof_line[:ln_right].should == nil
+    end
+  end
+  
+  describe "when parsing small diff" do
+    before(:each) do
+      @results = @diff.parse_diff(diff_outputs("small.diff"))
+      @lines = @results.first[:lines]
+    end
+    
+    it "should start with line-number-zero" do
+      @lines.map{|l| l[:ln_left]}.should  == [1, "EOF", nil, nil, nil, nil]
+      @lines.map{|l| l[:ln_right]}.should == [nil, nil, 1,   2,   3,   "EOF"]
     end
   end
 end
