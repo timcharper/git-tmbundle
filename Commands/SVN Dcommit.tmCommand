@@ -15,7 +15,7 @@ rescan_project</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>keyEquivalent</key>
-	<string>^@g</string>
+	<string>^~g</string>
 	<key>name</key>
 	<string>SVN Dcommit</string>
 	<key>output</key>
