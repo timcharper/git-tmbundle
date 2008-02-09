@@ -23,10 +23,10 @@ class Formatters
       last_formatted_line = {}
     
       formatted_annotations = annotations.map do |annotation|
-        col_class = []
-        col_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-        col_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
-        col_class = col_class * " "
+        line_class = []
+        line_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
+        line_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
+        line_class = line_class * " "
         formatted_line = {
           :rev => annotation[:rev], 
           :author => annotation[:author], 
@@ -45,7 +45,7 @@ class Formatters
   Date: #{friendly_date} (#{display[:date]})
   Author: #{annotation[:author]}
 EOF
-        display[:line_col_class] = col_class
+        display[:line_class] = line_class
         
         last_formatted_line = formatted_line
         display

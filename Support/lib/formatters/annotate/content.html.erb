@@ -26,7 +26,7 @@
         <td class="line-numbers"><%= make_non_breaking display[:author] %></td>
         <td class="line-numbers"><%= make_non_breaking display[:date] %></td>
         <td class="line-numbers"><%= display[:ln] %></td>
-        <td class="code <%= display[:col_class] %>"><%= htmlize(display[:text]) %></td>
+        <td class="code <%= display[:line_class] %>"><%= htmlize(display[:text]) %></td>
       </tr>
     <% end %>
     </tbody>
