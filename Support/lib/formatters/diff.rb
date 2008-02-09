@@ -38,7 +38,7 @@ class Formatters::Diff < Formatters
         filepath ? "<a href='txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
       end
       puts <<-EOF
-      <h4>#{files.uniq * ' --- '}</h4>
+      <h4>#{files.uniq * ' --&gt; '}</h4>
       <table class='codediff inline'>
         <thead>
           <tr>
