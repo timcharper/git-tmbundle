@@ -47,8 +47,11 @@ class SCM::Git::Push
     callbacks[:deltifying] ||= {}
     callbacks[:writing] ||= {}
     
-    stream.each_line do |line|
-      # puts "hi!"
+    line = ""
+    stream.each_byte do |char|
+      char = [char].pack('c')
+      line << char
+      next unless char=="\n" || char=="\r"
       # puts "line read: #{line.inspect}<br/>"
       case line
       when /^Everything up\-to\-date/
@@ -73,6 +76,7 @@ class SCM::Git::Push
           state = nil 
         end
       end
+      line=""
     end
     output
   end

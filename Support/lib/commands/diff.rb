@@ -44,7 +44,7 @@ class SCM::Git::Diff
         current[:left][:filepath] = $1
       when /^\+\+\+ [ab]{0,1}(.+?)(\t*)$/
         current[:right][:filepath] = $1
-      when /@@ \-(\d+)(,(\d+)){0,1} \+(\d+)(,(\d+)){0,1} @@ {0,1}(.*)$/  # @@ -5,6 +5,25 @@ class SCM::Git::Diff
+      when /^@@ \-(\d+)(,(\d+)){0,1} \+(\d+)(,(\d+)){0,1} @@ {0,1}(.*)$/  # @@ -5,6 +5,25 @@ class SCM::Git::Diff
         ln_left = $1.to_i
         ln_left_count = $3.to_i
         ln_right = $4.to_i

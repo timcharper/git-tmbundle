@@ -15,19 +15,9 @@ updating 'refs/heads/satellite'
 Generating pack...
 Done counting 6 objects.
 Deltifying 6 objects...
-  16% (1/6) done
-  33% (2/6) done
-  50% (3/6) done
-  66% (4/6) done
-  83% (5/6) done
- 100% (6/6) done
+  16% (1/6) done\r 33% (2/6) done\r 50% (3/6) done\r 66% (4/6) done\r 83% (5/6) done\r 100% (6/6) done\n
 Writing 6 objects...
-  16% (1/6) done
-  33% (2/6) done
-  50% (3/6) done
-  66% (4/6) done
-  83% (5/6) done
- 100% (6/6) done
+  16% (1/6) done\r 33% (2/6) done\r 50% (3/6) done\r 66% (4/6) done\r 83% (5/6) done\r 100% (6/6) done\n
 Total 6 (delta 1), reused 0 (delta 0)
 refs/heads/satellite: 60a254470cd97af3668ed4d6405633af850139c6 -> 746fba2424e6b94570fc395c472805625ab2ed25
 refs/heads/mybranch: f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a -> d8b368361ebdf2c51b78f7cfdae5c3044b23d189

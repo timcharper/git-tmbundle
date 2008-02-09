@@ -11,7 +11,7 @@ class Formatters
     end
     
     def progress_start(state, count)
-      puts "#{state} #{count} objects.  <div id='#{state}_progress'>0% 0 / #{count}</div>"
+      puts("#{state} #{count} objects.  <div id='#{state}_progress'>0% 0 / #{count}</div>")
     end
     
     def progress(state, percentage, index, count)
@@ -24,7 +24,7 @@ class Formatters
       flush 
     end
     
-    def progress_end(state)
+    def progress_end(state, count)
       puts "<p>Done</p>"
       flush
     end
