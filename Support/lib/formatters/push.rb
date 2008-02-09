@@ -37,7 +37,8 @@ class Formatters
       diff = SCM::Git::Diff.new
       diff_f = Formatters::Diff.new
       branch_revisions.each do |branch, revisions|
-        diff_f.header("Changes pushed: branch '#{branch}' #{short_rev(revisions.first)}..#{short_rev(revisions.last)}")
+        diff_f.header("Diff on changes pushed")
+        diff_f.sub_header("Branch '#{branch}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}")
         diff_f.content diff.diff_revisions(".", revisions.first, revisions.last)
       end
     end

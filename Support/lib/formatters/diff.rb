@@ -29,6 +29,10 @@ class Formatters::Diff < Formatters
     puts "<h2>#{text}</h2>"
   end
   
+  def sub_header(text)
+    puts "<h3>#{text}</h3>"
+  end
+  
   def content(diff_results)
     puts '<code>'
     diff_results.each do |diff_result|
