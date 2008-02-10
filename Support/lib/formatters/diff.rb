@@ -7,24 +7,7 @@ class Formatters::Diff < Formatters
     
     super
   end
-  
-  def layout(&block)
-    puts <<-EOF
-    <html>
-    <head>
-      <title>#{@header}</title>
-      <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
-    </head>
-    <body>
-    EOF
-    yield
     
-    puts <<-EOF
-    </body>
-    </html>
-    EOF
-  end
-  
   def open_in_tm_link
     puts <<-EOF
       <a href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open diff in TextMate</a>

@@ -27,7 +27,7 @@ end
 left = revisions.first
 right = revisions.last
 
-Formatters::Diff.new() do |f|
+Formatters::Diff.new(:rev =&gt; right) do |f|
   filepaths.each do |filepath|
     f.header("Diff for  ‘#{htmlize(log.make_local_path(filepath))}’ between revisions #{left} and #{right}")
     f.open_in_tm_link
