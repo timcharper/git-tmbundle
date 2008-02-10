@@ -23,6 +23,11 @@ end
 class Formatters
   include ERB::Util
   include CommonFormatters
+  
+  def self.template_root
+    to_s.gsub("::", "/").downcase
+  end
+  
   def initialize(*params, &block)
     @stdout = STDOUT
     layout {yield self} if block_given?
@@ -48,7 +53,7 @@ protected
   
   def render(name, options = {}, &block)
     name = "#{name}.html.erb" unless name.include?(".")
-    sub_dir = self.class.to_s.gsub("::", "/").downcase
+    sub_dir = self.class.template_root
     ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
     
     if options[:locals]
