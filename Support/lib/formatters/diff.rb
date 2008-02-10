@@ -46,7 +46,7 @@ class Formatters::Diff < Formatters
         filepath = diff_result[lr][:filepath]
         start_line_right = diff_result[:right][:ln_start]
         
-        filepath ? %Q{<a href='javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}"] );'>#{htmlize filepath}</a>} : "(none)"
+        filepath ? %Q{<a href='javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}", "#{start_line_right}"] );'>#{htmlize filepath}</a>} : "(none)"
         # txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
       end
       puts <<-EOF
