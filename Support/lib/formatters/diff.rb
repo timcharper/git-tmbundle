@@ -26,13 +26,15 @@ class Formatters::Diff < Formatters
         start_line_right = diff_result[:right][:ln_start]
         
         if filepath
-          link = 
+          prev_link = 
             if (@rev.nil? || @rev.empty?) 
-              "txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}"
+              ""
             else 
-              %Q{javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}", "#{start_line_right}"] );}
+              prev_url = %Q{javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}", "#{start_line_right}"] );}
+              %Q{(<a href='#{prev_url}'>#{short_rev(@rev)}</a>)}
             end
-            filepath ? %Q{<a href='#{link}'>#{htmlize filepath}</a>} : "(none)"
+            current_url = "txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}"
+            filepath ? %Q{<a href='#{current_url}'>#{htmlize filepath}</a> #{prev_link}} : "(none)"
         else
           "(none)"
         end
