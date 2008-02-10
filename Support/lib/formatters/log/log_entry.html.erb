@@ -16,9 +16,11 @@
     <div>
       <%= htmlize(log_entry[:msg])%>
     </div>
-    <a href="javascript:toggle('<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Hide Diff</a>
-    <div class="diff shown" rev="<%= log_entry[:rev] %>" id="detail_<%= log_entry[:rev] %>">
-      <% diff_formatter.content(log_entry[:diff]) if log_entry[:diff]%>
-    </div>
+    <% if log_entry[:diff] %>
+      <a href="javascript:toggle('<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Collapse</a>
+      <div class="diff shown" rev="<%= log_entry[:rev] %>" id="detail_<%= log_entry[:rev] %>">
+        <% diff_formatter.content(log_entry[:diff]) if log_entry[:diff]%>
+      </div>
+    <% end %>
   </div>  
 </div>
