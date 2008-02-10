@@ -30,6 +30,7 @@ right = revisions.last
 Formatters::Diff.new() do |f|
   filepaths.each do |filepath|
     f.header("Diff for  ‘#{htmlize(log.make_local_path(filepath))}’ between revisions #{left} and #{right}")
+     open_in_tm_link
 	puts filepath.inspect
     f.content(diff.diff_revisions(filepath, left, right))
   end
