@@ -14,7 +14,7 @@ describe "Formatter with layout", :shared => true do
   end
   
   it "should include a prototype.js" do
-    (@h / "script").map{|s| File.basename(s.attributes["src"])}.should include("prototype.js")
+    (@h / "script").map{|s| File.basename(s.attributes["src"].to_s)}.should include("prototype.js")
   end
 end
 
@@ -35,8 +35,10 @@ module SpecHelpers
     io_stream = StringIO.new
     begin 
       set_constant_forced(Object, "STDOUT", io_stream)
-      def Kernel.puts(*args)
+      Object.class_eval do 
+        def puts(*args)
         args.each{ |arg| Object::STDOUT.puts arg}
+        end
       end
       yield
     ensure
@@ -49,9 +51,20 @@ end
 
 def stub_command_runner(klass)
   klass.class_eval do
-    attr_accessor :command_output
+    def self.command_output
+      @command_output ||= []
+    end
+    
+    def command_output
+      self.class.command_output
+    end
+    
     def command(*args)
-      command_output
+      command_output.shift
+    end
+    
+    def popen_command(*args)
+      StringIO.new(command_output.shift)
     end
     
     def chdir_base

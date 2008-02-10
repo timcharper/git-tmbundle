@@ -1,3 +1,6 @@
+require 'date.rb'
+require 'time.rb'
+
 module FriendlyTime
   def to_friendly(time=true)
     time=false if Date==self.class

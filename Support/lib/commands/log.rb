@@ -2,9 +2,7 @@ require "#{ENV["TM_SUPPORT_PATH"]}/lib/osx/plist"
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/ui"
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/progress"
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/escape"
-require 'date.rb'
-require 'time.rb'
-
+require File.dirname(__FILE__) + "/../date_helpers.rb"
 location = ENV["TM_BUNDLE_SUPPORT"]
 $nib = "#{location}/nibs/RevisionSelector.nib"
 $tm_dialog = "#{ENV["TM_SUPPORT_PATH"]}/bin/tm_dialog"
@@ -124,6 +122,7 @@ class SCM::Git::Log
     params = ["log"]
     params << "-p" if options[:with_log]
     params += ["-n", options[:limit]] if options[:limit]
+    params << "#{options[:revisions].first}..#{options[:revisions].last}" if options[:revisions]
     params << file_or_directory
     parse_log(command(*params))
   end

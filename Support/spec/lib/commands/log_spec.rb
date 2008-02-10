@@ -45,15 +45,15 @@ made more failproof}
     it "should extract and parse diffs" do
       @entry[:diff].should_not be_nil
       @entry_diff = @entry[:diff].first
-      @entry_diff[:left][:filepath].should == "/Commands/Browse Annotated File (blame).tmCommand"
-      @entry_diff[:right][:filepath].should == "/Commands/Browse Annotated File (blame).tmCommand"
+      @entry_diff[:left][:filepath].should == "Commands/Browse Annotated File (blame).tmCommand"
+      @entry_diff[:right][:filepath].should == "Commands/Browse Annotated File (blame).tmCommand"
       @entry_diff[:lines].length.should == 19
     end
   end
   
   describe "when running" do
     before(:each) do
-      @log.command_output = fixture_file("log_with_diffs.txt")
+      @log.command_output << fixture_file("log_with_diffs.txt")
       
       @output = capture_output do
         results = @log.run
@@ -64,7 +64,7 @@ made more failproof}
     it_should_behave_like "Formatter with layout"
     
     it "should output the revision in short format" do
-      rev_output = (@h / "ul.infobox > li").first.to_s
+      rev_output = (@h / ".infobox > span > strong").first.to_s
       # rev_output.should include("Revision")
       rev_output.should match(/\b3dce1220\b/)
     end

@@ -13,8 +13,16 @@ class ERBStdout < ERB
   end
 end
 
+module CommonFormatters
+  def short_rev(rev)
+    rev.to_s[0..7]
+  end
+end
+
+
 class Formatters
   include ERB::Util
+  include CommonFormatters
   def initialize(*params, &block)
     @stdout = STDOUT
     layout {yield self} if block_given?
@@ -29,14 +37,13 @@ class Formatters
     @header = text
   end
   
+  def sub_header(text)
+    puts "<h3>#{text}</h3>"
+  end
   
 protected  
   def resource_url(filename)
     "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
-  end
-  
-  def short_rev(rev)
-    rev.to_s[0..7]
   end
   
   def render(name, options = {}, &block)

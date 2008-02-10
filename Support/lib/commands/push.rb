@@ -22,7 +22,13 @@ class SCM::Git::Push
         )
       
         if ! output[:pushes].empty?
-          f.diffs(output[:pushes])
+          log = SCM::Git::Log.new
+          log_f = Formatters::Log.new
+          log_f.header("Log of changes pushed")
+          output[:pushes].each do |branch, revisions|
+            log_f.sub_header("Branch '#{branch}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}")
+            log_f.content log.log(".", :revisions => [revisions.first, revisions.last], :with_log => true)
+          end
         elsif output[:nothing_to_push]
           puts "There's nothing to push!"
           puts output[:text]
@@ -36,8 +42,7 @@ class SCM::Git::Push
   
   def push(source, callbacks = {})
     args = ["push", source]
-    cmd = command_str(*args)
-    p = IO.popen("#{cmd} 2>&1", "r")
+    p = popen_command(*args)
     process_push(p, callbacks)
   end
   

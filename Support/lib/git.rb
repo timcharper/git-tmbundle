@@ -7,6 +7,7 @@ require File.dirname(__FILE__) + '/ruby_tm_helpers.rb'
 module SCM
   class Git
     module CommonCommands
+      include CommonFormatters
       def command_str(*args)
         %{#{e_sh SCM::Git.git} #{args.map{ |arg| e_sh(arg) } * ' '}}
       end
@@ -17,6 +18,11 @@ module SCM
       
       def command(*args)
         %x{#{command_str(*args)} 2>&1 }
+      end
+      
+      def popen_command(*args)
+        cmd = command_str(*args)
+        IO.popen("#{cmd} 2>&1", "r")
       end
       
       def sources
@@ -156,7 +162,7 @@ module SCM
       file = File.dirname(__FILE__) + "/commands/#{name.to_s.downcase}.rb"
       require file
       klass = const_get(name)
-    rescue
+    rescue LoadError
       raise "Class not found: #{name}"
     end
   end

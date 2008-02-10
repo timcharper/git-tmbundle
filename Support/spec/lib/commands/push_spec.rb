@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 require 'stringio'
 
 describe SCM::Git::Push do
+  include SpecHelpers
   TEST_INPUT = <<EOF
 updating 'refs/heads/mybranch'
   from f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a
@@ -22,6 +23,11 @@ Total 6 (delta 1), reused 0 (delta 0)
 refs/heads/satellite: 60a254470cd97af3668ed4d6405633af850139c6 -> 746fba2424e6b94570fc395c472805625ab2ed25
 refs/heads/mybranch: f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a -> d8b368361ebdf2c51b78f7cfdae5c3044b23d189
 EOF
+  before(:all) do
+    stub_command_runner(SCM::Git::Log)
+    stub_command_runner(SCM::Git::Push)
+  end
+  
   before(:each) do
     @process_io = StringIO.new(TEST_INPUT)
     @push = SCM::Git::Push.new
@@ -59,5 +65,15 @@ EOF
 Everything up-to-date
 EOF
     output[:nothing_to_push].should == true
+  end
+  
+  it "should run" do
+    SCM::Git::Push.command_output << %Q{origin}
+    SCM::Git::Push.command_output << TEST_INPUT
+    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
+    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
+    capture_output do
+      @push.run
+    end
   end
 end
