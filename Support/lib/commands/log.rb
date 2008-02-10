@@ -15,7 +15,7 @@ class SCM::Git::Log
   include SCM::Git::CommonCommands
   
   def initialize
-    Dir.chdir(git_base)
+    chdir_base
   end
   
   
@@ -47,29 +47,14 @@ class SCM::Git::Log
     else
       title = "View revision of file #{File.basename(path)}"
     end
-    revisions = choose_revision(path, title, :multiple)
-    return if revisions.nil?
-
-    files            = []
-
-    TextMate.call_with_progress(:title => "View Revision",
-                              :summary => "Retrieving revision data…",
-                              :details => "#{File.basename(path)}") do |dialog|
-      revisions.each do |revision|
-        # Get the file at the desired revision
-        dialog.parameters = {'summary' => "Retrieving revision #{revision}…"}
-
-        files << show_to_tmp_file(path, revision)
-      end
-    end
-
-    # Open the files in TextMate and delete them on close
-    ### mate -w doesn't work on multiple files, so we'll do one file at a time...
-    files.each do |file|
-      fork do 
-        tm_open(file, :wait => true)
-        File.delete(file)
-      end
+    
+    log_entries = log(fullpath, :limit => 50)
+    
+    log_formatter = Formatters::Log.new
+    log_formatter.layout do
+      log_formatter.header(title)
+      log_formatter.content(log_entries)
+      ""
     end
   end
 
@@ -137,6 +122,7 @@ class SCM::Git::Log
   def log(file_or_directory, options = {})
     file_or_directory = make_local_path(file_or_directory)
     params = ["log"]
+    params << "-p"
     params += ["-n", options[:limit]] if options[:limit]
     params << file_or_directory
     parse_log(command(*params))
@@ -145,19 +131,22 @@ class SCM::Git::Log
   def parse_log(log_content)
     output = []
     current = nil
-    log_content.split("\n").each do |line|
-      case line
-      when /^commit *(.+)/
+    log_blocks = log_content.split("\n\n")
+    log_blocks.each do |block|
+      case block.split("\n").first
+      when /^commit /
         output << (current = {})
-        current[:rev] = $1
-      when /Author: *(.+)/
-        current[:author] = $1
-      when /Date: *(.+)/
-        current[:date] = Time.parse($1)
+        data = block.scan(/^([a-z]+):? (.*)$/i).inject({}) { |h, v| h[v.first] = v.last;  h }
+        current.merge!(
+          :rev => data["commit"],
+          :author => data["Author"],
+          :date => Time.parse(data["Date"])
+        )
       when / {4}(.*)/
-        current[:msg]||=""
-        current[:msg] << $1
-        current[:msg] << "\n"
+        current[:msg] = block.gsub(/^ {4}/, "")
+      when /^diff /
+        differ = SCM::Git::Diff.new
+        current[:diff] = differ.parse_diff(block)
       end
     end
     output

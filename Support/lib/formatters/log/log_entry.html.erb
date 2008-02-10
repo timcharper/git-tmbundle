@@ -1,0 +1,24 @@
+<div>
+  <div class="infobox">
+    <span style='float:left'>
+      <strong><%= short_rev(log_entry[:rev]) %></strong>
+      committed by 
+      <strong><%= log_entry[:author] %></strong>
+    </span>
+    <span style='float:right'> 
+      <abbr title="<%= log_entry[:date].to_friendly %>">
+        <%= htmlize(relative_date(log_entry[:date])) %> ago
+      </abbr>
+    </span>      
+    <br clear="all" />
+  </div>
+  <div style='padding: 10px 15px 0px 15px;'>
+    <div>
+      <%= htmlize(log_entry[:msg])%>
+    </div>
+    <a href="javascript:toggle('<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Hide Diff</a>
+    <div class="diff shown" rev="<%= log_entry[:rev] %>" id="detail_<%= log_entry[:rev] %>">
+      <% diff_formatter.content(log_entry[:diff]) if log_entry[:diff]%>
+    </div>
+  </div>  
+</div>

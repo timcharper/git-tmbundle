@@ -5,17 +5,10 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>require_cmd "${TM_GIT:=git}" "If you have installed svn, then you need to either update your &lt;tt&gt;PATH&lt;/tt&gt; or set the &lt;tt&gt;TM_SVN&lt;/tt&gt; shell variable (e.g. in Preferences / Advanced)"
-
-ruby &gt;&amp; /tmp/tm_svn_debug &lt;&lt;END &amp;
-begin
-	require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-	git = SCM::Git::Log.new
-	git.run
-rescue Exception =&gt; error
-	TextMate::UI.alert(:warning, "You’ve discovered a bug", "Please report the following text: #{error}\n\n#{error.backtrace.join(%Q{\n})}")
-end
-END
+	<string>#!/usr/bin/env ruby
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+git = SCM::Git::Log.new
+git.run
 </string>
 	<key>input</key>
 	<string>none</string>
@@ -24,7 +17,7 @@ END
 	<key>name</key>
 	<string>Log</string>
 	<key>output</key>
-	<string>discard</string>
+	<string>showAsHTML</string>
 	<key>uuid</key>
 	<string>46662F92-7739-42A7-B7CD-0527A0474BDC</string>
 </dict>

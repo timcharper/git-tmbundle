@@ -1,0 +1,389 @@
+commit 3dce12204f8b81535ce10f579a78d71aa3fa1730
+Author: Tim Harper <timcharper@gmail.com>
+Date:   Fri Feb 8 13:22:36 2008 -0700
+
+    overrode ERB to have ability to put all content onto a buffer (like STDOUT, for example), making ERB suit our needs better
+
+diff --git a/Commands/Browse Annotated File (blame).tmCommand b/Commands/Browse Annotated File (blame).tmCommand
+index ec2b697..1b788d4 100644
+--- a/Commands/Browse Annotated File (blame).tmCommand	
++++ b/Commands/Browse Annotated File (blame).tmCommand	
+@@ -22,14 +22,12 @@ end
+ log_entries = log.log(filepath)
+ 
+ f = Formatters::Annotate.new(:log_entries =&gt; log_entries)
+-output = f.layout do
+-  p = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+-  p &lt;&lt; f.navigate_box
+-  p &lt;&lt; f.content(annotations)
+-  p
++f.layout do
++  f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
++  f.navigate_box
++  f.content(annotations)
+ end
+-
+-puts output</string>
++</string>
+ 	<key>input</key>
+ 	<string>none</string>
+ 	<key>keyEquivalent</key>
+diff --git a/Commands/Commit.tmCommand b/Commands/Commit.tmCommand
+index ca833ca..94446a8 100644
+--- a/Commands/Commit.tmCommand
++++ b/Commands/Commit.tmCommand
+@@ -5,7 +5,7 @@
+ 	<key>beforeRunningCommand</key>
+ 	<string>nop</string>
+ 	<key>command</key>
+-	<string>#!/usr/bin/env ruby -wKU
++	<string>#!/usr/bin/env ruby
+ 
+ require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+ 
+diff --git a/Support/gateway/annotate.rb b/Support/gateway/annotate.rb
+index 892f971..ba6ae96 100644
+--- a/Support/gateway/annotate.rb
++++ b/Support/gateway/annotate.rb
+@@ -14,8 +14,5 @@ if annotations.nil?
+ end
+ 
+ f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
+-
+-output = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+-output = f.content(annotations)
+-
+-puts output
++f.header "Annotations for ‘#{htmlize(git.shorten(filepath))}’"
++f.content annotations
+diff --git a/Support/lib/commands/commit.rb b/Support/lib/commands/commit.rb
+index 74943a0..4555fea 100644
+--- a/Support/lib/commands/commit.rb
++++ b/Support/lib/commands/commit.rb
+@@ -18,50 +18,51 @@ class SCM::Git::Commit
+   end
+   
+   def run
+-    puts "<h1>Committing Files in ‘#{htmlize(shorten(@base))}’</h1>"
+-    STDOUT.flush
++    commit_formatter = Formatters::Commit.new
++    commit_formatter.layout do
++      puts "hi"
++      puts "<h1>Committing Files in ‘#{htmlize(shorten(@base))}’</h1>"
++      STDOUT.flush
+     
+-    files, status = [], []
++      files, status = [], []
+     
+-    statuses.each do |e|
+-      files  << e_sh(shorten(e[:path], @base))
+-      status << e_sh(e[:status][:short])
+-    end
++      statuses.each do |e|
++        files  << e_sh(shorten(e[:path], @base))
++        status << e_sh(e[:status][:short])
++      end
+ 
+-    res = %x{#{e_sh CW}                \
+-      --diff-cmd   '#{git},diff'          \
+-      --status #{status.join ':'}      \
+-      #{files.join ' '} 2>/dev/console
+-    }
++      res = %x{#{e_sh CW}                \
++        --diff-cmd   '#{git},diff'          \
++        --status #{status.join ':'}      \
++        #{files.join ' '} 2>/dev/console
++      }
+ 
+-    if $? != 0
+-      puts "<strong>Cancel</strong>"
+-      abort
+-    end
++      if $? != 0
++        puts "<strong>Cancel</strong>"
++        abort
++      end
+ 
+-    res   = Shellwords.shellwords(res)
+-    msg   = res[1]
+-    files = res[2..-1]
++      res   = Shellwords.shellwords(res)
++      msg   = res[1]
++      files = res[2..-1]
+ 
+-    puts "<h2>Commit Files:</h2><ul>"
+-    puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
+-    puts "</ul>"
++      puts "<h2>Commit Files:</h2><ul>"
++      puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
++      puts "</ul>"
+ 
+-    puts "<h2>Using Message:</h2>"
+-    puts "<pre>#{htmlize(msg)}</pre>"
+-    STDOUT.flush
++      puts "<h2>Using Message:</h2>"
++      puts "<pre>#{htmlize(msg)}</pre>"
++      STDOUT.flush
+ 
+-    unless files.empty?
+-      puts "<h2>Result:</h2>"
+-      add_files = files.select{ |f| File.exists?(f) }
+-      remove_files = files.reject{ |f| File.exists?(f) }
+-      
+-      puts "add_files - #{add_files.inspect}"
+-      puts "remove_files - #{remove_files.inspect}"
+-      res = add(add_files) unless add_files.empty?
+-      res = rm(remove_files) unless remove_files.empty?
+-      res = commit(msg)
+-      puts "<pre>#{htmlize(res)}</pre>"
++      unless files.empty?
++        puts "<h2>Result:</h2>"
++        add_files = files.select{ |f| File.exists?(f) }
++        remove_files = files.reject{ |f| File.exists?(f) }
++        res = add(add_files) unless add_files.empty?
++        res = rm(remove_files) unless remove_files.empty?
++        res = commit(msg)
++        puts "<pre>#{htmlize(res)}</pre>"
++      end
+     end
+   end
+   
+diff --git a/Support/lib/formatters.rb b/Support/lib/formatters.rb
+index 63a2060..897bf0b 100644
+--- a/Support/lib/formatters.rb
++++ b/Support/lib/formatters.rb
+@@ -1,69 +1,96 @@
+ require 'erb'
+ 
++class ERBStdout < ERB
++  def set_eoutvar(compiler, eoutvar = 'STDOUT')
++    compiler.put_cmd = "#{eoutvar} << "
++    compiler.insert_cmd = "#{eoutvar} << "
++    compiler.pre_cmd = "#{eoutvar}.flush"
++    compiler.post_cmd = "#{eoutvar}.flush; ''"
++  end
++  
++  def run(b=TOPLEVEL_BINDING)
++    self.result(b)
++  end
++end
++
+ class Formatters
+-  module FormatterHelpers
+-    def resource_url(filename)
+-      "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
+-    end
+-    
+-    def short_rev(rev)
+-      rev.to_s[0..7]
+-    end
+-    
+-    def render(name, options = {}, &block)
+-      name = "#{name}.html.erb" unless name.include?(".")
+-      sub_dir = self.class.to_s.gsub("::", "/")
+-      ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+-      
+-      if options[:locals]
+-        __v__ = options[:locals].values
+-        eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
+-      end
+-      
+-      ERB.new(___template___, nil, "-").result(binding)
+-    end
+-    
+-    def select_box(name, select_options = [], options = {})
+-      options[:name] ||= name
+-      options[:id] ||= name
+-      # puts select_options.inspect
+-      <<-EOF
+-        <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
+-          #{select_options}
+-        </select>
+-      EOF
+-    end
+   
+-    def options_for_select(select_options = [], selected_value = nil)
+-      output = ""
+-    
+-      select_options.each do |name, val|
+-        selected = (val == selected_value) ? "selected='true'" : ""
+-        output << "<option value='#{val}' #{selected}>#{htmlize(name)}</option>"
+-      end
+-    
+-      output
+-    end
+-    
+-    def make_non_breaking(output)
+-      htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
+-    end
+-    
++  def initialize(*params, &block)
++    layout {yield self} if block_given?
++  end
++  
++  def layout(&block)
++    render("layout", &block)
++  end
++
++  def header(text)
++    @header = text
++  end
++  
++  
++protected  
++  def resource_url(filename)
++    "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
++  end
++  
++  def short_rev(rev)
++    rev.to_s[0..7]
++  end
++  
++  def render(name, options = {}, &block)
++    name = "#{name}.html.erb" unless name.include?(".")
++    sub_dir = self.class.to_s.gsub("::", "/")
++    ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+     
+-    def htmlize_attr(str)
+-      str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
++    if options[:locals]
++      __v__ = options[:locals].values
++      eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
+     end
+     
+-    def e_js(str)
+-      str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
++    ERBStdout.new(___template___, nil, "-", "STDOUT").run(binding)
++  end
++  
++  
++  def select_box(name, select_options = [], options = {})
++    options[:name] ||= name
++    options[:id] ||= name
++    # puts select_options.inspect
++    <<-EOF
++      <select name='#{options[:name]}' id='#{options[:id]}' onchange="#{options[:onchange]}" style='width:100%'>
++        #{select_options}
++      </select>
++    EOF
++  end
++
++  def options_for_select(select_options = [], selected_value = nil)
++    output = ""
++  
++    select_options.each do |name, val|
++      selected = (val == selected_value) ? "selected='true'" : ""
++      output << "<option value='#{val}' #{selected}>#{htmlize(name)}</option>"
+     end
+-    
+-    def javascript_include_tag(*params)
+-      file_names = []
+-      params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
+-      params.map do |p|
+-        %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
+-      end
++  
++    output
++  end
++  
++  def make_non_breaking(output)
++    htmlize(output.to_s.strip).gsub(" ", "&nbsp;")
++  end
++  
++  
++  def htmlize_attr(str)
++    str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
++  end
++  
++  def e_js(str)
++    str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
++  end
++  
++  def javascript_include_tag(*params)
++    file_names = []
++    params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
++    params.map do |p|
++      %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
+     end
+   end
+   
+diff --git a/Support/lib/formatters/annotate.rb b/Support/lib/formatters/annotate.rb
+index 48d97c3..6f51b79 100644
+--- a/Support/lib/formatters/annotate.rb
++++ b/Support/lib/formatters/annotate.rb
+@@ -1,28 +1,17 @@
+ require File.dirname(__FILE__) + '/../date_helpers.rb'
+ class Formatters
+-  class Annotate
+-    include Formatters::FormatterHelpers
++  class Annotate < Formatters
+   
+     def initialize(options = {}, &block)
+       @base = options[:base] || ENV["TM_PROJECT_DIRECTORY"]
+-      @header = options[:header] || "Annotate / Blame"
++      @header = options[:header] || ""
+       @log_entries = options[:log_entries]
+       @selected_revision = options[:selected_revision]
+       @as_partial = options[:as_partial]
+     
+-      layout {yield self} if block_given?
++      super
+     end
+   
+-    def layout(&block)
+-      render("layout", &block)
+-    end
+-  
+-    def header(text)
+-      @header = text
+-      ""
+-      # puts "<h2>#{text}</h2>"
+-    end
+-    
+     include DateHelpers
+     def navigate_box
+       formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+diff --git a/Support/lib/formatters/annotate/layout.html.erb b/Support/lib/formatters/annotate/layout.html.erb
+index 8aef334..4b9ce09 100644
+--- a/Support/lib/formatters/annotate/layout.html.erb
++++ b/Support/lib/formatters/annotate/layout.html.erb
+@@ -4,7 +4,7 @@
+   <link type="text/css" rel="stylesheet" media="screen" href="<%= resource_url('style.css') %>"/>
+ </head>
+ <body id='body'>
+-  <%= yield %>
++  <% yield %>
+ </body>
+ <!-- we put the script at the end because it messes up TextMate's html rendering, for some reason -->
+ <%= javascript_include_tag "prototype", "rb_gateway" %>
+diff --git a/Support/lib/formatters/diff.rb b/Support/lib/formatters/diff.rb
+index e29567e..e2a0cc3 100644
+--- a/Support/lib/formatters/diff.rb
++++ b/Support/lib/formatters/diff.rb
+@@ -1,5 +1,4 @@
+-class Formatters::Diff
+-  include Formatters::FormatterHelpers
++class Formatters::Diff < Formatters
+   
+   def initialize(base = nil, options = {}, &block)
+     @base = ENV["TM_PROJECT_DIRECTORY"]
+
+commit 382052cb014438e43045c0277a5d3f8273fa032d
+Author: Tim Harper <timcharper@gmail.com>
+Date:   Fri Feb 8 12:35:01 2008 -0700
+
+    commit the whole directory
+
+diff --git a/Support/lib/commands/commit.rb b/Support/lib/commands/commit.rb
+index e750ee3..74943a0 100644
+--- a/Support/lib/commands/commit.rb
++++ b/Support/lib/commands/commit.rb
+@@ -60,7 +60,7 @@ class SCM::Git::Commit
+       puts "remove_files - #{remove_files.inspect}"
+       res = add(add_files) unless add_files.empty?
+       res = rm(remove_files) unless remove_files.empty?
+-      res = commit(msg, files)
++      res = commit(msg)
+       puts "<pre>#{htmlize(res)}</pre>"
+     end
+   end

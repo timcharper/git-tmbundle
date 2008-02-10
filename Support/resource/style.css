@@ -28,7 +28,7 @@ body {
   background: #fff;
   color: #000;
   font-family: Georgia, Times, "Times new Roman", serif;
-  margin: 0;
+  margin: 8px;
   padding: 0;
 }
 h1, h2, h3, h4, h5, h6 {
@@ -82,6 +82,7 @@ table {
 code, pre, tt {
   font: 95%/105%  "Bitstream Vera Sans Mono", Monaco, "Courier New", Courier, monospace;
 }
+
 a {
 /*  color: #630;*/
   color: #811E00;
@@ -395,7 +396,7 @@ table.repository_list tr.clone td.name {
 
 .infobox {
   background: #efefef;
-  padding: 10px;
+  padding: 5px;
   border: 1px solid #ccc;
 }
 
