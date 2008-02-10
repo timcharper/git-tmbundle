@@ -22,5 +22,6 @@
         <% diff_formatter.content(log_entry[:diff]) if log_entry[:diff]%>
       </div>
     <% end %>
+    <%= htmlize log_entry.inspect %>
   </div>  
 </div>
