@@ -24,7 +24,7 @@ class SCM::Git::Log
     filename = File.basename(filename)
     # TODO: Make sure the filename can fit in 255 characters, the limit on HFS+ volumes.
 
-    "#{filename.sub(extname, '')}-r#{rev}#{extname}"
+    "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
   end
   
   def show(fullpath, revision)
@@ -48,7 +48,7 @@ class SCM::Git::Log
       title = "View revision of file #{File.basename(path)}"
     end
     
-    log_entries = log(fullpath, :limit => 50)
+    log_entries = log(fullpath, :limit => 50, :with_log => true)
     
     log_formatter = Formatters::Log.new
     log_formatter.layout do
@@ -122,7 +122,7 @@ class SCM::Git::Log
   def log(file_or_directory, options = {})
     file_or_directory = make_local_path(file_or_directory)
     params = ["log"]
-    params << "-p"
+    params << "-p" if options[:with_log]
     params += ["-n", options[:limit]] if options[:limit]
     params << file_or_directory
     parse_log(command(*params))
