@@ -11,6 +11,10 @@ module SCM
         %{#{e_sh SCM::Git.git} #{args.map{ |arg| e_sh(arg) } * ' '}}
       end
       
+      def chdir_base
+        Dir.chdir(git_base)
+      end
+      
       def command(*args)
         %x{#{command_str(*args)} 2>&1 }
       end

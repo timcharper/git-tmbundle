@@ -12,9 +12,10 @@ git = SCM::Git::Diff.new
 paths = git.paths(:fallback =&gt; :current_file, :unique =&gt; true)
 base = git.nca(paths)
 
-Formatters::Diff.new(base) do |f|
+Formatters::Diff.new(:base =&gt; base) do |f|
   paths.each do |path|
     f.header("Uncomitted Changes for ‘#{htmlize(git.shorten(path, base))}’")
+    f.open_in_tm_link
     f.content(git.diff_file(path))
   end
 end</string>

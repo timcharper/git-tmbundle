@@ -1,22 +1,16 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-SCM::Git::Commit
- 
-class SCM::Git::Commit
-  attr_accessor :commit_output
-  def command(*args)
-    commit_output
-  end
-end
 
+stub_command_runner(SCM::Git::Commit)
 
 describe SCM::Git::Commit do
   before(:each) do
     @commit = SCM::Git::Commit.new
   end
+  include SpecHelpers
   
   it "should parse a commit" do
-    @commit.commit_output = <<-EOF
+    @commit.command_output = <<-EOF
 Created commit ff4ba93: some message
  1 files changed, 2 insertions(+), 0 deletions(-)
 Unrecognized line

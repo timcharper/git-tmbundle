@@ -1,12 +1,14 @@
-<div style='position:fixed; top:0px; background: #fff; width: 100%;'>
+<div style='position:fixed; top:0px; background: #fff; width: 100%; '>
   <div id='debug'></div>
-  <div style='float:right'>
-    <b>Commands</b>: <strong>n / p</strong> - <em>next / previous revision</em>. <strong>N / P</strong> - <em>current / earliest revision</em>.  <strong>o</strong> - Open in textmate
+  <div style='float:right; margin-right: 15px;'>
+    <b>Commands</b>: <strong>n / p</strong> - <em>next / previous</em>. <strong>N / P</strong> - <em>current / earliest</em>.  <strong>o</strong> - Open in textmate
   </div>
   <%= @header %>
   <br clear='both'/>
-  <%= select_box( "rev",
-    options_for_select(formatted_options, selected_revision),
-    :onchange => "show_annotation($F(this))"
-  ) %>
+  <div style='margin-right: 15px'>
+    <%= select_box( "rev",
+      options_for_select(formatted_options, selected_revision),
+      :onchange => "show_annotation($F(this))"
+    ) %>
+  </div>
 </div>

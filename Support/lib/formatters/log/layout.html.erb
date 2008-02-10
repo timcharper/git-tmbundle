@@ -1,0 +1,50 @@
+<html>
+<head>
+  <title><%= @header %></title>
+  <link type="text/css" rel="stylesheet" media="screen" href="<%= resource_url('style.css') %>"/>
+</head>
+<body>
+  <div id='debug'></div>
+  <div>
+    <a href="javascript:toggle_all();" id="toggle_all">Collapse all</a>
+  </div>
+  <% yield %>
+</body>
+<%= javascript_include_tag "prototype", "rb_gateway" %>
+<script language="JavaScript">
+  all_toggled = true;
+  function toggle_all() {
+    if (all_toggled) {
+      $$(".diff").each(function(e) { set_detail_visibility($(e).readAttribute("rev"), false )});
+      all_toggled = false;
+      $('toggle_all').update("Expand all");
+    }
+    else
+    {
+      $$(".diff").each(function(e) { set_detail_visibility($(e).readAttribute("rev"), true )});
+      all_toggled = true;
+      $('toggle_all').update("Collapse all");
+    }
+  }
+  
+  function set_detail_visibility(rev, state) {
+    link = "toggle_link_" + rev;
+    detail_div = "detail_" + rev;
+    
+    if (state) {
+      $(link).update("Collapse");
+      $(detail_div).show();
+    }
+    else
+    {
+      $(link).update("Expand");
+      $(detail_div).hide()
+    }
+  }
+  
+  function toggle(rev) {
+    set_detail_visibility( rev, ! $('detail_' + rev).visible() );
+  }
+  
+</script>
+</html>

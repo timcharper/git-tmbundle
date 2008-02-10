@@ -14,8 +14,9 @@ class ERBStdout < ERB
 end
 
 class Formatters
-  
+  include ERB::Util
   def initialize(*params, &block)
+    @stdout = STDOUT
     layout {yield self} if block_given?
   end
   
@@ -24,6 +25,7 @@ class Formatters
   end
 
   def header(text)
+    @stdout.puts "<h2>#{text}</h2>"
     @header = text
   end
   
@@ -39,7 +41,7 @@ protected
   
   def render(name, options = {}, &block)
     name = "#{name}.html.erb" unless name.include?(".")
-    sub_dir = self.class.to_s.gsub("::", "/")
+    sub_dir = self.class.to_s.gsub("::", "/").downcase
     ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
     
     if options[:locals]
@@ -96,7 +98,7 @@ protected
   
   def self.const_missing(name)
     @last_try||=nil
-    raise if @last_try==name
+    raise "Can't find constant #{name}" if @last_try==name
     @last_try = name
     
     file = File.dirname(__FILE__) + "/formatters/#{name.to_s.downcase}.rb"

@@ -4,21 +4,17 @@ describe SCM::Git::Diff do
   before(:each) do
     @diff = SCM::Git::Diff.new
   end
-  
-  def diff_outputs(filename)
-    File.read("#{FIXTURES_DIR}/#{filename}")
-  end
-  
+  include SpecHelpers
   describe "when parsing a diff" do
     before(:each) do
-      @results = @diff.parse_diff(diff_outputs("changed_files.diff"))
+      @results = @diff.parse_diff(fixture_file("changed_files.diff"))
       @lines = @results.first[:lines]
     end
     
     it "should create an entry for each file" do
       @results.should have(2).results
-      @results.map{|r| r[:left][:filepath]}.should == ["/Support/lib/commands/diff.rb", "/Support/lib/formatters/diff.rb"]
-      @results.map{|r| r[:right][:filepath]}.should == ["/Support/lib/commands/diff.rb", "/Support/lib/formatters/diff.rb"]
+      @results.map{|r| r[:left][:filepath]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
+      @results.map{|r| r[:right][:filepath]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
     end
     
     it "should parse the line_numbers for the files" do
@@ -46,7 +42,7 @@ describe SCM::Git::Diff do
   
   describe "when parse a diff with line breaks" do
     before(:each) do
-      @results = @diff.parse_diff(diff_outputs("changed_files_with_break.diff"))
+      @results = @diff.parse_diff(fixture_file("changed_files_with_break.diff"))
       @lines = @results.first[:lines]
     end
     
@@ -56,7 +52,7 @@ describe SCM::Git::Diff do
   end
   describe "when parse a diff with line breaks" do
     before(:each) do
-      @results = @diff.parse_diff(diff_outputs("new_line_at_end.diff"))
+      @results = @diff.parse_diff(fixture_file("new_line_at_end.diff"))
       @lines = @results.first[:lines]
     end
     
@@ -69,7 +65,7 @@ describe SCM::Git::Diff do
   
   describe "when parsing small diff" do
     before(:each) do
-      @results = @diff.parse_diff(diff_outputs("small.diff"))
+      @results = @diff.parse_diff(fixture_file("small.diff"))
       @lines = @results.first[:lines]
     end
     

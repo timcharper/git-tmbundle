@@ -1,27 +1,16 @@
 class Formatters::Diff < Formatters
   
-  def initialize(base = nil, options = {}, &block)
+  def initialize(options = {}, &block)
     @base = ENV["TM_PROJECT_DIRECTORY"]
+    @rev = options[:rev]
     @header = options[:header] || "Uncomitted changes"
     
     super
   end
-  
-  def layout(&block)
-    puts <<-EOF
-    <html>
-    <head>
-      <title>#{@header}</title>
-      <link type="text/css" rel="stylesheet" media="screen" href="#{resource_url('style.css')}"/>
-    </head>
-    <body>
-      <a href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open in TextMate</a>
-    EOF
-    yield
     
+  def open_in_tm_link
     puts <<-EOF
-    </body>
-    </html>
+      <a href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open diff in TextMate</a>
     EOF
   end
   
@@ -39,7 +28,18 @@ class Formatters::Diff < Formatters
       files = [:left, :right].map do |lr|
         filepath = diff_result[lr][:filepath]
         start_line_right = diff_result[:right][:ln_start]
-        filepath ? "<a href='txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
+        
+        if filepath
+          link = 
+            if (@rev.nil? || @rev.empty?) 
+              "txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}"
+            else 
+              %Q{javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}", "#{start_line_right}"] );}
+            end
+            filepath ? %Q{<a href='#{link}'>#{htmlize filepath}</a>} : "(none)"
+        else
+          "(none)"
+        end
       end
       puts <<-EOF
       <h4>#{files.uniq * ' --&gt; '}</h4>

@@ -4,6 +4,7 @@ describe SCM::Git::Annotate do
   before(:each) do
     @annotate = SCM::Git::Annotate.new
   end
+  include SpecHelpers
   
   describe "when parsing a annotate" do
     TEST_ANNOTATE = File.read("#{FIXTURES_DIR}/annotate.txt")
