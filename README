@@ -1,0 +1,9 @@
+Installation
+============
+Install Git.tmbundle to your
+~/Library/Application Support/TextMate/Bundles directory.
+
+If Git executable is not in your path, then add the Git path to
+~/.MacOSX/environment.plist. Alternatively, open TextMate preferences ->
+Advanced -> Shell Variables and add TM_GIT variable with path to Git as
+value.
