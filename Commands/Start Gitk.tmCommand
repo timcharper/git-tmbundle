@@ -11,13 +11,13 @@ require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 git = SCM::Git::Gitk.new
 </string>
 	<key>input</key>
-	<string>selection</string>
+	<string>none</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
 	<string>Start Gitk</string>
 	<key>output</key>
-	<string>replaceSelectedText</string>
+	<string>discard</string>
 	<key>uuid</key>
 	<string>20F5C491-F71C-4963-9C61-DF7294976550</string>
 </dict>
