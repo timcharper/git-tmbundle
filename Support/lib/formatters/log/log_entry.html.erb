@@ -18,7 +18,7 @@
     </div>
     <% if log_entry[:diff] %>
       <a href="javascript:toggle('<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Collapse</a>
-      <div class="diff shown" rev="<%= log_entry[:rev] %>" id="detail_<%= log_entry[:rev] %>">
+      <div class="diff shown" rev="<%= log_entry[:rev] %>" id="detail_<%= log_entry[:rev] %>" style="margin-left: 55px;">
         <% Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]%>
       </div>
     <% end %>
