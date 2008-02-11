@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+git = SCM::Git.new
+puts "&lt;pre&gt;"
+git.sources.each do |source|
+  puts "&lt;h2&gt;Pruning remote '#{source}'...&lt;/h2&gt;"
+  flush
+  puts git.command('remote', 'prune', source)
+  flush
+end
+puts "&lt;div&gt;Done.&lt;/div&gt;"
+puts "&lt;/pre&gt;"</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Prune Stale Remote Branches</string>
+	<key>output</key>
+	<string>showAsHTML</string>
+	<key>uuid</key>
+	<string>CD02EAD0-E14F-4FC1-8B54-994814B08239</string>
+</dict>
+</plist>
