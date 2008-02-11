@@ -3,6 +3,6 @@ class SCM::Git::Gitk
   def initialize
     @base = git_base
     Dir.chdir(@base)
+    %x{#{e_sh "gitk"} --all}
   end
-  
 end
