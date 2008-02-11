@@ -5,7 +5,7 @@ Sam Granieri
 
 Previous contributors
 ---------------------
-Duff - Duff started the git bundle, and we ran with it.  Thanks Duff!
+Allan Odgaard (duff) - Allan started the git bundle (and stopped developing it due to time constraints), so we ran with it.  Thanks Allan Odgaard!
 
 SPONSORS
 --------
@@ -15,6 +15,6 @@ CREDITS / PATCHES / THANKS
 ----------------------------
 The git bundle wouldn't be possible without the contributions of the following fine gentlemen:
 
-Duff - For starting the bundle and getting the ball rolling
+Allan Odgaard - For starting the bundle and getting the ball rolling.  Also, for creating TextMate!
 Tommi Asiala - README file submission
 Lawrence Pit - Performance Enhancements
