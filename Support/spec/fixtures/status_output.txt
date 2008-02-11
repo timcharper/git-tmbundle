@@ -1,0 +1,17 @@
+# On branch master
+# Changes to be committed:
+#   (use "git reset HEAD <file>..." to unstage)
+#
+#	new file:   new_file_and_added.txt
+#
+# Changed but not updated:
+#   (use "git add/rm <file>..." to update what will be committed)
+#
+#	modified:   project.txt
+#	deleted:    small.diff
+#
+# Untracked files:
+#   (use "git add <file>..." to include in what will be committed)
+#
+#	dir/
+#	new_file.txt

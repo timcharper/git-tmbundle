@@ -23,20 +23,18 @@ class SCM::Git::Status
   end
   
   def status(files_or_dirs = nil, options = {})
+    
     files_or_dirs = paths if files_or_dirs.nil?
-    base_dir = nca(files_or_dirs)
+    chdir_base
+    base_dir = git_base
     
     file_statuses = {}
     
     files_or_dirs.each do |file_or_dir|
-      dir = dir_part(file_or_dir)
-      Dir.chdir(dir)
-      
       res = []
-      # a note about the following:
-      # the order of these parameter is important.  Deleted files are also listed when querying git ls-files -m.  Therefore, if we list the deleted files first, then add any modified files that weren't listed by delete, we get a less-suprising result (for the commit dialog)
-      [['o', '?'], ['d', 'D'], ['m', 'M']].each do |file_type, display_status|
-        res << list_files(file_or_dir, :type => file_type).map { |e| file_statuses[File.expand_path(e, dir)] ||= display_status }
+      results = parse_status(command("status", make_local_path(file_or_dir)))
+      results.each do |file, status|
+        file_statuses[File.expand_path(file, base_dir)] = status
       end
     end
     
@@ -75,10 +73,10 @@ class SCM::Git::Status
         state = :modified
       when /^# Untracked files:/
         state = :untracked
-      when /^#\t([a-z ]+): (.*)$/
-        filename = $2
-        status_description = $1
-        status = case $1
+      when /^#\t(([a-z ]+): +){0,1}(.*)$/
+        filename = $3
+        status_description = $2
+        status = case status_description
         when "new file"
           state == :added ? "A" : "?"
         when "deleted"
@@ -91,8 +89,7 @@ class SCM::Git::Status
         file_statuses[filename] ||= status
       end
       
-      file_statuses
     end
-    
+    file_statuses
   end
 end

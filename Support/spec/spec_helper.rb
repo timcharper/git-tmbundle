@@ -67,8 +67,12 @@ def stub_command_runner(klass)
       StringIO.new(command_output.shift)
     end
     
-    def chdir_base
+    def chdir_base(*args)
       true
+    end
+    
+    def git_base
+      "/base/"
     end
   end
 end
