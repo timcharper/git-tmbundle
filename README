@@ -1,3 +1,27 @@
+Currently, the most feature complete version of the Git text-mate bundle
+
+Fixes / New Features
+* Overhaul on the "Git Commit" dialog. All sorts of bugs fixed. Deleted files show up as status "Deleted" rather than modified. Selecting them deletes them, (instead of throwing an error). Selecting a non-tracked files will add it, then commit it. It just does what makes sense. Works better than the subversion commit dialog now, in my opinion.
+
+* Edit conflicts using FileMerge command
+
+* Diff window has pretty colors!
+
+* Push / Pull commands
+
+* Diff between revisions, using the revision select dialog (borrowed from the subversion bundle)
+
+* Open previous revision of file (using the same, nifty dialog)
+
+* Interactive annotation-browser
+
+* Log shows a diff - ability to show/hide diffs for logs
+
+* Push/Pull/Commit shows a log with diffs of everything committed/pushed/pulled, to make it easier to monitor your repository.
+
+* Many other miscellaneous fixes.
+
+
 Installation
 ============
 Install Git.tmbundle to your
