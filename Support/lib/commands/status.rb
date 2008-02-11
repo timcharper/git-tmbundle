@@ -30,12 +30,9 @@ class SCM::Git::Status
     
     file_statuses = {}
     
-    files_or_dirs.each do |file_or_dir|
-      res = []
-      results = parse_status(command("status", make_local_path(file_or_dir)))
-      results.each do |file, status|
-        file_statuses[File.expand_path(file, base_dir)] = status
-      end
+    results = parse_status(command("status"))
+    results.each do |file, status|
+      file_statuses[File.expand_path(file, base_dir)] = status
     end
     
     file_statuses.sort.map do |filepath, display_status|

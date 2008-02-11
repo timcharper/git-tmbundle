@@ -5,7 +5,7 @@ class SCM::Git::Commit
   
   def initialize
     @paths = paths
-    @base  = nca
+    @base  = git_base
     Dir.chdir(@base)
   end
 
@@ -60,7 +60,7 @@ class SCM::Git::Commit
         remove_files = files.reject{ |f| File.exists?(f) }
         res = add(add_files) unless add_files.empty?
         res = rm(remove_files) unless remove_files.empty?
-        res = commit(msg)
+        res = commit(msg, files)
         
         puts "<pre>#{htmlize(res[:output])}</pre>"
         
