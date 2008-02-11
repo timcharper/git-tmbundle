@@ -62,4 +62,37 @@ class SCM::Git::Status
     end
 
   end
+  
+  def parse_status(input)
+    output = []
+    file_statuses = {}
+    state = nil
+    input.split("\n").each do |line|
+      case line
+      when /^# Changes to be committed:/
+        state = :added
+      when /^# Changed but not updated:/
+        state = :modified
+      when /^# Untracked files:/
+        state = :untracked
+      when /^#\t([a-z ]+): (.*)$/
+        filename = $2
+        status_description = $1
+        status = case $1
+        when "new file"
+          state == :added ? "A" : "?"
+        when "deleted"
+          "D"
+        when "modified"
+          "M"
+        else
+          "?"
+        end
+        file_statuses[filename] ||= status
+      end
+      
+      file_statuses
+    end
+    
+  end
 end

@@ -28,8 +28,8 @@ class SCM::Git::Pull
           :end => lambda { |state, count| f.progress_end(state, count) }
         )
         
-        puts "<pre>output[:text]</pre>"
-      
+        puts "<pre>#{output[:text]}</pre>"
+        
         if ! output[:pulls].empty?
           log = SCM::Git::Log.new
           log_f = Formatters::Log.new
