@@ -1,7 +1,12 @@
 Currently, the most feature complete version of the Git text-mate bundle
 
 Fixes / New Features
-* Overhaul on the "Git Commit" dialog. All sorts of bugs fixed. Deleted files show up as status "Deleted" rather than modified. Selecting them deletes them, (instead of throwing an error). Selecting a non-tracked files will add it, then commit it. It just does what makes sense. Works better than the subversion commit dialog now, in my opinion.
+* Overhaul on the "Git Commit" dialog. All sorts of bugs fixed. 
+* Deleted files show up as status "Deleted" rather than modified. 
+* Selecting them deletes them, (instead of throwing an error). 
+* Selecting a non-tracked files will add it, then commit it.
+* It just does what makes sense. 
+* Works better than the subversion commit dialog now, in my opinion.
 
 * Edit conflicts using FileMerge command
 
