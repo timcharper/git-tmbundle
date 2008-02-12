@@ -1,1 +1,8 @@
 This is a road map to experimental branches and what they should do once they're done. 	
+
+experimental_gitk -- 
+	try to implement invoking gitk from the bundle. 
+	doesnt really work now because it the bundle beachballs when called from the menu. 
+
+experimental_gitify -- 
+	planned feature to move creation of a git repository from the command line by calling git-init to a bundle menu item
