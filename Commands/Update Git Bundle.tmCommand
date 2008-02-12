@@ -37,8 +37,6 @@ EOF
 %x{osascript -e 'tell app "TextMate" to reload bundles'}</string>
 	<key>input</key>
 	<string>selection</string>
-	<key>keyEquivalent</key>
-	<string>^G</string>
 	<key>name</key>
 	<string>Update Git Bundle</string>
 	<key>output</key>
