@@ -17,7 +17,7 @@ else
   base = filepaths.first
 end
 
-revisions = log.choose_revision(base, "Choose revisions for #{filepaths.map{|f| SCM::Git.make_local_path(f)}.join(',')}", :multiple, :sort =&gt; true)
+revisions = log.choose_revision(base, "Choose revisions for #{filepaths.map{|f| log.make_local_path(f)}.join(',')}", :multiple, :sort =&gt; true)
 
 if revisions.nil?
   puts "Canceled"
