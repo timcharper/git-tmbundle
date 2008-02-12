@@ -1,0 +1,23 @@
+This is a road map to experimental branches and what they should do once they're done. 	
+
+Anyone's encouraged to add to this list or take an idea and turn it into a branch or work on an existing experimental branch. 
+I think it's a good idea to keep features in development in separate branches until they're ready to be merged into master. 
+
+Branches in progress
+
+experimental_gitk -- 
+	try to implement invoking gitk from the bundle. 
+	doesnt really work now because it the bundle beachballs when called from the menu. 
+
+experimental_gitify -- 
+	planned feature to move creation of a git repository from the command line by calling git-init to a bundle menu item
+	there should be a way to see that you're working out of a folder (like how the root folder of this project is the git.tmbundle folder) and not on an individual document and not on an individual document sitting in your home folder.. It might not be a good idea to add your home folder to a new git repo ;)
+	
+Ideas yet to be branched (but they're on my mind of things to do when I get to it)
+
+	git-gui --
+		tim was running into the same problem I did with beachballing
+	cherry-picking -- 
+		pick a SHA ref and merge the commit associated with it from one branch to another
+	amending and signing off on commits
+	setting up the .gitignore file for a standard rails project
