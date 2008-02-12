@@ -33,7 +33,7 @@ class SCM::Git::Pull < SCM::Git
             abort
           end
           
-          if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge #{remote_branch} to #{c_branch}?", 'Yes', 'No')  == "Yes"
+          if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch} -> #{c_branch}?", 'Yes', 'No')  == "Yes"
             self[branch_remote_config_key] = source
             self[branch_remote_merge_key] = "refs/heads/" + remote_branch.split("/").last
           end
