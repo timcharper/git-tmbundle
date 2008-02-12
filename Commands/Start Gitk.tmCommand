@@ -5,11 +5,8 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby
-
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-git = SCM::Git::Gitk.new
-git.run</string>
+	<string>cd $TM_PROJECT_DIRECTORY
+gitk 2&gt;&amp;1 &gt; null &amp;</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

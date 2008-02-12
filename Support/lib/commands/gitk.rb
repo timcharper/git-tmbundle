@@ -5,6 +5,8 @@ class SCM::Git::Gitk
   end
   
   def run
+    fork do
     %x{gitk --all > /dev/null 2>&1 &}
+    end
   end
 end
