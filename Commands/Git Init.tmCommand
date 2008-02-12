@@ -17,7 +17,7 @@ rescan_project</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Git Init</string>
+	<string>Initialize Repository</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>
