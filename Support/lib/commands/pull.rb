@@ -22,8 +22,11 @@ class SCM::Git::Pull < SCM::Git
         if source != branch_default_source || branch_default_merge.nil?
           # select a branch to merge from
           remote_branches = branches(:remote, :remote_name => source).map{|b| b[:name]}
-          remote_branch = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "The config doesn't tell me which remote branch to grab changes from.  Please select a branch:", :items => remote_branches)
-          if remote_branch.nil?
+          
+          # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
+          remote_branches << ""
+          remote_branch = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{c_branch}'?", :items => remote_branches)
+          if remote_branch.nil? || remote_branch.empty?
             puts "Aborted"
             abort
           end
