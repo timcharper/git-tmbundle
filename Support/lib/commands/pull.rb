@@ -9,14 +9,12 @@ class SCM::Git::Pull < SCM::Git
   def run
     f = Formatters::Pull.new
     c_branch = current_branch
-    # puts current_branch.inspect
     branch_remote_config_key = "branch.#{c_branch}.remote"
     branch_remote_merge_key = "branch.#{c_branch}.merge"
     branch_default_source = self[branch_remote_config_key]
     branch_default_merge = self[branch_remote_merge_key]
     sources_with_default = sources
     sources_with_default = [branch_default_source] + (sources_with_default - [branch_default_source]) if branch_default_source
-    puts sources_with_default.inspect
     
     f.layout do
       TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources_with_default) do |source|
