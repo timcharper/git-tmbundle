@@ -1,8 +1,10 @@
 class SCM::Git::Gitk
   include SCM::Git::CommonCommands
   def initialize
-    @base = git_base
-    Dir.chdir(@base)
-    %x{#{e_sh "gitk"} --all}
+    Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
+  end
+  
+  def run
+    %x{gitk --all > /dev/null 2>&1 &}
   end
 end
