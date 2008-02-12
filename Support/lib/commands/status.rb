@@ -79,6 +79,14 @@ class SCM::Git::Status < SCM::Git
           "D"
         when "modified"
           "M"
+        when "unmerged"
+          # do a quick check to see if the merge is resolved
+          file_contents = File.read(filename)
+          if /^={7}$/.match(file_contents)
+            "C"
+          else
+            "G"
+          end
         else
           "?"
         end
