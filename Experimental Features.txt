@@ -8,10 +8,6 @@ Branches in progress
 experimental_gitk -- 
 	try to implement invoking gitk from the bundle. 
 	doesnt really work now because it the bundle beachballs when called from the menu. 
-
-experimental_gitify -- 
-	planned feature to move creation of a git repository from the command line by calling git-init to a bundle menu item
-	there should be a way to see that you're working out of a folder (like how the root folder of this project is the git.tmbundle folder) and not on an individual document and not on an individual document sitting in your home folder.. It might not be a good idea to add your home folder to a new git repo ;)
 	
 Ideas yet to be branched (but they're on my mind of things to do when I get to it)
 

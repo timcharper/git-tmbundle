@@ -14,7 +14,7 @@ class SCM::Git::Pull < SCM::Git
     branch_default_source = self[branch_remote_config_key]
     branch_default_merge = self[branch_remote_merge_key]
     sources_with_default = sources
-    sources_with_default = [branch_default_source] + (sources_with_default - [branch_default_source]) if branch_default_source
+    sources_with_default = ([branch_default_source] + sources_with_default).uniq if branch_default_source
     
     f.layout do
       TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources_with_default) do |source|
@@ -22,6 +22,8 @@ class SCM::Git::Pull < SCM::Git
         if source != branch_default_source || branch_default_merge.nil?
           # select a branch to merge from
           remote_branches = branches(:remote, :remote_name => source).map{|b| b[:name]}
+          # by default, select a branch with the same name first
+          remote_branches = (remote_branches.grep(/(\/|^)#{c_branch}$/) + remote_branches).uniq
           
           # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
           remote_branches << ""
@@ -31,7 +33,7 @@ class SCM::Git::Pull < SCM::Git
             abort
           end
           
-          if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge #{remote_branch} to #{c_branch}?", 'Yes', 'No')  == "Yes"
+          if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch} -> #{c_branch}?", 'Yes', 'No')  == "Yes"
             self[branch_remote_config_key] = source
             self[branch_remote_merge_key] = "refs/heads/" + remote_branch.split("/").last
           end
