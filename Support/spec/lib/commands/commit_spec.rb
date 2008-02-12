@@ -1,8 +1,5 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-
-stub_command_runner(SCM::Git::Commit)
-
 describe SCM::Git::Commit do
   before(:each) do
     @commit = SCM::Git::Commit.new

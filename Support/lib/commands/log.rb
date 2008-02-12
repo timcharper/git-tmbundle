@@ -9,8 +9,7 @@ $tm_dialog = "#{ENV["TM_SUPPORT_PATH"]}/bin/tm_dialog"
 ListNib = File.dirname(__FILE__) + "/../../nibs/RevisionSelector.nib"
 
 
-class SCM::Git::Log
-  include SCM::Git::CommonCommands
+class SCM::Git::Log < SCM::Git
   
   def initialize
     chdir_base

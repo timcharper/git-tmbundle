@@ -1,7 +1,6 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-class SCM::Git::Push
-  include SCM::Git::CommonCommands
+class SCM::Git::Push < SCM::Git
   
   def initialize
     @base = git_base

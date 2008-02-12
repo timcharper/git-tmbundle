@@ -1,5 +1,4 @@
-class SCM::Git::Status
-  include SCM::Git::CommonCommands
+class SCM::Git::Status < SCM::Git
   
   GIT_SCM_STATUS_MAP = {
     'A' => {:short => 'A', :long => 'added',        :foreground => '#008000', :background => '#bbffb3'},

@@ -76,3 +76,5 @@ def stub_command_runner(klass)
     end
   end
 end
+
+stub_command_runner(SCM::Git)

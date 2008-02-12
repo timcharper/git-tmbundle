@@ -1,12 +1,11 @@
-class SCM::Git::Commit
-  include SCM::Git::CommonCommands
+class SCM::Git::Commit < SCM::Git
   CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
   
   
   def initialize
     @paths = paths
     @base  = git_base
-    Dir.chdir(@base)
+    chdir_base
   end
 
   def status(*args)

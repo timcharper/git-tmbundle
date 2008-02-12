@@ -67,7 +67,13 @@ EOF
   end
   
   it "should run" do
+    # query the sources
+    SCM::Git::Pull.command_output << "origin"
+    SCM::Git::Pull.command_output << "+refs/heads/*:refs/remotes/origin/*"
     SCM::Git::Pull.command_output << %Q{origin}
+    
+    # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
+    
     SCM::Git::Pull.command_output << TEST_INPUT
     SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
     SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")

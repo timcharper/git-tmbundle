@@ -1,7 +1,6 @@
 require 'time.rb'
 require 'date.rb'
-class SCM::Git::Annotate
-  include SCM::Git::CommonCommands
+class SCM::Git::Annotate < SCM::Git
   def annotate(filepath, revision = nil)
     file = make_local_path(filepath)
     args = [file]

@@ -1,5 +1,4 @@
-class SCM::Git::Diff
-  include SCM::Git::CommonCommands
+class SCM::Git::Diff < SCM::Git
   
   def diff_branches(branch_left, branch_right)
     Dir.chdir(git_base)

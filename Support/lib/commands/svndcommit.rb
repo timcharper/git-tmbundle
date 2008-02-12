@@ -1,7 +1,6 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-class SCM::Git::SVNDcommit
-  include SCM::Git::CommonCommands
+class SCM::Git::SVNDcommit < SCM::Git
   
   def initialize
     Dir.chdir(git_base)

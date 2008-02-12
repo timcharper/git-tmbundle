@@ -1,28 +1,44 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-class SCM::Git::Pull
-  include SCM::Git::CommonCommands
-  
+class SCM::Git::Pull < SCM::Git
+    
   def initialize
-    Dir.chdir(git_base)
+    chdir_base
   end
-  
-  # def run
-  #   TextMate::UI.request_item(:title => "Pull", :prompt => "Select a remote source to pull from:", :items => sources) do |name|
-  #     puts "<p>Pulling from remote source '#{name}'\n</p>"
-  #     flush
-  #     puts htmlize(pull(name))
-  #   end
-  # end
 
   def run
     f = Formatters::Pull.new
+    c_branch = current_branch
+    # puts current_branch.inspect
+    branch_remote_config_key = "branch.#{c_branch}.remote"
+    branch_remote_merge_key = "branch.#{c_branch}.merge"
+    branch_default_source = self[branch_remote_config_key]
+    branch_default_merge = self[branch_remote_merge_key]
+    sources_with_default = sources
+    sources_with_default = [branch_default_source] + (sources_with_default - [branch_default_source]) if branch_default_source
+    puts sources_with_default.inspect
     
     f.layout do
-      TextMate::UI.request_item(:title => "Push", :prompt => "Select a remote source to pull from:", :items => sources) do |name|
-        puts "<p>Pulling from remote source '#{name}'\n</p>"
+      TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources_with_default) do |source|
+        # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
+        if source != branch_default_source || branch_default_merge.nil?
+          # select a branch to merge from
+          remote_branches = branches(:remote, :remote_name => source).map{|b| b[:name]}
+          remote_branch = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "The config doesn't tell me which remote branch to grab changes from.  Please select a branch:", :items => remote_branches)
+          if remote_branch.nil?
+            puts "Aborted"
+            abort
+          end
+          
+          if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge #{remote_branch} to #{c_branch}?", 'Yes', 'No')  == "Yes"
+            self[branch_remote_config_key] = source
+            self[branch_remote_merge_key] = "refs/heads/" + remote_branch.split("/").last
+          end
+        end
+        
+        puts "<p>Pulling from remote source '#{source}'\n</p>"
         flush
-        output = pull(name, 
+        output = pull(source, remote_branch,
           :start => lambda { |state, count| f.progress_start(state, count) }, 
           :progress => lambda { |state, percentage, index, count| f.progress(state, percentage, index, count)},
           :end => lambda { |state, count| f.progress_end(state, count) }
@@ -46,8 +62,9 @@ class SCM::Git::Pull
     end
   end
   
-  def pull(source, callbacks = {})
+  def pull(source, remote_merge_branch = nil, callbacks = {})
     args = ["pull", source]
+    args << remote_merge_branch.split('/').last if remote_merge_branch
     p = popen_command(*args)
     process_pull(p, callbacks)
   end
