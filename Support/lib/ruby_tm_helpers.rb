@@ -116,3 +116,9 @@ module Enumerable
     result
   end
 end
+
+class Object
+  def blank?
+    nil? || empty?
+  end
+end
