@@ -46,6 +46,7 @@
         break;
       case 98: // b
         gateway_command('create_branch_from_revision.rb', [$F('rev')] )
+        break;
       case 111: // o
         gateway_command('show.rb', ["<%=e_js ENV['TM_FILEPATH'] %>", $F('rev')] )
         // 
