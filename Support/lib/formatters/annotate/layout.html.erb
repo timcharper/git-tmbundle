@@ -44,6 +44,8 @@
         $('rev').selectedIndex = $('rev').options.length - 1;
         $('rev').onchange();
         break;
+      case 98: // b
+        gateway_command('create_branch_from_revision.rb', [$F('rev')] )
       case 111: // o
         gateway_command('show.rb', ["<%=e_js ENV['TM_FILEPATH'] %>", $F('rev')] )
         // 
