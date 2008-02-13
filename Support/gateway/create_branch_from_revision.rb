@@ -4,7 +4,7 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 revision = ARGV[0]
 if revision.empty?
-  tm_open(filepath, :line => line)
+  TextMate::UI.alert(:warning, "Error", "You must specify a revision other than 'current'", 'OK') 
   abort
 end
 
