@@ -12,8 +12,8 @@ module StreamProgressMethods
   end
 
   def process_with_progress(stream, options = {}, &block)
-    options[:start_regexp] = /([a-z]+) ([0-9]+) objects/i
-    options[:progress_regexp] = /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
+    options[:start_regexp] ||= /([a-z]+) ([0-9]+) objects/i
+    options[:progress_regexp] ||= /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
     callbacks = options[:callbacks]
     state = nil
     each_line_from_stream(stream) do |line|

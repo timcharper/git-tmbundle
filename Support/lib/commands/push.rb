@@ -1,10 +1,12 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require File.dirname(__FILE__) + "/../stream_progress_methods.rb"
 
 class SCM::Git::Push < SCM::Git
+  include StreamProgressMethods
   
   def initialize
     @base = git_base
-    Dir.chdir(@base)
+    chdir_base
   end
   
   def run
@@ -47,38 +49,18 @@ class SCM::Git::Push < SCM::Git
   
   def process_push(stream, callbacks = {})
     output = {:pushes => {}, :text => "", :nothing_to_push => false}
-    state = nil
+    branch = nil
     
-    line = ""
-    stream.each_byte do |char|
-      char = [char].pack('c')
-      line << char
-      next unless char=="\n" || char=="\r"
-      # puts "line read: #{line.inspect}<br/>"
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(Deltifying|Writing) ([0-9]+) objects/) do |line|
       case line
       when /^Everything up\-to\-date/
         output[:nothing_to_push] = true
-      when /(Deltifying|Writing) ([0-9]+) objects/
-        state = $1
-        callbacks[:start] && callbacks[:start].call(state, $2.to_i)
-        percentage, index, count = 0, 0, $2.to_i
-      when /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
-        percentage, index, count = $1.to_i, $2.to_i, $3.to_i
       when /^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
-        state = nil
         output[:pushes][$1] = [$2,$3]
       else
         output[:text] << line
       end
       
-      if state
-        callbacks[:progress] && callbacks[:progress].call(state, percentage, index, count)
-        if percentage == 100
-          callbacks[:end] && callbacks[:end].call(state, count)
-          state = nil 
-        end
-      end
-      line=""
     end
     output
   end

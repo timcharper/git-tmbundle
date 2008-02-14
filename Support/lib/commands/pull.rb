@@ -73,7 +73,7 @@ class SCM::Git::Pull < SCM::Git
   end
   
   def process_pull(stream, callbacks = {})
-    output = {:pulls => {}, :text => "", :nothing_to_pull => false}
+    output = {:pulls => {}, :text => "", :nothing_to_pull => false, :start_regexp => /(Unpacking) ([0-9]+) objects/}
     branch = nil
     
     process_with_progress(stream, :callbacks => callbacks) do |line|

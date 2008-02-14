@@ -23,14 +23,10 @@ Total 6 (delta 1), reused 0 (delta 0)
 refs/heads/satellite: 60a254470cd97af3668ed4d6405633af850139c6 -> 746fba2424e6b94570fc395c472805625ab2ed25
 refs/heads/mybranch: f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a -> d8b368361ebdf2c51b78f7cfdae5c3044b23d189
 EOF
-  before(:all) do
-    stub_command_runner(SCM::Git::Log)
-    stub_command_runner(SCM::Git::Push)
-  end
   
   before(:each) do
     @process_io = StringIO.new(TEST_INPUT)
-    @push = SCM::Git::Push.new
+    @push = Git::Push.new
   end
   
   it "should call the status proc 6 times" do
@@ -39,7 +35,7 @@ EOF
     output = {"Deltifying" => [], "Writing" => [] }
     @push.process_push(@process_io,
         :start => lambda { |state, count| started_count[state] = count },
-        :progress => lambda {|state, percent, index, count| output[state] << [percent, index, count]},
+        :progress => lambda {|state, percent, index, count| state; output[state] << [percent, index, count]},
         :end => lambda { |state, count| finished[state] = true }
     )
     
@@ -68,10 +64,10 @@ EOF
   end
   
   it "should run" do
-    SCM::Git::Push.command_output << %Q{origin}
-    SCM::Git::Push.command_output << TEST_INPUT
-    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
-    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
+    Git.command_output << %Q{origin}
+    Git.command_output << TEST_INPUT
+    Git.command_output << fixture_file("log_with_diffs.txt")
+    Git.command_output << fixture_file("log_with_diffs.txt")
     capture_output do
       @push.run
     end
