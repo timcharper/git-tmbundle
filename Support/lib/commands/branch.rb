@@ -90,8 +90,7 @@ class SCM::Git::Branch < SCM::Git
     else
       target = TextMate::UI.request_item(:title => "Delete Branch", :prompt => "Select the branch to delete:", :items => locals + remotes)
       if target.blank?
-        TextMate::UI.alert(:informational, "Aborted!", "Branch deletion aborted", 'OK') 
-        return false
+        return exit_discard
       end
       
       if target == current
