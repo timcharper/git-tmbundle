@@ -62,7 +62,7 @@ EOF
       it "should switch to a remote branch" do
         @request_branch_expectation.call("origin/release")
         TextMate::UI.should_receive(:request_string).with(@get_branch_name_params).and_return("release")
-        Git.command_response["branch", "release", "origin/release"] = %{Branch release set up to track remote branch refs/remotes/origin/release.\n}
+        Git.command_response["branch", "--track", "release", "origin/release"] = %{Branch release set up to track remote branch refs/remotes/origin/release.\n}
         Git.command_response["checkout", "release"] = %{Switched to branch "release"\n}
         output = capture_output do
           @branch.run_switch

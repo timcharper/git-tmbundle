@@ -69,7 +69,7 @@ class SCM::Git::Branch < SCM::Git
       end
     end while repeat
     
-    output = command("branch", new_branch_name, target)
+    output = command("branch", "--track", new_branch_name, target)
     puts htmlize(output)
     run_switch_local(new_branch_name)
   end
