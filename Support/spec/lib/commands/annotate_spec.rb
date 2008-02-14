@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe SCM::Git::Annotate do
   before(:each) do
-    @annotate = SCM::Git::Annotate.new
+    @annotate = Git::Annotate.new
   end
   include SpecHelpers
   

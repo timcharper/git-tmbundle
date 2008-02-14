@@ -49,32 +49,65 @@ module SpecHelpers
   end
 end
 
-def stub_command_runner(klass)
-  klass.class_eval do
-    def self.command_output
-      @command_output ||= []
-    end
-    
-    def command_output
-      self.class.command_output
-    end
-    
-    def command(*args)
-      command_output.shift
-    end
-    
-    def popen_command(*args)
-      StringIO.new(command_output.shift)
-    end
-    
-    def chdir_base(*args)
-      true
-    end
-    
-    def git_base
-      "/base/"
-    end
+class ArrayKeyedHash < Hash
+  def []=(*args)
+    value = args.pop
+    super(args, value)
+  end
+  
+  def [](*args)
+    super(args)
   end
 end
 
-stub_command_runner(SCM::Git)
+class Git
+  class << self
+    def reset_mock!
+      command_response.clear
+      command_output.clear
+      commands_ran.clear
+    end
+    
+    def command_response
+      @@command_response ||= ArrayKeyedHash.new
+    end
+  
+    def command_output
+      @@command_output ||= []
+    end
+  
+    def commands_ran
+      @@commands_ran ||= []
+    end
+    
+    def stubbed_command(*args)
+      commands_ran << args
+      if command_response.empty?
+        command_output.shift
+      else
+        r = command_response[*args] || ""
+        if r.is_a?(Array)
+          r.shift
+        else
+          r
+        end
+      end
+    end
+  end
+  
+  def command(*args)
+    Git.stubbed_command(*args)
+  end
+  
+  def popen_command(*args)
+    StringIO.new(command(*args))
+  end
+  
+  def chdir_base(*args)
+    true
+  end
+  
+  def git_base
+    "/base/"
+  end
+end
