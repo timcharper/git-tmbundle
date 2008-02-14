@@ -74,7 +74,7 @@ class SCM::Git::Stash < SCM::Git
     options = {:title => "Select stash", :prompt => "Select a stash", :items => stash_list.map{|s| "#{s[:id]} - #{s[:description]}"}}.merge(options)
     TextMate::UI.request_item(options) do |stash_id|
       selected_stash_entry = stash_list.find { |s| s[:id].to_i == stash_id.to_i}
-      return selected_stash_entry[:name]
+      return selected_stash_entry
     end
     
     nil
