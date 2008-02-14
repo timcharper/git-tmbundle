@@ -73,10 +73,10 @@ class SCM::Git::Pull < SCM::Git
   end
   
   def process_pull(stream, callbacks = {})
-    output = {:pulls => {}, :text => "", :nothing_to_pull => false, :start_regexp => /(Unpacking) ([0-9]+) objects/}
+    output = {:pulls => {}, :text => "", :nothing_to_pull => false}
     branch = nil
     
-    process_with_progress(stream, :callbacks => callbacks) do |line|
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(Unpacking) ([0-9]+) objects/) do |line|
       case line
       when /^Already up\-to\-date/          then output[:nothing_to_pull] = true
       when /^\* ([^:]+):/                   then branch = $1
