@@ -29,11 +29,28 @@ describe Git::Branch do
         output.should include(%{Switched to branch "master"})
       end
       
-      it "should alert you if the switch isn't possible because of uncommitted changes" do
+      it "should alert you if the switch isn't possible because you're in the middle of a merge" do
         @request_branch_expectation.call("task")
         Git.command_response["checkout", "task"] = %{fatal: you need to resolve your current index first\n}
         TextMate::UI.should_receive(:alert).with(:warning, "Error - couldn't switch", "Git said:\nfatal: you need to resolve your current index first\n\nYou're probably in the middle of a conflicted merge, and need to commit", "OK").and_return("Yes")
         @branch.run_switch
+      end
+      
+      it "should ask you if you'd like to force when uncommitted files exist" do
+        @request_branch_expectation.call("task")
+        Git.command_response["checkout", "task"] = %{fatal: Entry 'branch_spec.rb' not uptodate. Cannot merge.\n}
+        TextMate::UI.should_receive(:alert).with(:informational, "Conflict detected if you switch", "There are uncommitted changes that will cause conflicts by this switch (branch_spec.rb).\nSwitch anyways?", "No", "Yes").and_return("Yes")
+        
+        Git.command_response["checkout", "-m", "task"] = <<-EOF
+Auto-merged Support/spec/lib/commands/branch_spec.rb
+CONFLICT (content): Merge conflict in Support/spec/lib/commands/branch_spec.rb
+M	Support/spec/lib/commands/branch_spec.rb
+EOF
+        output = capture_output do
+          @branch.run_switch
+        end
+        
+        output.should include("CONFLICT (content): Merge conflict in Support/spec/lib/commands/branch_spec.rb")
       end
     end
     

@@ -25,6 +25,15 @@ class SCM::Git::Branch < SCM::Git
       when /fatal: you need to resolve your current index first/
         TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
         exit_discard
+      when /fatal: Entry '(.+)' not uptodate\. Cannot merge\./
+        response = TextMate::UI.alert(:informational, "Conflict detected if you switch", "There are uncommitted changes that will cause conflicts by this switch (#{$1}).\nSwitch anyways?", "No", "Yes")
+        if response=="Yes"
+          output = command("checkout", "-m", target_branch)
+          puts htmlize(output)
+          exit_show_html
+        else
+          exit_discard
+        end
       else
         puts htmlize(output)
         exit_show_html
