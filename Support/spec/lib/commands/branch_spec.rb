@@ -75,7 +75,7 @@ EOF
       it "should not allow you to create a branch with an existing local name" do
         @request_branch_expectation.call("origin/release")
         TextMate::UI.should_receive(:request_string).once.with(@get_branch_name_params).and_return("task")
-        TextMate::UI.should_receive(:alert).with(:warning, "Branch name already taken!", "The branch name you have chosen is already in use.\nPlease choose another name, or cancel.", "Cancel", "OK").and_return("Cancel")
+        TextMate::UI.should_receive(:alert).with(:warning, "Branch name already taken!", "The branch name 'task' is already in use.\nVery likely this is the branch you want to work on.\nIf not, pick another name.", "Pick another name", "Switch to it", "Cancel").and_return("Cancel")
         @branch.run_switch
       end
     end
