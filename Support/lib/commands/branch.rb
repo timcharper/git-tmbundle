@@ -62,7 +62,7 @@ class SCM::Git::Branch < SCM::Git
       end
       
       if branch_names(:local).include?(new_branch_name)
-        response = TextMate::UI.alert(:warning, "Branch name already taken!", "The branch name you have chosen is already in use.\nPlease choose another name, or cancel.", "Cancel", "OK")
+        response = TextMate::UI.alert(:warning, "Branch name already taken!", "The branch name '#{new_branch_name}' is already in use.\nMost likely you should just switch to it.\nIf not, press OK to specify another name.", "OK", "Cancel")
         return exit_discard if response == "Cancel"
         repeat = true
       end
