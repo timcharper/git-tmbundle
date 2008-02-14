@@ -62,7 +62,7 @@ EOF
     output[:nothing_to_pull].should == true
   end
   
-  it "should run" do
+  it "should run and output log of changes pulled" do
     # query the sources
     Git.command_response["branch"] = "* master\n"
     Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
