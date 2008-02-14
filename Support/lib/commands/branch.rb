@@ -6,6 +6,32 @@ class SCM::Git::Branch < SCM::Git
     chdir_base
   end
   
+  def run_switch
+    locals = branch_names(:local)
+    remotes = branch_names(:remote)
+    current = current_branch
+    
+    items = ([current] + locals + remotes).uniq
+    
+    if items.length == 0
+      puts "Current branch is '#{current}'. There are no other branches."
+    else
+      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current}'.\nSelect a new branch to switch to:", :items => items) 
+      if target_branch.blank?
+        exit_discard
+      end
+      output = switch_to_branch(target_branch)
+      case output
+      when /fatal: you need to resolve your current index first/
+        TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
+        exit_discard
+      else
+        puts htmlize(output)
+        exit_show_html
+      end
+    end
+  end
+  
   def run_delete
     locals = branch_names(:local)
     remotes = branch_names(:remote)
