@@ -5,21 +5,21 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby -wKU
+	<string>#!/usr/bin/env ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-branch = Git::Branch.new
-
-branch.run_switch</string>
+git = Git::Fetch.new
+git.run
+</string>
 	<key>input</key>
-	<string>none</string>
+	<string>selection</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Branches (show/switch)…</string>
+	<string>Fetch</string>
 	<key>output</key>
-	<string>showAsTooltip</string>
+	<string>showAsHTML</string>
 	<key>uuid</key>
-	<string>7F8D2058-E106-40DC-9FBE-F32A1202D158</string>
+	<string>491D8DB3-8CB2-4888-ACD8-C94FAB125B38</string>
 </dict>
 </plist>

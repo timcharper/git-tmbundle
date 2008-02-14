@@ -111,3 +111,12 @@ class Git
     "/base/"
   end
 end
+
+
+def exit_show_html
+  $exit_status = :exit_show_html
+end
+
+def exit_discard
+  $exit_status = :exit_discard
+end

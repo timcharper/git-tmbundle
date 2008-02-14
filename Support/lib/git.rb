@@ -151,11 +151,11 @@ module SCM
       %x{#{command_str("branch", name)} && #{command_str("checkout", name)}}
     end
   
-    def switch_to_branch(name, git_file)
-      base = File.expand_path("..", git_dir(git_file))
-      Dir.chdir(base)
-      command("checkout", name)
+    def switch_to_branch(name, git_file = nil)
+      chdir_base
+      result = command("checkout", name)
       rescan_project
+      result
     end
   
     def create_tag(name, git_file)
