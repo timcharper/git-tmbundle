@@ -1,7 +1,8 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require File.dirname(__FILE__) + "/../stream_progress_methods.rb"
 
 class SCM::Git::Pull < SCM::Git
-    
+  include StreamProgressMethods
   def initialize
     chdir_base
   end
@@ -71,49 +72,18 @@ class SCM::Git::Pull < SCM::Git
     process_pull(p, callbacks)
   end
   
-  def each_line_from_stream(stream, &block)
-    line = ""
-    stream.each_byte do |char|
-      char = [char].pack('c')
-      line << char
-      next unless char=="\n" || char=="\r"
-      yield line
-      line = ""
-    end
-  end
-  
   def process_pull(stream, callbacks = {})
     output = {:pulls => {}, :text => "", :nothing_to_pull => false}
-    state = nil
     branch = nil
     
-    each_line_from_stream(stream) do |line|
+    process_with_progress(stream, :callbacks => callbacks) do |line|
       case line
-      when /^Already up\-to\-date/
-        output[:nothing_to_pull] = true
-      when /(Unpacking) ([0-9]+) objects/
-        state = $1
-        callbacks[:start] && callbacks[:start].call(state, $2.to_i)
-        percentage, index, count = 0, 0, $2.to_i
-      when /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
-        percentage, index, count = $1.to_i, $2.to_i, $3.to_i
-      when /^\* ([^:]+):/
-        branch = $1
-      when /^  (old\.\.new|commit): (.+)/
-        revs = $2.split("..")
-        revs = ["#{revs[0]}^", revs[0]] if revs.length == 1
-        output[:pulls][branch] = revs
+      when /^Already up\-to\-date/          then output[:nothing_to_pull] = true
+      when /^\* ([^:]+):/                   then branch = $1
+      when /^  (old\.\.new|commit): (.+)/   then output[:pulls][branch] = get_rev_range($2)
       end
       
       output[:text] << line
-      
-      if state
-        callbacks[:progress] && callbacks[:progress].call(state, percentage, index, count)
-        if percentage == 100
-          callbacks[:end] && callbacks[:end].call(state, count)
-          state = nil 
-        end
-      end
     end
     output
   end
