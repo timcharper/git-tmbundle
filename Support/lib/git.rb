@@ -58,6 +58,10 @@ module SCM
       result
     end
     
+    def branch_names(*args)
+      branches(*args).map{|b| b[:name]}
+    end
+    
     def current_branch
       branches.find { |b| b[:default] }[:name]
     end
@@ -195,3 +199,4 @@ if __FILE__ == $0
 
 end
 
+Git = SCM::Git
