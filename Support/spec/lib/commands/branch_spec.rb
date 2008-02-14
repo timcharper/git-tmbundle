@@ -21,12 +21,12 @@ describe Git::Branch do
     describe "when switching to a local branch" do
       it "should switch to a local branch" do
         @request_branch_expectation.call("task")
-        Git.command_response["checkout", "task"] = %{Switched to branch "master"\n}
+        Git.command_response["checkout", "task"] = %{Switched to branch "task"\n}
         output = capture_output do
           @branch.run_switch
         end
         
-        output.should include(%{Switched to branch "master"})
+        output.should include(%{Switched to branch "task"})
       end
       
       it "should alert you if the switch isn't possible because you're in the middle of a merge" do
@@ -54,8 +54,30 @@ EOF
       end
     end
     
-    it "should description" do
+    describe "when switching to a remote branch" do
+      before(:each) do
+        @get_branch_name_params = {:title=>"Switch to remote branch", :prompt=>"You must set up a local tracking branch to work on 'origin/release'.\nWhat would you like to name the local tracking branch?", :default=>"release"}
+      end
       
+      it "should switch to a remote branch" do
+        @request_branch_expectation.call("origin/release")
+        TextMate::UI.should_receive(:request_string).with(@get_branch_name_params).and_return("release")
+        Git.command_response["branch", "release", "origin/release"] = %{Branch release set up to track remote branch refs/remotes/origin/release.\n}
+        Git.command_response["checkout", "release"] = %{Switched to branch "release"\n}
+        output = capture_output do
+          @branch.run_switch
+        end
+        
+        output.should include(%{Branch release set up to track remote branch refs/remotes/origin/release.})
+        output.should include(%{Switched to branch "release"})
+      end
+      
+      it "should not allow you to create a branch with an existing local name" do
+        @request_branch_expectation.call("origin/release")
+        TextMate::UI.should_receive(:request_string).once.with(@get_branch_name_params).and_return("task")
+        TextMate::UI.should_receive(:alert).with(:warning, "Branch name already taken!", "The branch name you have chosen is already in use.\nPlease choose another name, or cancel.", "Cancel", "OK").and_return("Cancel")
+        @branch.run_switch
+      end
     end
   end
   describe "when deleting branches" do

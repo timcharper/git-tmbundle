@@ -20,25 +20,57 @@ class SCM::Git::Branch < SCM::Git
       if target_branch.blank?
         exit_discard
       end
-      output = switch_to_branch(target_branch)
-      case output
-      when /fatal: you need to resolve your current index first/
-        TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
-        exit_discard
-      when /fatal: Entry '(.+)' not uptodate\. Cannot merge\./
-        response = TextMate::UI.alert(:informational, "Conflict detected if you switch", "There are uncommitted changes that will cause conflicts by this switch (#{$1}).\nSwitch anyways?", "No", "Yes")
-        if response=="Yes"
-          output = command("checkout", "-m", target_branch)
-          puts htmlize(output)
-          exit_show_html
-        else
-          exit_discard
-        end
+      
+      if locals.include?(target_branch)
+        run_switch_local(target_branch)
       else
-        puts htmlize(output)
-        exit_show_html
+        run_switch_remote(target_branch)
       end
     end
+  end
+  
+  def run_switch_local(target_branch)
+    output = switch_to_branch(target_branch)
+    case output
+    when /fatal: you need to resolve your current index first/
+      TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
+      exit_discard
+    when /fatal: Entry '(.+)' not uptodate\. Cannot merge\./
+      response = TextMate::UI.alert(:informational, "Conflict detected if you switch", "There are uncommitted changes that will cause conflicts by this switch (#{$1}).\nSwitch anyways?", "No", "Yes")
+      if response=="Yes"
+        output = command("checkout", "-m", target_branch)
+        puts htmlize(output)
+        exit_show_html
+      else
+        exit_discard
+      end
+    else
+      puts htmlize(output)
+      exit_show_html
+    end
+  end
+  
+  def run_switch_remote(target)
+    remote_alias, remote_branch_name = target.split("/")
+    
+    repeat = false
+    begin
+      new_branch_name = TextMate::UI.request_string(:title => "Switch to remote branch", :prompt => "You must set up a local tracking branch to work on '#{target}'.\nWhat would you like to name the local tracking branch?", :default => remote_branch_name)
+      new_branch_name = new_branch_name.to_s.strip
+      if new_branch_name.blank?
+        return exit_discard
+      end
+      
+      if branch_names(:local).include?(new_branch_name)
+        response = TextMate::UI.alert(:warning, "Branch name already taken!", "The branch name you have chosen is already in use.\nPlease choose another name, or cancel.", "Cancel", "OK")
+        return exit_discard if response == "Cancel"
+        repeat = true
+      end
+    end while repeat
+    
+    output = command("branch", new_branch_name, target)
+    puts htmlize(output)
+    run_switch_local(new_branch_name)
   end
   
   def run_delete

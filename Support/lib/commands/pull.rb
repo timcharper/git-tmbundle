@@ -24,7 +24,6 @@ class SCM::Git::Pull < SCM::Git
           remote_branches = branches(:remote, :remote_name => source).map{|b| b[:name]}
           # by default, select a branch with the same name first
           remote_branches = (remote_branches.grep(/(\/|^)#{c_branch}$/) + remote_branches).uniq
-          
           # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
           remote_branches << ""
           remote_branch = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{c_branch}'?", :items => remote_branches)
@@ -72,19 +71,23 @@ class SCM::Git::Pull < SCM::Git
     process_pull(p, callbacks)
   end
   
-  def process_pull(stream, callbacks = {})
-    output = {:pulls => {}, :text => "", :nothing_to_pull => false}
-    state = nil
-    branch = nil
-    callbacks[:deltifying] ||= {}
-    callbacks[:writing] ||= {}
-    
+  def each_line_from_stream(stream, &block)
     line = ""
     stream.each_byte do |char|
       char = [char].pack('c')
       line << char
       next unless char=="\n" || char=="\r"
-      # puts "line read: #{line.inspect}<br/>"
+      yield line
+      line = ""
+    end
+  end
+  
+  def process_pull(stream, callbacks = {})
+    output = {:pulls => {}, :text => "", :nothing_to_pull => false}
+    state = nil
+    branch = nil
+    
+    each_line_from_stream(stream) do |line|
       case line
       when /^Already up\-to\-date/
         output[:nothing_to_pull] = true
@@ -111,7 +114,6 @@ class SCM::Git::Pull < SCM::Git
           state = nil 
         end
       end
-      line=""
     end
     output
   end

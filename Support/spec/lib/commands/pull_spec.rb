@@ -22,14 +22,10 @@ If you often merge with the same branch, you may want to
 configure the following variables in your configuration
 file:
 EOF
-  before(:all) do
-    stub_command_runner(SCM::Git::Log)
-    stub_command_runner(SCM::Git::Pull)
-  end
-  
   before(:each) do
     @process_io = StringIO.new(TEST_INPUT)
-    @pull = SCM::Git::Pull.new
+    @pull = Git::Pull.new
+    Git.reset_mock!
   end
   
   it "should call the status proc 6 times" do
@@ -68,17 +64,23 @@ EOF
   
   it "should run" do
     # query the sources
-    SCM::Git::Pull.command_output << "origin"
-    SCM::Git::Pull.command_output << "+refs/heads/*:refs/remotes/origin/*"
-    SCM::Git::Pull.command_output << %Q{origin}
+    Git.command_response["branch"] = "* master\n"
+    Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
+    Git.command_response["config", "remote.origin.fetch"] = "+refs/heads/*:refs/remotes/origin/*"
+    Git.command_response["config", "branch.master.remote"] = %Q{origin}
+    Git.command_response["config", "branch.master.merge"] = %Q{refs/heads/master}
+    Git.command_response["remote"] = %Q{origin}
     
     # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
     
-    SCM::Git::Pull.command_output << TEST_INPUT
-    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
-    SCM::Git::Log.command_output << fixture_file("log_with_diffs.txt")
-    capture_output do
+    # Git.command_response[] 
+    Git.command_response["log", "-p", "a58264f..89e8f37", "."] = fixture_file("log_with_diffs.txt")
+    Git.command_response["log", "-p", "d8b3683^..d8b3683", "."] = fixture_file("log_with_diffs.txt")
+    Git.command_response["pull", "origin"] = TEST_INPUT
+    output = capture_output do
       @pull.run
     end
+    
+    output.should include("Log of changes pulled")
   end
 end

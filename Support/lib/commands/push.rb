@@ -48,8 +48,6 @@ class SCM::Git::Push < SCM::Git
   def process_push(stream, callbacks = {})
     output = {:pushes => {}, :text => "", :nothing_to_push => false}
     state = nil
-    callbacks[:deltifying] ||= {}
-    callbacks[:writing] ||= {}
     
     line = ""
     stream.each_byte do |char|
