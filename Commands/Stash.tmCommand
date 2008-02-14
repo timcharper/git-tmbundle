@@ -8,18 +8,8 @@
 	<string>#!/usr/bin/env ruby -wKU
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-stash = SCM::Git::Stash.new
-
-stash_description = TextMate::UI.request_string(:title =&gt; "Stash", :prompt =&gt; "Describe stash: (blank yields intelligent default):")
-
-if stash_description.nil?
-  puts "Aborted"
-  abort
-end
-
-puts stash.stash_save(stash_description)
-
-rescan_project</string>
+stash = Git::Stash.new
+stash.run_stash_save</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

@@ -39,14 +39,6 @@ class SCM::Git::Status < SCM::Git
     end
   end
   
-  def list_files(dir, options = {})
-    options[:exclude_file] ||= File.exists?(excl_file = git_dir(dir) + '/info/exclude') ? excl_file : nil
-    excl_args = options[:exclude_file] ? " --exclude-from=#{e_sh options[:exclude_file]}" : ''
-    options[:type] ||= nil
-    type_arg = options[:type] && "-#{options[:type]}"
-     %x{#{e_sh git} ls-files #{type_arg} --exclude-per-directory=.gitignore#{excl_args}}.split("\n")
-  end
-  
   def run
     puts '<h2>Status for ' + paths.map { |e| "‘#{htmlize(shorten(e))}’" }.join(', ') + '</h2>'
     puts '<pre>'

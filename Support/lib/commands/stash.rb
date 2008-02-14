@@ -2,7 +2,7 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 class SCM::Git::Stash < SCM::Git
   def initialize()
-    Dir.chdir(git_base)
+    chdir_base
   end
   
   def stash_list(reload = false)
@@ -15,6 +15,30 @@ class SCM::Git::Stash < SCM::Git
       /([0-9]+)/.match(name)
       {:id => $1.to_i, :name => name, :description => description}
     end
+  end
+  
+  def run_stash_save
+    untracked_files = list_files(git_base, :type => "o")
+    if untracked_files.length >= 1
+      response = TextMate::UI.alert(:warning, "Untracked files in working copy", "Would you like to include the following untracked files in your stash?:\n#{untracked_files * "\n"}\n", "Add them", "Leave them out", "Cancel")
+      case response
+      when "Add them"
+        command("add", ".")
+      when "Cancel", nil
+        return exit_discard
+      end
+    end
+    
+    stash_description = TextMate::UI.request_string(:title => "Stash", :prompt => "Describe stash:", :default => "WIP: ")
+    if stash_description.nil?
+      return exit_discard
+    end
+    stash_description = "WIP" if stash_description.empty?
+    
+    puts stash_save(stash_description)
+
+    rescan_project
+    return exit_show_html
   end
   
   def stash_save(desciption = "")

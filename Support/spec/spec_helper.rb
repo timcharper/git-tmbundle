@@ -107,16 +107,17 @@ class Git
     true
   end
   
+  def git_dir(file_or_dir)
+    "/base/"
+  end
+  
   def git_base
     "/base/"
   end
 end
 
-
-def exit_show_html
-  $exit_status = :exit_show_html
-end
-
-def exit_discard
-  $exit_status = :exit_discard
+[:exit_show_html, :exit_discard, :exit_show_tool_tip].each do |exit_method|
+  Object.send :define_method, exit_method do
+    $exit_status = exit_method
+  end
 end

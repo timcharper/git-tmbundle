@@ -15,6 +15,17 @@ module SCM
       Dir.chdir(git_base)
     end
     
+    def list_files(dir, options = {})
+      options[:exclude_file] ||= File.exists?(excl_file = git_dir(dir) + '/info/exclude') ? excl_file : nil
+      options[:type] ||= nil
+      params = []
+      params << "-#{options[:type]}" if options[:type]
+      params << "--exclude-per-directory=.gitignore"
+      params << "--exclude-from=#{e_sh options[:exclude_file]}" if options[:exclude_file]
+      
+      command("ls-files", *params).split("\n")
+    end
+
     def command(*args)
       %x{#{command_str(*args)} 2>&1 }
     end
