@@ -5,9 +5,6 @@ I think it's a good idea to keep features in development in separate branches un
 
 Branches in progress
 
-experimental_gitk -- 
-	try to implement invoking gitk from the bundle. 
-	doesnt really work now because it the bundle beachballs when called from the menu. 
 	
 Ideas yet to be branched (but they're on my mind of things to do when I get to it)
 
