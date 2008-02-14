@@ -17,7 +17,11 @@ class SCM::Git::Fetch < SCM::Git
     sources_with_default = ([branch_default_source] + sources_with_default).uniq if branch_default_source
     
     TextMate::UI.request_item(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => sources_with_default) do |source|
+      puts "<h2>Fetching from #{source}</h2>"
+      flush
       puts htmlize(command("fetch", source))
+      puts "<p>Done.</p>"
+      flush
     end
   end
   
