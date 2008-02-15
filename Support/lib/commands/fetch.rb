@@ -16,7 +16,9 @@ class SCM::Git::Fetch < SCM::Git
     branch_default_merge = self[branch_remote_merge_key]
     sources_with_default = sources
     sources_with_default = ([branch_default_source] + sources_with_default).uniq if branch_default_source
-    TextMate::UI.request_item(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => sources_with_default + [FETCH_ALL]) do |selected_source|
+    sources_with_default_with_all = sources_with_default.dup
+    sources_with_default_with_all << FETCH_ALL if sources_with_default.length > 1
+    TextMate::UI.request_item(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => sources_with_default_with_all) do |selected_source|
       ((selected_source == FETCH_ALL) ? sources_with_default : [source]).each do |source|
         puts "<h2>Fetching from #{source}</h2>"
         flush
