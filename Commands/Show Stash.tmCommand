@@ -14,18 +14,16 @@ if stash.stash_list.empty?
   puts "Stash list is empty"
 end
 
-stash_name = stash.select_stash
+stash_item = stash.select_stash
 
-if stash_name.nil?
+if stash_item.nil?
   puts "Aborted"
   exit_show_tool_tip
 end
 
-base = stash.git_base
-
-Formatters::Diff.new(base) do |f|
-  f.header("Diff for stash ‘#{stash_name}’")
-  f.content(stash.stash_diff(stash_name))
+Formatters::Diff.new() do |f|
+  f.header("Diff for stash ‘#{stash_item[:description]}’")
+  f.content(stash.stash_diff(stash_item[:name]))
 end
 exit_show_html</string>
 	<key>input</key>
