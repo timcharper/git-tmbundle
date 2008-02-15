@@ -42,7 +42,7 @@ class SCM::Git::Merge < SCM::Git
     output = {:text => "", :conflicts => []}
     input.split("\n").each do |line|
       case line
-      when /^CONFLICT \(content\): Merge conflict in (.+)$/
+      when /^CONFLICT \(.+\): Merge conflict in (.+)$/
         output[:conflicts] << $1
       else
         output[:text] << "#{line}\n"
