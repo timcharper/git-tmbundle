@@ -19,7 +19,7 @@ class SCM::Git::Fetch < SCM::Git
     sources_with_default_with_all = sources_with_default.dup
     sources_with_default_with_all << FETCH_ALL if sources_with_default.length > 1
     TextMate::UI.request_item(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => sources_with_default_with_all) do |selected_source|
-      ((selected_source == FETCH_ALL) ? sources_with_default : [source]).each do |source|
+      ((selected_source == FETCH_ALL) ? sources_with_default : [selected_source]).each do |source|
         puts "<h2>Fetching from #{source}</h2>"
         flush
         puts htmlize(fetch(source))
