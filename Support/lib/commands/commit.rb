@@ -1,7 +1,6 @@
 class SCM::Git::Commit < SCM::Git
   CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
   
-  
   def initialize
     @paths = paths
     @base  = git_base
@@ -17,12 +16,31 @@ class SCM::Git::Commit < SCM::Git
   end
   
   def run
+    if File.exist?(File.join(git_base, ".git/MERGE_HEAD"))
+      run_merge_commit
+    else
+      run_partial_commit
+    end
+  end
+  
+  def run_merge_commit
+    f = Formatters::Commit.new
+    f.layout do
+      f.header "Committing merge result"
+    
+      status = Git::Status.new
+      status.run([git_base])
+      
+      f.commit_merge_dialog(File.read(File.join(git_base, ".git/MERGE_MSG")))
+    end
+  end
+  
+  def run_partial_commit
     f = Formatters::Commit.new
     target_file_or_dir = paths.first
-    f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
-    
-    flush
     f.layout do
+      f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
+      flush
     
       files, status = [], []
       statuses(target_file_or_dir).each do |e|
@@ -30,9 +48,9 @@ class SCM::Git::Commit < SCM::Git
         status << e_sh(e[:status][:short])
       end
 
-      res = %x{#{e_sh CW}                \
-        --diff-cmd   '#{git},diff'          \
-        --status #{status.join ':'}      \
+      res = %x{#{e_sh CW}                 \
+        --diff-cmd   '#{git},diff'        \
+        --status #{status.join ':'}       \
         #{files.join ' '} 2>/dev/console
       }
 
@@ -55,24 +73,20 @@ class SCM::Git::Commit < SCM::Git
 
       unless files.empty?
         puts "<h2>Result:</h2>"
-        add_files = files.select{ |f| File.exists?(f) }
-        remove_files = files.reject{ |f| File.exists?(f) }
-        res = add(add_files) unless add_files.empty?
-        res = rm(remove_files) unless remove_files.empty?
+        auto_add_rm(files)
         res = commit(msg, files)
-        
-        puts "<pre>#{htmlize(res[:output])}</pre>"
-        
-        puts "<h2>Diff of committed changes:</h2>"
-        if res[:rev]
-          diff_formatter = Formatters::Diff.new
-          diff = SCM::Git::Diff.new
-          diff_result = diff.diff_revisions(".", "#{res[:rev]}^", "#{res[:rev]}")
-          
-          diff_formatter.content diff_result
-        end
+        f.output_commit_result(res)
       end
     end
+  end
+  
+  def auto_add_rm(files)
+    chdir_base
+    add_files = files.select{ |f| File.exists?(f) }
+    remove_files = files.reject{ |f| File.exists?(f) }
+    puts add_files.inspect
+    res = add(add_files) unless add_files.empty?
+    res = rm(remove_files) unless remove_files.empty?
   end
   
   def statuses(path = paths.first)

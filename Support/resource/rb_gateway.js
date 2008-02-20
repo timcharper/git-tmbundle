@@ -1,7 +1,7 @@
 /* Git JS gateway */
 /* Tim Harper (tim.harper at leadmediapartners.org) */
 function e_sh(str) { 
-	return str.toString().replace(/(?=[^a-zA-Z0-9_.\/\-\x7F-\xFF\n])/, '\\').replace(/\n/, '\\n').replace(/^$/, "''") 
+	return '"' + (str.toString().replace('"', '\\"')) + '"';
 }
 
 function exec(command, params) {

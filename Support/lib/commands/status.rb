@@ -65,14 +65,13 @@ class SCM::Git::Status < SCM::Git
     result
   end
   
-  def run
-    puts '<h2>Status for ' + paths.map { |e| "‘#{htmlize(shorten(e))}’" }.join(', ') + '</h2>'
+  def run(file_or_path = paths.first)
+    puts '<h2>Status for ' + file_or_path.map { |e| "‘#{htmlize(shorten(e))}’" }.join(', ') + '</h2>'
     puts '<pre>'
-
-    status(paths).each do |e|
+    status(file_or_path).each do |e|
       puts "<span title='#{htmlize(e[:status][:long])}'>#{htmlize(e[:status][:short])}</span> <a href='txmt://open?url=file://#{e_url e[:path]}'>#{htmlize(e[:display])}</a>"
     end
-
+    puts "</pre>"
   end
   
   def parse_status(input)
