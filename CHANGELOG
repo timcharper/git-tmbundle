@@ -1,3 +1,7 @@
+[2008-02-20] Commit dialog graceful handling of conflict resolutions
+
+[2008-02-20] Commit dialog limits down to the selected file/folder selected in drawer.
+
 [2008-02-14] Deleted experimental gitk branch since the feature is now merged into master
 
 [2008-02-14] Visualize Gitk feature added (Sam Granieri and Tim Harper)
