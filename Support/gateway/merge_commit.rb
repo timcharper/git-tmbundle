@@ -7,7 +7,7 @@ begin
   f = Formatters::Commit.new
   f.layout do 
     statuses = status.status(status.git_base)
-    files = statuses.map { |status_options| (status_options[:status][:short] == "?") ? nil : commit.make_local_path(status_options[:path]) }.compact
+    files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? commit.make_local_path(status_options[:path]) : nil }.compact
 
     commit.auto_add_rm(files)
     res = commit.commit(message, [])
