@@ -20,5 +20,5 @@ Allan Odgaard - For starting the bundle and getting the ball rolling.  Also, for
 Johan Sørensen - Contributing the CSS styling.  He made gitorious look so sexy I just couldn't think of a better design to implement for the bundle, so he's generously allowed me to utilize it.
 
 Tommi Asiala - README file submission
-
 Lawrence Pit - Performance Enhancements
+Jay Soffian - Bug report with patch (missing environment variables)
