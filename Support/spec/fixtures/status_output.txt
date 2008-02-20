@@ -14,4 +14,4 @@
 #   (use "git add <file>..." to include in what will be committed)
 #
 #	dir/
-#	new_file.txt
+#	directory.txt

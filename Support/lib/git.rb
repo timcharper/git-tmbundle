@@ -96,6 +96,7 @@ module SCM
     end
     
     def shorten(path, base = nil)
+      base = base.gsub(/\/$/, "") if base
       if base && path =~ /^#{Regexp.escape base}\/(.+)$/
         $1
       elsif path == ENV['TM_PROJECT_DIRECTORY']

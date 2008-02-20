@@ -18,14 +18,14 @@ class SCM::Git::Commit < SCM::Git
   
   def run
     f = Formatters::Commit.new
-    f.header "Committing Files in ‘#{htmlize(shorten(@base))}’"
+    target_file_or_dir = paths.first
+    f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
     
     flush
     f.layout do
     
       files, status = [], []
-    
-      statuses.each do |e|
+      statuses(target_file_or_dir).each do |e|
         files  << e_sh(shorten(e[:path], @base))
         status << e_sh(e[:status][:short])
       end
@@ -75,8 +75,8 @@ class SCM::Git::Commit < SCM::Git
     end
   end
   
-  def statuses
-    @statuses ||= status(@paths)
+  def statuses(path = paths.first)
+    @statuses ||= status(path)
   end
   
   def commit(msg, files = ["."])

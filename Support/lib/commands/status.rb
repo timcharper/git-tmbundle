@@ -21,9 +21,9 @@ class SCM::Git::Status < SCM::Git
   def initialize
   end
   
-  def status(files_or_dirs = nil, options = {})
-    
-    files_or_dirs = paths if files_or_dirs.nil?
+  def status(file_or_dir = nil, options = {})
+    file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
+    file_or_dir = file_or_dir.dup if file_or_dir
     chdir_base
     base_dir = git_base
     
@@ -31,12 +31,38 @@ class SCM::Git::Status < SCM::Git
     
     results = parse_status(command("status"))
     results.each do |file, status|
-      file_statuses[File.expand_path(file, base_dir)] = status
+      file_statuses[expand_path_preserving_trailing_slash(file, base_dir)] = status
     end
     
-    file_statuses.sort.map do |filepath, display_status|
+    sorted_results = file_statuses.sort.map do |filepath, display_status|
       {:path => filepath, :display => shorten(filepath, base_dir), :status => GIT_SCM_STATUS_MAP[display_status]}
     end
+    
+    if file_or_dir
+      file_or_dir << "/" if File.directory?(file_or_dir) unless /\/$/.match(file_or_dir)
+      sorted_results.select do |status|
+        if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
+          # promote this status on down and keep it if it's the parent folder of our target file_or_dir
+          status[:path] = file_or_dir
+          status[:display] = shorten(file_or_dir, base_dir)
+          true
+        else
+          /^#{Regexp.escape(file_or_dir)}/i.match(status[:path])
+        end
+      end
+    else
+      sorted_results
+    end
+  end
+  
+  def is_a_path?(filepath)
+    /\/$/.match(filepath)
+  end
+  
+  def expand_path_preserving_trailing_slash(file, base_dir)
+    result = File.expand_path(file, base_dir)
+    result << "/" if is_a_path?(file)
+    result
   end
   
   def run
