@@ -30,7 +30,8 @@ class SCM::Git::Commit < SCM::Git
     
       status = Git::Status.new
       status.run([git_base])
-      if statuses.any? {|status_options| status_options[:status][:short] == "C"}
+      # puts statuses(git_base).inspect
+      if statuses(git_base).any? {|status_options| status_options[:status][:short] == "C"}
         puts "<p>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
         abort
       end
@@ -92,7 +93,7 @@ class SCM::Git::Commit < SCM::Git
   end
   
   def statuses(path = paths.first)
-    @statuses ||= status(path)
+    status(path)
   end
   
   def commit(msg, files = ["."])
