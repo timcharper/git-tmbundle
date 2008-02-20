@@ -95,18 +95,23 @@ module SCM
       fullpath
     end
     
+
     def shorten(path, base = nil)
+      return if path.blank?
       base = base.gsub(/\/$/, "") if base
-      if base && path =~ /^#{Regexp.escape base}\/(.+)$/
+      project_path = 
+      home_path = ENV['HOME']
+      case
+      when base && path =~ /^#{Regexp.escape base}\/(.+)$/
         $1
-      elsif path == ENV['TM_PROJECT_DIRECTORY']
+      when path == project_path
         File.basename(path)
-      elsif path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
+      when ENV['TM_PROJECT_DIRECTORY'] && path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
         $1
-      elsif path =~ /^#{Regexp.escape ENV['HOME']}\/(.+)$/
+      when ENV['HOME'] && path =~ /^#{Regexp.escape ENV['HOME']}\/(.+)$/
         '~/' + $1
       else
-        $1
+        path
       end
     end
     
