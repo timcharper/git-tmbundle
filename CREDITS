@@ -16,5 +16,9 @@ CREDITS / PATCHES / THANKS
 The git bundle wouldn't be possible without the contributions of the following fine gentlemen:
 
 Allan Odgaard - For starting the bundle and getting the ball rolling.  Also, for creating TextMate!
+
+Johan Sørensen - Contributing the CSS styling.  He made gitorious look so sexy I just couldn't think of a better design to implement for the bundle, so he's generously allowed me to utilize it.
+
 Tommi Asiala - README file submission
+
 Lawrence Pit - Performance Enhancements
