@@ -26,11 +26,14 @@ class SCM::Git::Commit < SCM::Git
   def run_merge_commit
     f = Formatters::Commit.new
     f.layout do
-      f.header "Committing merge result"
+      f.header "Resolve a merge conflict"
     
       status = Git::Status.new
       status.run([git_base])
-      
+      if statuses.any? {|status_options| status_options[:status][:short] == "C"}
+        puts "<p>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
+        abort
+      end
       f.commit_merge_dialog(File.read(File.join(git_base, ".git/MERGE_MSG")))
     end
   end
@@ -84,7 +87,6 @@ class SCM::Git::Commit < SCM::Git
     chdir_base
     add_files = files.select{ |f| File.exists?(f) }
     remove_files = files.reject{ |f| File.exists?(f) }
-    puts add_files.inspect
     res = add(add_files) unless add_files.empty?
     res = rm(remove_files) unless remove_files.empty?
   end
