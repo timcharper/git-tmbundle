@@ -8,14 +8,11 @@
 	<string>#!/usr/bin/env ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 require 'erb'
-
 include ERB::Util
-Dir.chdir(ENV['TM_BUNDLE_PATH'])
 
 g = SCM::Git.new
+Dir.chdir(ENV['TM_BUNDLE_PATH'])
 
 puts &lt;&lt;-EOF
 &lt;html&gt;
@@ -23,11 +20,13 @@ puts &lt;&lt;-EOF
   &lt;title&gt;Update Git Bundle&lt;/title&gt;
 &lt;/head&gt;
 &lt;body&gt;
-  &lt;pre&gt;
 EOF
 
-puts "Updating git bundle"
-puts h(%x{#{g.git} pull})
+puts "&lt;h2&gt;Updating git bundle&lt;/h2&gt;"
+flush
+
+puts "  &lt;pre&gt;"
+puts g.command("pull")
 puts &lt;&lt;-EOF
   &lt;/pre&gt;
 &lt;/body&gt;
