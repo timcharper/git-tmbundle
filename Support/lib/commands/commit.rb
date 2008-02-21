@@ -32,7 +32,7 @@ class SCM::Git::Commit < SCM::Git
       status.run([git_base])
       # puts statuses(git_base).inspect
       if statuses(git_base).any? {|status_options| status_options[:status][:short] == "C"}
-        puts "<p>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
+        puts "<p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
         abort
       end
       f.commit_merge_dialog(File.read(File.join(git_base, ".git/MERGE_MSG")))
