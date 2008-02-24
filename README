@@ -32,9 +32,9 @@ Refer to the <a href="http://groups.google.com/group/git-tmbundle">git-tmbundle 
 
 <h2>The git bundle wouldn't be possible without the contributions of the following fine gentlemen:</h2>
 
-<h3>Contributions</h3>
+<h3>Major Contributions</h3>
  * <b>Allan Odgaard</b> - Started the bundle, got it rolling.
- * <b>Sam Granieri</b> - GitK, Many of the git-svn commands
+ * <b>Sam Granieri</b> - GitK, Many of the git-svn commands, Git initialize repository command, menu layouting.
  * <b>Johan Sørensen</b> - Contributing the CSS styling.  He made gitorious look so sexy I just couldn't think of a better design to implement for the bundle, so he's generously allowed me to utilize it.
 
 <h3>Patches, etc</h3>
