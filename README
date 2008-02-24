@@ -1,43 +1,44 @@
-Currently, the most feature complete version of the Git text-mate bundle
+The official repository for the Git text-mate bundle.
 
-Fixes / New Features
-* Overhaul on the "Git Commit" dialog. All sorts of bugs fixed. 
+<h2>Installation</h2>
 
-* Deleted files show up as status "Deleted" rather than modified. 
+ * Run this:
+ 
+<pre>
+cd "~/Library/Application Support/TextMate/Bundles"
+git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
+</pre>
 
-* Selecting them deletes them, (instead of throwing an error). 
-
-* Selecting a non-tracked files will add it, then commit it.
-
-* It just does what makes sense. 
-
-* Works better than the subversion commit dialog now, in my opinion.
-
+ * In the TextMate preferences, advanced tab, shell variables, set the TM_GIT variable to point to your installation of git (ie <code>/usr/local/bin/git/</code>)
+ * Many shortcuts are available from the Git-shortcut (ctrl-shift-G).  Subversion commands are ctrl-option-g.  Less frequent commands are accessed via the menu.
+ * Update your bundle by running the "Update Git Bundle" command.
+ 
+<h2>Feature Summary:</h2>
+* Natural feeling integrated commit dialog
 * Edit conflicts using FileMerge command
-
-* Diff window has pretty colors!
-
-* Push / Pull commands
-
-* Diff between revisions, using the revision select dialog (borrowed from the subversion bundle)
-
-* Open previous revision of file (using the same, nifty dialog)
-
+* Sexy Diffs (uses Gitorious styles!)
+* Push / pull / fetch / diffing / logging / branching / stashing commands
 * Interactive annotation-browser
+* Many more features
 
-* Log shows a diff - ability to show/hide diffs for logs
+<h2>Support</h2>
 
-* Push/Pull/Commit shows a log with diffs of everything committed/pushed/pulled, to make it easier to monitor your repository.
+Refer to the <a href="http://groups.google.com/group/git-tmbundle">git-tmbundle group</a> for questions, feedback, anything.
 
-* Many other miscellaneous fixes.
+<hr />
 
+<h3>Maintainer, Lead Developer:</h3>
+ * Tim Harper (with <a href="http://leadmediapartners.com">Lead Media Partners</a>)
 
-Installation
-============
-Install Git.tmbundle to your
-~/Library/Application Support/TextMate/Bundles directory.
+<h2>The git bundle wouldn't be possible without the contributions of the following fine gentlemen:</h2>
 
-If Git executable is not in your path, then add the Git path to
-~/.MacOSX/environment.plist. Alternatively, open TextMate preferences ->
-Advanced -> Shell Variables and add TM_GIT variable with path to Git as
-value.
+<h3>Contributions</h3>
+ * <b>Allan Odgaard</b> - Started the bundle, got it rolling.
+ * <b>Sam Granieri</b> - GitK, Many of the git-svn commands
+ * <b>Johan Sørensen</b> - Contributing the CSS styling.  He made gitorious look so sexy I just couldn't think of a better design to implement for the bundle, so he's generously allowed me to utilize it.
+
+<h3>Patches, etc</h3>
+ * <b>Tommi Asiala</b> - README file submission
+ * <b>Lawrence Pit</b> - Performance Enhancements
+ * <b>Jay Soffian</b> - Bug report with patch (missing environment variables)
+ * <b>Humberto Diógenes</b> - Git-svn fetch command
