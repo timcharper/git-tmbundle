@@ -1,7 +1,7 @@
 class Formatters::Diff < Formatters
   
   def initialize(options = {}, &block)
-    @base = ENV["TM_PROJECT_DIRECTORY"]
+    @base = Git.new.git_base
     @rev = options[:rev]
     @header = options[:header] || "Uncomitted changes"
     
