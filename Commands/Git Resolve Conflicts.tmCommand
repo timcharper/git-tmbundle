@@ -11,7 +11,7 @@
 # By Tim Harper
 # http://code.leadmediapartners.com/
 
-require "FileUtils"
+require "fileutils"
 FM="/Developer/Applications/Utilities/FileMerge.app/Contents/MacOS/FileMerge"
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
