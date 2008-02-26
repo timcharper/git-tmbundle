@@ -42,3 +42,4 @@ Refer to the <a href="http://groups.google.com/group/git-tmbundle">git-tmbundle 
  * <b>Lawrence Pit</b> - Performance Enhancements
  * <b>Jay Soffian</b> - Bug report with patch (missing environment variables)
  * <b>Humberto Diógenes</b> - Git-svn fetch command
+ * <b>Lee Marlow</b>
