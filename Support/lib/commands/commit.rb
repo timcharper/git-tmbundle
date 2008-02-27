@@ -39,6 +39,10 @@ class SCM::Git::Commit < SCM::Git
     end
   end
   
+  def status_helper_tool
+    ENV['TM_BUNDLE_SUPPORT'] + '/gateway/commit_dialog_helper.rb'
+  end
+  
   def run_partial_commit
     f = Formatters::Commit.new
     target_file_or_dir = paths.first
@@ -54,6 +58,7 @@ class SCM::Git::Commit < SCM::Git
 
       res = %x{#{e_sh CW}                 \
         --diff-cmd   '#{git},diff'        \
+        --action-cmd "M,D:Revert,#{status_helper_tool},revert" \
         --status #{status.join ':'}       \
         #{files.join ' '} 2>/dev/console
       }

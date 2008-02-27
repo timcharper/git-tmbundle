@@ -184,12 +184,11 @@ module SCM
   
     def revert(paths = [])
       output = ""
-    
-      base = nca(paths)
-      Dir.chdir(base)
-    
+      
+      chdir_base
+        
       paths.each do |e|
-        output << command("checkout", "--", shorten(e, base))
+        output << command("checkout", "--", shorten(e, git_base))
       end
       output
     end
