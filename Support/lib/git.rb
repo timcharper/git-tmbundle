@@ -189,7 +189,7 @@ module SCM
       Dir.chdir(base)
     
       paths.each do |e|
-        output << command("checkout", shorten(e, base))
+        output << command("checkout", "--", shorten(e, base))
       end
       output
     end
