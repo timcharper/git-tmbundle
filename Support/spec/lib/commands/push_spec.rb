@@ -4,7 +4,13 @@ require 'stringio'
 
 describe SCM::Git::Push do
   include SpecHelpers
-  TEST_INPUT = <<EOF
+  
+  before(:each) do
+    @push = Git::Push.new
+  end
+    
+  describe "standard push" do
+    TEST_INPUT = <<EOF
 updating 'refs/heads/mybranch'
   from f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a
   to   d8b368361ebdf2c51b78f7cfdae5c3044b23d189
@@ -24,52 +30,50 @@ refs/heads/satellite: 60a254470cd97af3668ed4d6405633af850139c6 -> 746fba2424e6b9
 refs/heads/mybranch: f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a -> d8b368361ebdf2c51b78f7cfdae5c3044b23d189
 EOF
   
-  before(:each) do
-    @process_io = StringIO.new(TEST_INPUT)
-    @push = Git::Push.new
-  end
-  
-  it "should call the status proc 6 times" do
-    started_count = {}
-    finished = {}
-    output = {"Deltifying" => [], "Writing" => [] }
-    @push.process_push(@process_io,
-        :start => lambda { |state, count| started_count[state] = count },
-        :progress => lambda {|state, percent, index, count| state; output[state] << [percent, index, count]},
-        :end => lambda { |state, count| finished[state] = true }
-    )
-    
-    for state in ["Deltifying", "Writing"]
-      started_count[state].should == 6
-      output[state].map{|o| o[0]}.should == [0,16,33,50,66,83,100]
-      output[state].map{|o| o[1]}.should == (0..6).to_a
-      output[state].map{|o| o[2]}.should == [6] * 7
-      finished[state].should == true
+    before(:each) do
+      @process_io = StringIO.new(TEST_INPUT)
     end
-  end
   
-  it "should return a list of all reivisions pushed" do
-    output = @push.process_push(@process_io)
-    output[:pushes].should == {
-      "refs/heads/satellite" => ["60a254470cd97af3668ed4d6405633af850139c6", "746fba2424e6b94570fc395c472805625ab2ed25"],
-      "refs/heads/mybranch" => ["f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a", "d8b368361ebdf2c51b78f7cfdae5c3044b23d189"]
-    }
-  end
+    it "should call the status proc 6 times" do
+      started_count = {}
+      finished = {}
+      output = {"Deltifying" => [], "Writing" => [] }
+      @push.process_push(@process_io,
+          :start => lambda { |state, count| started_count[state] = count },
+          :progress => lambda {|state, percent, index, count| state; output[state] << [percent, index, count]},
+          :end => lambda { |state, count| finished[state] = true }
+      )
+    
+      for state in ["Deltifying", "Writing"]
+        started_count[state].should == 6
+        output[state].map{|o| o[0]}.should == [0,16,33,50,66,83,100]
+        output[state].map{|o| o[1]}.should == (0..6).to_a
+        output[state].map{|o| o[2]}.should == [6] * 7
+        finished[state].should == true
+      end
+    end
   
-  it "should return :nothing_to_push if Everything up-to-date" do
-    output = @push.process_push(StringIO.new(<<-EOF))
-Everything up-to-date
-EOF
-    output[:nothing_to_push].should == true
-  end
+    it "should return a list of all revisions pushed" do
+      output = @push.process_push(@process_io)
+      output[:pushes].should == {
+        "refs/heads/satellite" => ["60a254470cd97af3668ed4d6405633af850139c6", "746fba2424e6b94570fc395c472805625ab2ed25"],
+        "refs/heads/mybranch" => ["f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a", "d8b368361ebdf2c51b78f7cfdae5c3044b23d189"]
+      }
+    end
   
-  it "should run" do
-    Git.command_output << %Q{origin}
-    Git.command_output << TEST_INPUT
-    Git.command_output << fixture_file("log_with_diffs.txt")
-    Git.command_output << fixture_file("log_with_diffs.txt")
-    capture_output do
-      @push.run
+    it "should return :nothing_to_push if Everything up-to-date" do
+      output = @push.process_push(StringIO.new("Everything up-to-date\n"))
+      output[:nothing_to_push].should == true
+    end
+  
+    it "should run" do
+      Git.command_output << %Q{origin}
+      Git.command_output << TEST_INPUT
+      Git.command_output << fixture_file("log_with_diffs.txt")
+      Git.command_output << fixture_file("log_with_diffs.txt")
+      capture_output do
+        @push.run
+      end
     end
   end
 end

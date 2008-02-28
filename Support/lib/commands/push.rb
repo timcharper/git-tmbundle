@@ -51,12 +51,12 @@ class SCM::Git::Push < SCM::Git
     output = {:pushes => {}, :text => "", :nothing_to_push => false}
     branch = nil
     
-    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(Deltifying|Writing) ([0-9]+) objects/) do |line|
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(remote: )?(Deltifying|Writing) ([0-9]+) objects/) do |line|
       case line
-      when /^Everything up\-to\-date/
+      when /(remote: )?^Everything up\-to\-date/
         output[:nothing_to_push] = true
-      when /^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
-        output[:pushes][$1] = [$2,$3]
+      when /(remote: )?^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
+        output[:pushes][$2] = [$3,$4]
       else
         output[:text] << line
       end

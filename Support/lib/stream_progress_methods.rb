@@ -2,7 +2,9 @@ module StreamProgressMethods
   
   def each_line_from_stream(stream, &block)
     line = ""
+    # output = File.open("/tmp/stream_output.txt", "wb")
     stream.each_byte do |char|
+      # output.putc(char)
       char = [char].pack('c')
       line << char
       next unless char=="\n" || char=="\r"
@@ -12,18 +14,22 @@ module StreamProgressMethods
   end
 
   def process_with_progress(stream, options = {}, &block)
-    options[:start_regexp] ||= /([a-z]+) ([0-9]+) objects/i
-    options[:progress_regexp] ||= /([0-9]+)% \(([0-9]+)\/([0-9]+)\) done/
+    options[:start_regexp] ||= /(remote: )?([a-z]+) ([0-9]+) objects/i
+    options[:progress_regexp] ||= /(remote: ([a-z]+) objects: +)?([0-9]+)% \(([0-9]+)\/([0-9]+)\)(,? done)?/i
     callbacks = options[:callbacks]
     state = nil
     each_line_from_stream(stream) do |line|
       case line
       when options[:start_regexp]
-        state = $1
-        callbacks[:start] && callbacks[:start].call(state, $2.to_i)
-        percentage, index, count = 0, 0, $2.to_i
+        state = $2
+        callbacks[:start] && callbacks[:start].call(state, $3.to_i)
+        percentage, index, count = 0, 0, $3.to_i
       when options[:progress_regexp]
-        percentage, index, count = $1.to_i, $2.to_i, $3.to_i
+        percentage, index, count = $3.to_i, $4.to_i, $5.to_i
+        if $2 && state != $2 && percentage != 100
+          state = $2
+          callbacks[:start] && callbacks[:start].call(state, count)
+        end
       else
         yield line
       end
