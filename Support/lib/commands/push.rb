@@ -25,6 +25,7 @@ class SCM::Git::Push < SCM::Git
         if ! output[:pushes].empty?
           log = SCM::Git::Log.new
           log_f = Formatters::Log.new
+          puts "<pre>#{output[:text]}</pre>"
           log_f.header("Log of changes pushed")
           output[:pushes].each do |branch, revisions|
             log_f.sub_header("Branch '#{branch}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}")
@@ -35,7 +36,7 @@ class SCM::Git::Push < SCM::Git
           puts output[:text]
         else
           puts "<h3>Error:</h3>"
-          puts output[:text]
+          puts "<pre>#{output[:text]}</pre>"
         end
       end
     end
@@ -51,12 +52,15 @@ class SCM::Git::Push < SCM::Git
     output = {:pushes => {}, :text => "", :nothing_to_push => false}
     branch = nil
     
-    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(remote: )?(Deltifying|Writing) ([0-9]+) objects/) do |line|
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Deltifying|Writing) ([0-9]+) objects/) do |line|
       case line
-      when /(remote: )?^Everything up\-to\-date/
+      when /(?-:remote: )?^Everything up\-to\-date/
         output[:nothing_to_push] = true
-      when /(remote: )?^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
-        output[:pushes][$2] = [$3,$4]
+      when /(?-:remote: )?^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
+        output[:pushes][$1] = [$2,$3]
+      when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
+        output[:pushes][$2] = get_rev_range($1)
+
       else
         output[:text] << line
       end

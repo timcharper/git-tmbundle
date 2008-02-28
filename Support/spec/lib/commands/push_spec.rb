@@ -76,4 +76,30 @@ EOF
       end
     end
   end
+  
+  describe "for git 1.5.4.3" do
+    before(:each) do
+      @process_io = StringIO.new(fixture_file("push_1_5_4_3_output.txt"))
+    end
+
+    it "should call the progress proc 6 times for state Compressing" do
+      output = {"Compressing" => [], "Writing" => [] }
+
+      @push.process_push(@process_io, :progress => lambda {|state, percent, index, count| output[state] << [percent, index, count]})
+      output["Compressing"].map{|o| o[0]}.should == [50,100]
+      output["Compressing"].map{|o| o[1]}.should == [1,2]
+      output["Compressing"].map{|o| o[2]}.should == [2,2]
+      output["Writing"].map{|o| o[0]}.should == [33,66,100]
+      output["Writing"].map{|o| o[1]}.should == [1,2,3]
+      output["Writing"].map{|o| o[2]}.should == [3,3,3]
+    end
+
+    it "should extract the push information for the branch and assume the current branch" do
+      output = @push.process_push(@process_io)
+      
+      output[:pushes]['asdf'].should == ["865f920", "f9ca10d"]
+      output[:pushes]['master'].should == nil
+
+    end
+  end
 end

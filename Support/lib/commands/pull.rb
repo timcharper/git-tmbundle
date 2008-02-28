@@ -76,7 +76,7 @@ class SCM::Git::Pull < SCM::Git
     output = {:pulls => {}, :text => "", :nothing_to_pull => false}
     branch = nil
     branch = current_branch
-    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(remote: )?(Unpacking) ([0-9]+) objects/) do |line|
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Unpacking) ([0-9]+) objects/) do |line|
       case line
       when /^Already up\-to\-date/
         output[:nothing_to_pull] = true

@@ -1,0 +1,8 @@
+Counting objects: 5, done.
+Compressing objects:  50% (1/2)   Compressing objects: 100% (2/2)   Compressing objects: 100% (2/2), done.
+Writing objects:  33% (1/3)   Writing objects:  66% (2/3)   Writing objects: 100% (3/3)   Writing objects: 100% (3/3), 268 bytes, done.
+Total 3 (delta 1), reused 0 (delta 0)
+To ../satellite/
+   865f920..f9ca10d  asdf -> asdf
+ ! [rejected]        master -> master (non-fast forward)
+error: failed to push some refs to '../satellite/'
