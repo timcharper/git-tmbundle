@@ -1,12 +1,8 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Log do
-  before(:all) do
-    stub_command_runner(SCM::Git::Log)
-  end
-  
+describe SCM::Git::Log do  
   before(:each) do
-    @log = SCM::Git::Log.new
+    @log = Git::Log.new
   end
   include SpecHelpers
   
@@ -53,7 +49,8 @@ made more failproof}
   
   describe "when running" do
     before(:each) do
-      @log.command_output << fixture_file("log_with_diffs.txt")
+      Git.command_output << fixture_file("log_with_diffs.txt")
+      Git.command_output << "* master\n  task"
       
       @output = capture_output do
         results = @log.run
