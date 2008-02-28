@@ -1,0 +1,16 @@
+remote: Counting objects: 8, done.        
+remote: Compressing objects:  16% (1/6)           
+remote: Compressing objects:  33% (2/6)           
+remote: Compressing objects:  50% (3/6)           
+remote: Compressing objects:  66% (4/6)           
+remote: Compressing objects:  83% (5/6)           
+remote: Compressing objects: 100% (6/6)           
+remote: Compressing objects: 1        0remote: 0% (6/6), done.        
+remote: Total 6 (delta 4), reused 0 (delta 0)        
+From ../satellite
+   dc29d3d..05f9ad9  asdf       -> satellite/asdf
+   791a587..4bfc230  master     -> satellite/master
+Updating 791a587..4bfc230
+Fast forward
+ project.txt |   12 ++++++++++++
+ 1 files changed, 12 insertions(+), 0 deletions(-)

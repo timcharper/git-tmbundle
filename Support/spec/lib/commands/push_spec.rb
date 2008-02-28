@@ -4,7 +4,13 @@ require 'stringio'
 
 describe SCM::Git::Push do
   include SpecHelpers
-  TEST_INPUT = <<EOF
+  
+  before(:each) do
+    @push = Git::Push.new
+  end
+    
+  describe "standard push" do
+    TEST_INPUT = <<EOF
 updating 'refs/heads/mybranch'
   from f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a
   to   d8b368361ebdf2c51b78f7cfdae5c3044b23d189
@@ -24,52 +30,76 @@ refs/heads/satellite: 60a254470cd97af3668ed4d6405633af850139c6 -> 746fba2424e6b9
 refs/heads/mybranch: f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a -> d8b368361ebdf2c51b78f7cfdae5c3044b23d189
 EOF
   
-  before(:each) do
-    @process_io = StringIO.new(TEST_INPUT)
-    @push = Git::Push.new
-  end
+    before(:each) do
+      @process_io = StringIO.new(TEST_INPUT)
+    end
   
-  it "should call the status proc 6 times" do
-    started_count = {}
-    finished = {}
-    output = {"Deltifying" => [], "Writing" => [] }
-    @push.process_push(@process_io,
-        :start => lambda { |state, count| started_count[state] = count },
-        :progress => lambda {|state, percent, index, count| state; output[state] << [percent, index, count]},
-        :end => lambda { |state, count| finished[state] = true }
-    )
+    it "should call the status proc 6 times" do
+      started_count = {}
+      finished = {}
+      output = {"Deltifying" => [], "Writing" => [] }
+      @push.process_push(@process_io,
+          :start => lambda { |state, count| started_count[state] = count },
+          :progress => lambda {|state, percent, index, count| state; output[state] << [percent, index, count]},
+          :end => lambda { |state, count| finished[state] = true }
+      )
     
-    for state in ["Deltifying", "Writing"]
-      started_count[state].should == 6
-      output[state].map{|o| o[0]}.should == [0,16,33,50,66,83,100]
-      output[state].map{|o| o[1]}.should == (0..6).to_a
-      output[state].map{|o| o[2]}.should == [6] * 7
-      finished[state].should == true
+      for state in ["Deltifying", "Writing"]
+        started_count[state].should == 6
+        output[state].map{|o| o[0]}.should == [0,16,33,50,66,83,100]
+        output[state].map{|o| o[1]}.should == (0..6).to_a
+        output[state].map{|o| o[2]}.should == [6] * 7
+        finished[state].should == true
+      end
+    end
+  
+    it "should return a list of all revisions pushed" do
+      output = @push.process_push(@process_io)
+      output[:pushes].should == {
+        "refs/heads/satellite" => ["60a254470cd97af3668ed4d6405633af850139c6", "746fba2424e6b94570fc395c472805625ab2ed25"],
+        "refs/heads/mybranch" => ["f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a", "d8b368361ebdf2c51b78f7cfdae5c3044b23d189"]
+      }
+    end
+  
+    it "should return :nothing_to_push if Everything up-to-date" do
+      output = @push.process_push(StringIO.new("Everything up-to-date\n"))
+      output[:nothing_to_push].should == true
+    end
+  
+    it "should run" do
+      Git.command_output << %Q{origin}
+      Git.command_output << TEST_INPUT
+      Git.command_output << fixture_file("log_with_diffs.txt")
+      Git.command_output << fixture_file("log_with_diffs.txt")
+      capture_output do
+        @push.run
+      end
     end
   end
   
-  it "should return a list of all reivisions pushed" do
-    output = @push.process_push(@process_io)
-    output[:pushes].should == {
-      "refs/heads/satellite" => ["60a254470cd97af3668ed4d6405633af850139c6", "746fba2424e6b94570fc395c472805625ab2ed25"],
-      "refs/heads/mybranch" => ["f0f27c95b7cdf4ca3b56ecb3c54ef3364133eb6a", "d8b368361ebdf2c51b78f7cfdae5c3044b23d189"]
-    }
-  end
-  
-  it "should return :nothing_to_push if Everything up-to-date" do
-    output = @push.process_push(StringIO.new(<<-EOF))
-Everything up-to-date
-EOF
-    output[:nothing_to_push].should == true
-  end
-  
-  it "should run" do
-    Git.command_output << %Q{origin}
-    Git.command_output << TEST_INPUT
-    Git.command_output << fixture_file("log_with_diffs.txt")
-    Git.command_output << fixture_file("log_with_diffs.txt")
-    capture_output do
-      @push.run
+  describe "for git 1.5.4.3" do
+    before(:each) do
+      @process_io = StringIO.new(fixture_file("push_1_5_4_3_output.txt"))
+    end
+
+    it "should call the progress proc 6 times for state Compressing" do
+      output = {"Compressing" => [], "Writing" => [] }
+
+      @push.process_push(@process_io, :progress => lambda {|state, percent, index, count| output[state] << [percent, index, count]})
+      output["Compressing"].map{|o| o[0]}.should == [50,100]
+      output["Compressing"].map{|o| o[1]}.should == [1,2]
+      output["Compressing"].map{|o| o[2]}.should == [2,2]
+      output["Writing"].map{|o| o[0]}.should == [33,66,100]
+      output["Writing"].map{|o| o[1]}.should == [1,2,3]
+      output["Writing"].map{|o| o[2]}.should == [3,3,3]
+    end
+
+    it "should extract the push information for the branch and assume the current branch" do
+      output = @push.process_push(@process_io)
+      
+      output[:pushes]['asdf'].should == ["865f920", "f9ca10d"]
+      output[:pushes]['master'].should == nil
+
     end
   end
 end

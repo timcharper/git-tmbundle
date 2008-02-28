@@ -75,12 +75,19 @@ class SCM::Git::Pull < SCM::Git
   def process_pull(stream, callbacks = {})
     output = {:pulls => {}, :text => "", :nothing_to_pull => false}
     branch = nil
-    
-    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(Unpacking) ([0-9]+) objects/) do |line|
+    branch = current_branch
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Unpacking) ([0-9]+) objects/) do |line|
       case line
-      when /^Already up\-to\-date/          then output[:nothing_to_pull] = true
-      when /^\* ([^:]+):/                   then branch = $1
-      when /^  (old\.\.new|commit): (.+)/   then output[:pulls][branch] = get_rev_range($2)
+      when /^Already up\-to\-date/
+        output[:nothing_to_pull] = true
+      when /^\* ([^:]+):/
+        branch = $1
+      when /^([a-z]+) ([0-9a-f]+\.\.[0-9a-f]+)/i
+        output[:pulls][branch] = get_rev_range($2)
+      when /^  (old\.\.new|commit): (.+)/
+        output[:pulls][branch] = get_rev_range($2)
+      when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
+        output[:pulls][$2] = get_rev_range($1)
       end
       
       output[:text] << line
