@@ -21,20 +21,21 @@ class Formatters::Diff < Formatters
   def content(diff_results)
     puts '<code>'
     diff_results.each do |diff_result|
+      open_links = {}
       files = [:left, :right].map do |lr|
         filepath = diff_result[lr][:filepath]
         start_line_right = diff_result[:right][:ln_start]
         
         if filepath
-          prev_link = 
-            if (@rev.nil? || @rev.empty?) 
-              ""
-            else 
-              prev_url = %Q{javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{@rev}", "#{start_line_right}"] );}
-              %Q{(<a href='#{prev_url}'>#{short_rev(@rev)}</a>)}
-            end
-            current_url = "txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}"
-            filepath ? %Q{<a href='#{current_url}'>#{htmlize filepath}</a> #{prev_link}} : "(none)"
+          if (@rev.nil? || @rev.empty?) 
+            open_links[lr] = lr.to_s
+          else 
+            prev_rev = lr == :left ? "#{@rev}^" : @rev
+            prev_url = %Q{javascript:gateway_command("show.rb", ["#{e_js filepath}", "#{prev_rev}", "#{start_line_right}"] );}
+            open_links[lr] = "<a href='#{prev_url}'>#{lr}</a>"
+          end
+          current_url = "txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}"
+          filepath ? %Q{<a href='#{current_url}'>#{htmlize filepath}</a>} : "(none)"
         else
           "(none)"
         end
@@ -44,8 +45,8 @@ class Formatters::Diff < Formatters
       <table class='codediff inline'>
         <thead>
           <tr>
-            <td class='line-numbers'>left</td>
-            <td class='line-numbers'>right</td>
+            <td class='line-numbers'>#{open_links[:left]}</td>
+            <td class='line-numbers'>#{open_links[:right]}</td>
             <td/>
           </tr>
         </thead>
