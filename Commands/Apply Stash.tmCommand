@@ -16,7 +16,7 @@ if stash_item.nil?
 end
 puts "&lt;h2&gt;Applying stash '#{stash_item[:description]}'&lt;/h2&gt;"
 flush
-puts htmlize(stash.apply_stash(stash_item[:id]))
+puts htmlize(stash.apply_stash(stash_item[:name]))
 rescan_project</string>
 	<key>input</key>
 	<string>none</string>

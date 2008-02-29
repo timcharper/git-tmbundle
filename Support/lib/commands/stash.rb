@@ -52,7 +52,7 @@ class SCM::Git::Stash < SCM::Git
   end
   
   def apply_stash(name)
-    command("stash", "apply", name)
+    command("stash", "apply", "--index", name)
   end
   
   def clear_with_confirmation
