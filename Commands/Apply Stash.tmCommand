@@ -16,7 +16,23 @@ if stash_item.nil?
 end
 puts "&lt;h2&gt;Applying stash '#{stash_item[:description]}'&lt;/h2&gt;"
 flush
-puts htmlize(stash.apply_stash(stash_item[:name]))
+
+stash_it = lambda {
+  stash.apply_stash(stash_item[:name])
+}
+
+result = stash_it.call
+
+if result.match(/Cannot restore on top of a dirty state/)
+  response = TextMate::UI.alert(:warning, "You're not on a clean working copy", "You may want to commit your outstanding changes before stashing.\nWould you like to apply your stash anyways? (could cause conflicts)", "No", "Yes")
+  if response == "Yes"
+    stash.command("add", ".")
+    result = stash_it.call
+    stash.command("reset")
+  end
+end
+
+puts htmlize(result)
 rescan_project</string>
 	<key>input</key>
 	<string>none</string>
