@@ -111,7 +111,7 @@ class SCM::Git::Branch < SCM::Git
     output = command("branch", "-d", target).strip
     if output == "Deleted branch #{target}."
       TextMate::UI.alert(:informational, "Success", output, 'OK') 
-    elsif output.match(/error.+not a strict subset/)
+    elsif output.match(/error.+(not a strict subset|not an ancestor of your current HEAD)/)
       response = TextMate::UI.alert(:warning, "Warning", "Branch '#{target}' is not a strict subset of your current HEAD (it has unmerged changes)\nReally delete it?", 'Yes', 'No') 
       return false if response != 'Yes'
       
