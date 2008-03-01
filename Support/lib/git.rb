@@ -1,12 +1,10 @@
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require 'shellwords'
-require 'set'
-require File.dirname(__FILE__) + '/formatters.rb'
-require File.dirname(__FILE__) + '/ruby_tm_helpers.rb'
-
 module SCM
   class Git
     include CommonFormatters
+    def initialize
+      chdir_base
+    end
+    
     def command_str(*args)
       %{#{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
     end
@@ -161,11 +159,8 @@ module SCM
       end
     end
 
-    def create_branch(name, git_file)
-      base = File.expand_path("..", git_dir(git_file))
-      Dir.chdir(base)
-    
-      %x{#{command_str("branch", name)} && #{command_str("checkout", name)}}
+    def create_branch(name)
+      command("checkout", "-b", name)
     end
   
     def switch_to_branch(name, git_file = nil)
@@ -205,14 +200,6 @@ module SCM
       raise "Class not found: #{name}"
     end
   end
-end
-
-if __FILE__ == $0
-
-  git = SCM::Git.new
-
-  p git.branches("/Users/duff/Source/Avian_git/Notes/Interesting F:OSS.txt")
-
 end
 
 Git = SCM::Git

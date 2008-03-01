@@ -5,8 +5,7 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby -wKU
-
+	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
 git = SCM::Git::SVNRebase.new
 git.run

@@ -5,9 +5,8 @@
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby -wKU
-
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+	<string>#!/usr/bin/env ruby
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 git = SCM::Git::Status.new
 git.run</string>
 	<key>input</key>

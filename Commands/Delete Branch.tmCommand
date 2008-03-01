@@ -7,10 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-
-git = SCM::Git::Branch.new
-git.run_delete</string>
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch(:controller =&gt; "branch", :action =&gt; "delete")</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

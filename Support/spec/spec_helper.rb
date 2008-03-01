@@ -1,6 +1,6 @@
 SPEC_ROOT = File.dirname(__FILE__)
 FIXTURES_DIR = "#{SPEC_ROOT}/fixtures"
-require SPEC_ROOT + '/../lib/git.rb'
+require SPEC_ROOT + '/../environment.rb'
 require 'stringio'
 require 'hpricot'
 
@@ -35,9 +35,11 @@ module SpecHelpers
     io_stream = StringIO.new
     begin 
       set_constant_forced(Object, "STDOUT", io_stream)
-      Object.class_eval do 
-        def puts(*args)
-        args.each{ |arg| Object::STDOUT.puts arg}
+      [Git, ApplicationController].each do |klass| 
+        klass.class_eval do 
+          def puts(*args)
+          args.each{ |arg| Object::STDOUT.puts arg}
+          end
         end
       end
       yield

@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
 	<key>beforeRunningCommand</key>
 	<string>nop</string>
 	<key>command</key>
-	<string>#!/usr/bin/env ruby -wKU
-
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
-
-if name = TextMate::UI.request_string(:title =&gt; "Create Branch", :prompt =&gt; "Enter the name of the new branch:")
-  git = SCM::Git.new
-  git_base = File.expand_path('..', git.git_dir(git.paths.first))
-  git.create_branch(name, git_base)
-end
+	<string>#!/usr/bin/env ruby
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch(:controller =&gt; "branch", :action =&gt; "create")
 </string>
 	<key>input</key>
 	<string>none</string>
