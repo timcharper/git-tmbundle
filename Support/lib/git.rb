@@ -62,25 +62,6 @@ module SCM
       fullpath
     end
     
-    def shorten(path, base = nil)
-      return if path.blank?
-      base = base.gsub(/\/$/, "") if base
-      project_path = 
-      home_path = ENV['HOME']
-      case
-      when base && path =~ /^#{Regexp.escape base}\/(.+)$/
-        $1
-      when path == project_path
-        File.basename(path)
-      when ENV['TM_PROJECT_DIRECTORY'] && path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
-        $1
-      when ENV['HOME'] && path =~ /^#{Regexp.escape ENV['HOME']}\/(.+)$/
-        '~/' + $1
-      else
-        path
-      end
-    end
-    
     def paths(options = { :unique => true, :fallback => :project })
       if ENV.has_key? 'TM_SELECTED_FILES'
         res = Shellwords.shellwords(ENV['TM_SELECTED_FILES'])
@@ -171,6 +152,11 @@ module SCM
     rescue LoadError
       raise "Class not found: #{name}"
     end
+    
+    def merge_message
+      return unless File.exist?(File.join(git_base, ".git/MERGE_HEAD"))
+      File.read(File.join(git_base, ".git/MERGE_MSG"))
+    end
 
     def status(file_or_dir = nil, options = {})
       file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
@@ -214,6 +200,22 @@ module SCM
       result = File.expand_path(file, base_dir)
       result << "/" if is_a_path?(file)
       result
+    end
+    
+    def clean_directory?
+      status.empty?
+    end
+
+    def commit(msg, files = ["."])
+      parse_commit(command("commit", "-m", msg, *files))
+    end
+    
+    def add(files = ["."])
+      command("add", *files)
+    end
+
+    def rm(files = ["."])
+      command("rm", *files)
     end
     
     %w[config branch].each do |command|

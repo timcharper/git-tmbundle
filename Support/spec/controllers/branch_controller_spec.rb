@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + '/../spec_helper'
-require CONTROLLERS_ROOT + "/branch_controller.rb"
 
 describe "deleting branches locally warns and allows you to cancel", :shared => true do
   it "Ask you if you'd like to delete the branch, and then delete it with -D if yes" do

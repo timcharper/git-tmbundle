@@ -8,10 +8,23 @@ end
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'shellwords'
 require 'set'
+require "#{ROOT}/dispatch"
 
-def dispatch(params = {})
-  raise "must supply a controller to use!" unless controller = params[:controller]
-  params[:action] ||= "index"
-  controller_class = "#{controller}_controller".classify.constantize
-  controller_class.call(params[:action], params)
+def shorten(path, base = nil)
+  return if path.blank?
+  base = base.gsub(/\/$/, "") if base
+  project_path = 
+  home_path = ENV['HOME']
+  case
+  when base && path =~ /^#{Regexp.escape base}\/(.+)$/
+    $1
+  when path == project_path
+    File.basename(path)
+  when ENV['TM_PROJECT_DIRECTORY'] && path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
+    $1
+  when ENV['HOME'] && path =~ /^#{Regexp.escape ENV['HOME']}\/(.+)$/
+    '~/' + $1
+  else
+    path
+  end
 end

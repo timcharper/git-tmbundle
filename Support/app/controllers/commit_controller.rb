@@ -1,4 +1,93 @@
+CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
+
 class CommitController < ApplicationController
   def index
+    if git.clean_directory?
+      puts "Working directory is clean (nothing to commit)"
+      exit
+    end
+    
+    if git.merge_message
+      run_merge_commit
+    else
+      run_partial_commit
+    end
   end
+  
+  protected
+    def run_merge_commit
+      f = Formatters::Commit.new
+      f.layout do
+        f.header "Resolve a merge conflict"
+        
+        render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base)
+        # puts statuses(git_base).inspect
+        if git.status.any? {|status_options| status_options[:status][:short] == "C"}
+          puts "<p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
+          abort
+        end
+        f.commit_merge_dialog(git.merge_message)
+      end
+    end
+      
+    def run_partial_commit
+      f = Formatters::Commit.new
+      target_file_or_dir = git.paths.first
+      f.layout do
+        f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
+        flush
+    
+        files, statuses = [], []
+        git.status(target_file_or_dir).each do |e|
+          files  << e_sh(shorten(e[:path], @base))
+          statuses << e_sh(e[:status][:short])
+        end
+        
+        msg, files = show_commit_dialog(files, statuses)
+
+        puts "<h2>Commit Files:</h2><ul>"
+        puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
+        puts "</ul>"
+
+        puts "<h2>Using Message:</h2>"
+        puts "<pre>#{htmlize(msg)}</pre>"
+        STDOUT.flush
+
+        unless files.empty?
+          puts "<h2>Result:</h2>"
+          auto_add_rm(files)
+          res = git.commit(msg, files)
+          f.output_commit_result(res)
+        end
+      end
+    end
+    
+    def show_commit_dialog(files, statuses)
+      status_helper_tool = ENV['TM_BUNDLE_SUPPORT'] + '/gateway/commit_dialog_helper.rb'
+      
+      res = %x{#{e_sh CW}                 \
+        --diff-cmd   '#{git.git},diff'        \
+        --action-cmd "M,D:Revert,#{status_helper_tool},revert" \
+        --status #{statuses.join ':'}       \
+        #{files.join ' '} 2>/dev/console
+      }
+
+      if $? != 0
+        puts "<strong>Cancel</strong>"
+        abort
+      end
+
+      res   = Shellwords.shellwords(res)
+      msg = res[1]
+      files = res[2..-1]
+      return msg, files
+    end
+    
+    def auto_add_rm(files)
+      git.chdir_base
+      add_files = files.select{ |f| File.exists?(f) }
+      remove_files = files.reject{ |f| File.exists?(f) }
+      res = git.add(add_files) unless add_files.empty?
+      res = git.rm(remove_files) unless remove_files.empty?
+    end
 end

@@ -35,6 +35,10 @@ class ApplicationController
     ERBStdout.new(___template___, nil, "-", "STDOUT").run(binding)
   end
   
+  def render_component(params = {})
+    dispatch(params)
+  end
+  
   def self.template_root
     to_s.gsub("::", "/").underscore
   end

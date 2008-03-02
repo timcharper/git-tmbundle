@@ -8,15 +8,7 @@
 	<string>#!/usr/bin/env ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-
-commit_dialog  = SCM::Git::Commit.new
-
-if commit_dialog.clean_directory?
-  puts "Working directory is clean (nothing to commit)"
-  exit
-end
-
-commit_dialog.run</string>
+dispatch(:controller =&gt; "commit")</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

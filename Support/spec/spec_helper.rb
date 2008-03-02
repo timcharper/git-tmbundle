@@ -116,6 +116,10 @@ class Git
   def git_base
     "/base/"
   end
+  
+  def paths
+    [git_base]
+  end
 end
 
 [:exit_show_html, :exit_discard, :exit_show_tool_tip].each do |exit_method|

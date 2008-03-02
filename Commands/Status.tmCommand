@@ -7,8 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-git = SCM::Git::Status.new
-git.run</string>
+dispatch(:controller =&gt; "status")
+</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
