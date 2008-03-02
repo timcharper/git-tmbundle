@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe SCM::Git::Status do
   before(:each) do
-    @status = SCM::Git::Status.new
+    @status = Git.new
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
   

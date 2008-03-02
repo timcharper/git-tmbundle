@@ -67,9 +67,10 @@ EOF
     end
   
     it "should run" do
-      Git.command_output << %Q{origin}
-      Git.command_output << TEST_INPUT
-      Git.command_output << fixture_file("log_with_diffs.txt")
+      Git.command_response["remote"] = %Q{origin}
+      Git.command_response["push", "origin"] = TEST_INPUT
+      Git.command_response["log", "-p", "60a254470cd97af3668ed4d6405633af850139c6..746fba2424e6b94570fc395c472805625ab2ed25", "."] = fixture_file("log_with_diffs.txt")
+      Git.command_response["branch"] = "* master\n  task"
       Git.command_output << fixture_file("log_with_diffs.txt")
       capture_output do
         @push.run

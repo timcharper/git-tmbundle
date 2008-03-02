@@ -1,10 +1,6 @@
 class String
   def constantize
-    if /^::/.match(self)
-      eval(self)
-    else
-      eval("::" + self)
-    end
+    Object.module_eval("::" + self)
   end
   
   def underscore

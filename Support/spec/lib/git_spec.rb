@@ -6,19 +6,19 @@ describe SCM::Git do
   end
   it "should retrieve a value" do
     @git.command_output << "../origin"
-    @git["remote.origin.url"].should == "../origin"
+    @git.config["remote.origin.url"].should == "../origin"
   end
   
   it "should set a value" do
     @git.command_output << "../origin"
     @git.command_output << "../origin"
-    @git["remote.origin.url"] = "../origin"
-    @git["remote.origin.url"].should == "../origin"
+    @git.config["remote.origin.url"] = "../origin"
+    @git.config["remote.origin.url"].should == "../origin"
   end
   
   it "should return nil on blank, non-existing value" do
     @git.command_output << ""
-    @git["remote.origin.url"].should be_nil
+    @git.config["remote.origin.url"].should be_nil
   end
   
   describe "when getting branches" do

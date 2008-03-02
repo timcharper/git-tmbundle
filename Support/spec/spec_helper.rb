@@ -35,7 +35,7 @@ module SpecHelpers
     io_stream = StringIO.new
     begin 
       set_constant_forced(Object, "STDOUT", io_stream)
-      [Git, ApplicationController].each do |klass| 
+      [::Git, ::ApplicationController, ::Formatters].each do |klass| 
         klass.class_eval do 
           def puts(*args)
           args.each{ |arg| Object::STDOUT.puts arg}

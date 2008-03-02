@@ -7,8 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
-git = SCM::Git::Pull.new
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+git = Git::Pull.new
 git.run
 
 rescan_project</string>

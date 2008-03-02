@@ -6,10 +6,6 @@ class SCM::Git::Commit < SCM::Git
     @base  = git_base
     chdir_base
   end
-
-  def status(*args)
-    SCM::Git::Status.new.status(*args)
-  end
   
   def clean_directory?
     statuses.empty?

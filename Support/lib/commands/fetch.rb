@@ -12,8 +12,8 @@ class SCM::Git::Fetch < SCM::Git
     c_branch = current_branch
     branch_remote_config_key = "branch.#{c_branch}.remote"
     branch_remote_merge_key = "branch.#{c_branch}.merge"
-    branch_default_source = self[branch_remote_config_key]
-    branch_default_merge = self[branch_remote_merge_key]
+    branch_default_source = config[branch_remote_config_key]
+    branch_default_merge = config[branch_remote_merge_key]
     sources_with_default = sources
     sources_with_default = ([branch_default_source] + sources_with_default).uniq if branch_default_source
     sources_with_default_with_all = sources_with_default.dup

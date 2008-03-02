@@ -9,11 +9,11 @@ class SCM::Git::Pull < SCM::Git
 
   def run
     f = Formatters::Pull.new
-    c_branch = current_branch
+    c_branch = branch.current_name
     branch_remote_config_key = "branch.#{c_branch}.remote"
     branch_remote_merge_key = "branch.#{c_branch}.merge"
-    branch_default_source = self[branch_remote_config_key]
-    branch_default_merge = self[branch_remote_merge_key]
+    branch_default_source = config[branch_remote_config_key]
+    branch_default_merge = config[branch_remote_merge_key]
     sources_with_default = sources
     sources_with_default = ([branch_default_source] + sources_with_default).uniq if branch_default_source
     
@@ -22,7 +22,7 @@ class SCM::Git::Pull < SCM::Git
         # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
         if source != branch_default_source || branch_default_merge.nil?
           # select a branch to merge from
-          remote_branches = branches(:remote, :remote_name => source).map{|b| b[:name]}
+          remote_branches = branch.list(:remote, :remote_name => source).map{|b| b[:name]}
           # by default, select a branch with the same name first
           remote_branches = (remote_branches.grep(/(\/|^)#{c_branch}$/) + remote_branches).uniq
           # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
@@ -34,8 +34,8 @@ class SCM::Git::Pull < SCM::Git
           end
           
           if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch} -> #{c_branch}?", 'Yes', 'No')  == "Yes"
-            self[branch_remote_config_key] = source
-            self[branch_remote_merge_key] = "refs/heads/" + remote_branch.split("/").last
+            config[branch_remote_config_key] = source
+            config[branch_remote_merge_key] = "refs/heads/" + remote_branch.split("/").last
           end
         end
         
@@ -75,7 +75,7 @@ class SCM::Git::Pull < SCM::Git
   def process_pull(stream, callbacks = {})
     output = {:pulls => {}, :text => "", :nothing_to_pull => false}
     branch = nil
-    branch = current_branch
+    branch = self.branch.current_name
     process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Unpacking) ([0-9]+) objects/) do |line|
       case line
       when /^Already up\-to\-date/

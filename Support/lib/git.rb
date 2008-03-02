@@ -1,27 +1,34 @@
+require LIB_ROOT + "/parsers.rb"
+require LIB_ROOT + "/commands/submodule_base.rb"
+require LIB_ROOT + "/commands/config.rb" # we have to specifically require this
 module SCM
   class Git
+    GIT_SCM_STATUS_MAP = {
+      'A' => {:short => 'A', :long => 'added',        :foreground => '#008000', :background => '#bbffb3'},
+      '+' => {:short => '+', :long => 'added',        :foreground => '#008000', :background => '#bbffb3'},
+      'D' => {:short => 'D', :long => 'deleted',      :foreground => '#FF0000', :background => '#f59696'},
+      'G' => {:short => 'G', :long => 'merged',       :foreground => '#eb6400', :background => '#f7e1ad'},
+      'U' => {:short => 'U', :long => 'updated',      :foreground => '#eb6400', :background => '#f7e1ad'},
+      'M' => {:short => 'M', :long => 'modified',     :foreground => '#eb6400', :background => '#f7e1ad'},
+      'L' => {:short => 'L', :long => 'locked',       :foreground => nil      , :background => nil      },
+      'B' => {:short => 'B', :long => 'broken',       :foreground => nil      , :background => nil      },
+      'R' => {:short => 'R', :long => 'replaced',     :foreground => '#FF0000', :background => '#f59696'},
+      'C' => {:short => 'C', :long => 'conflict',     :foreground => '#008080', :background => '#A3CED0'},
+      '!' => {:short => '!', :long => 'missing',      :foreground => '#008080', :background => '#A3CED0'},
+      '"' => {:short => '"', :long => 'typeconflict', :foreground => '#008080', :background => '#A3CED0'},
+      '?' => {:short => '?', :long => 'unknown',      :foreground => '#800080', :background => '#edaef5'},
+      'I' => {:short => 'I', :long => 'ignored',      :foreground => '#800080', :background => '#edaef5'},
+      'X' => {:short => 'X', :long => 'external',     :foreground => '#800080', :background => '#edaef5'},
+    }
+    
     include CommonFormatters
+    
     def initialize
       chdir_base
     end
     
     def command_str(*args)
       %{#{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
-    end
-    
-    def chdir_base
-      Dir.chdir(git_base)
-    end
-    
-    def list_files(dir, options = {})
-      options[:exclude_file] ||= File.exists?(excl_file = git_dir(dir) + '/info/exclude') ? excl_file : nil
-      options[:type] ||= nil
-      params = []
-      params << "-#{options[:type]}" if options[:type]
-      params << "--exclude-per-directory=.gitignore"
-      params << "--exclude-from=#{e_sh options[:exclude_file]}" if options[:exclude_file]
-      
-      command("ls-files", *params).split("\n")
     end
 
     def command(*args)
@@ -33,50 +40,12 @@ module SCM
       IO.popen("#{cmd} 2>&1", "r")
     end
     
-    def sources
-      command("remote").split("\n")
-    end
-    
-    def remote_branch_prefix(remote_name)
-      /\*:refs\/remotes\/(.+)\/\*/.match(self["remote.#{remote_name}.fetch"])
-       $1
-    end
-    
-    def [](key)
-      r = command("config", key)
-      r.empty? ? nil : r.gsub(/\n$/, '')
-    end
-
-    def []=(key, value)
-      command("config", key, value)
-    end
-
-    def branches(which = :local, options= {})
-      chdir_base
-      params = []
-      case which
-      when :all then params << "-a"
-      when :remote then params << "-r"
-      end
-      
-      result = command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
-      if options[:remote_name]
-        r_prefix = remote_branch_prefix(options[:remote_name])
-        result.delete_if {|r| ! Regexp.new("^#{Regexp.escape(r_prefix)}\/").match(r[:name]) }
-      end
-      result
-    end
-    
-    def branch_names(*args)
-      branches(*args).map{|b| b[:name]}
-    end
-    
-    def current_branch
-      branches.find { |b| b[:default] }[:name]
-    end
-    
     def git
       git ||= e_sh(ENV['TM_GIT'] || 'git')
+    end
+    
+    def chdir_base
+      Dir.chdir(git_base)
     end
   
     def git_base
@@ -93,7 +62,6 @@ module SCM
       fullpath
     end
     
-
     def shorten(path, base = nil)
       return if path.blank?
       base = base.gsub(/\/$/, "") if base
@@ -158,18 +126,22 @@ module SCM
         i == 0 ? '/' : components[0][0...i].join('/')
       end
     end
-
-    def create_branch(name)
-      command("checkout", "-b", name)
+    
+    def sources
+      command("remote").split("\n")
     end
-  
-    def switch_to_branch(name, git_file = nil)
-      chdir_base
-      result = command("checkout", name)
-      rescan_project
-      result
+    
+    def list_files(dir, options = {})
+      options[:exclude_file] ||= File.exists?(excl_file = git_dir(dir) + '/info/exclude') ? excl_file : nil
+      options[:type] ||= nil
+      params = []
+      params << "-#{options[:type]}" if options[:type]
+      params << "--exclude-per-directory=.gitignore"
+      params << "--exclude-from=#{e_sh options[:exclude_file]}" if options[:exclude_file]
+      
+      command("ls-files", *params).split("\n")
     end
-  
+    
     def create_tag(name, git_file)
       base = File.expand_path("..", git_dir(git_file))
       Dir.chdir(base)
@@ -199,6 +171,60 @@ module SCM
     rescue LoadError
       raise "Class not found: #{name}"
     end
+
+    def status(file_or_dir = nil, options = {})
+      file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
+      file_or_dir = file_or_dir.dup if file_or_dir
+      chdir_base
+      base_dir = git_base
+
+      file_statuses = {}
+
+      results = parse_status(command("status"))
+      results.each do |file, status|
+        file_statuses[expand_path_preserving_trailing_slash(file, base_dir)] = status
+      end
+
+      sorted_results = file_statuses.sort.map do |filepath, display_status|
+        {:path => filepath, :display => shorten(filepath, base_dir), :status => GIT_SCM_STATUS_MAP[display_status]}
+      end
+
+      if file_or_dir
+        file_or_dir << "/" if File.directory?(file_or_dir) unless /\/$/.match(file_or_dir)
+        sorted_results.select do |status|
+          if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
+            # promote this status on down and keep it if it's the parent folder of our target file_or_dir
+            status[:path] = file_or_dir
+            status[:display] = shorten(file_or_dir, base_dir)
+            true
+          else
+            /^#{Regexp.escape(file_or_dir)}/i.match(status[:path])
+          end
+        end
+      else
+        sorted_results
+      end
+    end
+
+    def is_a_path?(filepath)
+      /\/$/.match(filepath)
+    end
+
+    def expand_path_preserving_trailing_slash(file, base_dir)
+      result = File.expand_path(file, base_dir)
+      result << "/" if is_a_path?(file)
+      result
+    end
+    
+    %w[config branch].each do |command|
+      class_eval <<-EOF
+      def #{command}
+        @#{command} ||= SCM::Git::#{command.classify}.new(self)
+      end
+      EOF
+    end
+
+    include Parsers
   end
 end
 

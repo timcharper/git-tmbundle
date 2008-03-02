@@ -7,7 +7,7 @@ describe SCM::Git::Commit do
   include SpecHelpers
   
   it "should parse a commit" do
-    @commit.command_output << <<-EOF
+    Git.command_output << <<-EOF
 Created commit ff4ba93: some message
  1 files changed, 2 insertions(+), 0 deletions(-)
 Unrecognized line

@@ -2,9 +2,9 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 class BranchController < ApplicationController
   def switch
-    locals = git.branch_names(:local)
-    remotes = git.branch_names(:remote)
-    current = git.current_branch
+    locals = git.branch.list_names(:local)
+    remotes = git.branch.list_names(:remote)
+    current = git.branch.current_name
     
     items = ([current] + locals + remotes).uniq
     
@@ -26,14 +26,14 @@ class BranchController < ApplicationController
   
   def create
     if name = TextMate::UI.request_string(:title => "Create Branch", :prompt => "Enter the name of the new branch:")
-      puts git.create_branch(name)
+      puts git.branch.create(name)
     end
   end
   
   def delete
-    locals = git.branch_names(:local)
-    remotes = git.branch_names(:remote)
-    current = git.current_branch
+    locals = git.branch.list_names(:local)
+    remotes = git.branch.list_names(:remote)
+    current = git.branch.current_name
     
     all = locals + remotes
     
@@ -75,7 +75,7 @@ class BranchController < ApplicationController
           return exit_discard
         end
       
-        if git.branch_names(:local).include?(new_branch_name)
+        if git.branch.list_names(:local).include?(new_branch_name)
           response = TextMate::UI.alert(:warning, "Branch name already taken!", "The branch name '#{new_branch_name}' is already in use.\nVery likely this is the branch you want to work on.\nIf not, pick another name.", "Pick another name", "Switch to it", "Cancel")
           return exit_discard if response == "Cancel"
           return switch_local(new_branch_name) if response == "Switch to it"
@@ -89,39 +89,43 @@ class BranchController < ApplicationController
     end
   
     def delete_local(target)
-      output = git.command("branch", "-d", target).strip
-      if output == "Deleted branch #{target}."
-        TextMate::UI.alert(:informational, "Success", output, 'OK') 
-      elsif output.match(/error.+(not a strict subset|not an ancestor of your current HEAD)/)
-        response = TextMate::UI.alert(:warning, "Warning", "Branch '#{target}' is not a strict subset of your current HEAD (it has unmerged changes)\nReally delete it?", 'Yes', 'No') 
-        return false if response != 'Yes'
-      
-        output = git.command("branch", "-D", target).strip
-        TextMate::UI.alert(:informational, "Delete branch", output, 'OK')
+      result = git.branch.delete(target)
+      case result[:outcome]
+      when :success
+        TextMate::UI.alert(:informational, "Success", result[:output], 'OK') 
+      when :unmerged
+        return false if TextMate::UI.alert(:warning, "Warning", "Branch '#{target}' is not an ancestor of your current HEAD (it has unmerged changes)\nReally delete it?", 'Yes', 'No') != 'Yes'
+        result = git.branch.delete(target, :force => true)
+        if result[:outcome] == :success
+          TextMate::UI.alert(:informational, "Deleted branch", result[:output], 'OK')
+        else
+          TextMate::UI.alert(:informational, "Still couldn't delete branch", "Git said:\n#{result[:output]}", 'OK')
+          return false
+        end
       else
-        response = TextMate::UI.alert(:warning, "Hmmm", "I didn't understand's git's response, perhaps you can make sense of it?\n#{output}", 'Ok') 
+        TextMate::UI.alert(:warning, "Hmmm", "I didn't understand's git's response, perhaps you can make sense of it?\n#{result[:output].to_s}", 'Ok') 
+        return false
       end
-    
       true
     end
   
     def delete_remote(target)
       # detect remote
-      remote_alias, branch = target.split("/")
-      output = git.command("push", remote_alias, ":#{branch}")
-      case output
-      when /refs\/heads\/#{branch}: .+\-\> deleted/, /\[deleted\]/
+      result = git.branch.delete(target)
+      case result[:outcome]
+      when :success
         TextMate::UI.alert(:informational, "Success", "Deleted remote branch #{target}.", "OK")
         return true
-      when /error: dst refspec .+ does not match any existing ref on the remote and does not start with refs\/./
-        TextMate::UI.alert(:warning, "Delete branch failed!", "The source '#{remote_alias}' reported that the branch '#{branch}' does not exist.\nTry running the prune remote stale branches command?", "OK")
+      when :branch_not_found
+        TextMate::UI.alert(:warning, "Delete branch failed!", "The source '#{result[:remote]}' reported that the branch '#{result[:branch]}' does not exist.\nTry running the prune remote stale branches command?", "OK")
+        return false
       else
-        TextMate::UI.alert(:informational, "Deleted remote branch", "I couldn't make sense of this.  Perhaps you can?\n#{output}", 'OK')
+        TextMate::UI.alert(:informational, "Delete remote branch", "I couldn't make sense of this.  Perhaps you can?\n#{result[:output]}", 'OK')
       end
     end
     
     def switch_local(target_branch)
-      output = git.switch_to_branch(target_branch)
+      output = git.branch.switch(target_branch)
       case output
       when /fatal: you need to resolve your current index first/
         TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
