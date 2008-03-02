@@ -33,4 +33,14 @@ describe CommitController do
       output.should include(@merge_message)
     end
   end
+  
+  describe "when running a merge commit" do
+    it "should run" do
+      @merge_message = "Merged some branch into another branch..."
+      # output = capture_output do
+      dispatch(:controller => "commit", :action => "merge_commit", :message => @merge_message)
+      # end
+      # output.should include(@merge_message)
+    end
+  end
 end

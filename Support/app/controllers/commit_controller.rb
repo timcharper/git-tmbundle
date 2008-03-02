@@ -14,6 +14,19 @@ class CommitController < ApplicationController
     end
   end
   
+  def merge_commit
+    message = params[:message]
+    f = Formatters::Commit.new
+    f.layout do 
+      statuses = git.status(git.git_base)
+      files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
+
+      auto_add_rm(files)
+      res = git.commit(message, [])
+      f.output_commit_result(res)
+    end
+  end
+  
   protected
     def run_merge_commit
       f = Formatters::Commit.new
