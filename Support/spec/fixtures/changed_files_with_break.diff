@@ -48,7 +48,7 @@ index 18a505b..af13ba3 100644
 @@ -15,7 +15,7 @@ base = git.nca(paths)
  Formatters::Diff.new(base) do |f|
    paths.each do |path|
-     f.header("Uncomitted Changes for ‘#{htmlize(git.shorten(path, base))}’")
+     f.header("Uncomitted Changes for ‘#{htmlize(shorten(path, base))}’")
 -    f.content(git.diff(path, base))
 +    f.content(git.diff_file(ENV["TM_PROJECT_DIRECTORY"], base))
    end

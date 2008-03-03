@@ -13,12 +13,12 @@ index ec2b697..1b788d4 100644
  
  f = Formatters::Annotate.new(:log_entries =&gt; log_entries)
 -output = f.layout do
--  p = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+-  p = f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
 -  p &lt;&lt; f.navigate_box
 -  p &lt;&lt; f.content(annotations)
 -  p
 +f.layout do
-+  f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
++  f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
 +  f.navigate_box
 +  f.content(annotations)
  end
@@ -50,11 +50,11 @@ index 892f971..ba6ae96 100644
  
  f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
 -
--output = f.header("Annotations for ‘#{htmlize(git.shorten(filepath))}’")
+-output = f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
 -output = f.content(annotations)
 -
 -puts output
-+f.header "Annotations for ‘#{htmlize(git.shorten(filepath))}’"
++f.header "Annotations for ‘#{htmlize(shorten(filepath))}’"
 +f.content annotations
 diff --git a/Support/lib/commands/commit.rb b/Support/lib/commands/commit.rb
 index 74943a0..4555fea 100644
