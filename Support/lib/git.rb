@@ -12,7 +12,7 @@ module SCM
       'M' => {:short => 'M', :long => 'modified',     :foreground => '#eb6400', :background => '#f7e1ad'},
       'L' => {:short => 'L', :long => 'locked',       :foreground => nil      , :background => nil      },
       'B' => {:short => 'B', :long => 'broken',       :foreground => nil      , :background => nil      },
-      'R' => {:short => 'R', :long => 'replaced',     :foreground => '#FF0000', :background => '#f59696'},
+      'R' => {:short => 'R', :long => 'renamed',      :foreground => '#FF0000', :background => '#f59696'},
       'C' => {:short => 'C', :long => 'conflict',     :foreground => '#008080', :background => '#A3CED0'},
       '!' => {:short => '!', :long => 'missing',      :foreground => '#008080', :background => '#A3CED0'},
       '"' => {:short => '"', :long => 'typeconflict', :foreground => '#008080', :background => '#A3CED0'},

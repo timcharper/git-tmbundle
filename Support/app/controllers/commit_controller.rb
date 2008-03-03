@@ -17,61 +17,55 @@ class CommitController < ApplicationController
   def merge_commit
     message = params[:message]
     f = Formatters::Commit.new
-    f.layout do 
-      statuses = git.status(git.git_base)
-      files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
+    statuses = git.status(git.git_base)
+    files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
 
-      auto_add_rm(files)
-      res = git.commit(message, [])
-      f.output_commit_result(res)
-    end
+    auto_add_rm(files)
+    res = git.commit(message, [])
+    f.output_commit_result(res)
   end
   
   protected
     def run_merge_commit
       f = Formatters::Commit.new
-      f.layout do
-        f.header "Resolve a merge conflict"
-        
-        render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base)
-        # puts statuses(git_base).inspect
-        if git.status.any? {|status_options| status_options[:status][:short] == "C"}
-          puts "<p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
-          abort
-        end
-        f.commit_merge_dialog(git.merge_message)
+      f.header "Resolve a merge conflict"
+      
+      render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base)
+      # puts statuses(git_base).inspect
+      if git.status.any? {|status_options| status_options[:status][:short] == "C"}
+        puts "<p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
+        abort
       end
+      f.commit_merge_dialog(git.merge_message)
     end
       
     def run_partial_commit
       f = Formatters::Commit.new
       target_file_or_dir = git.paths.first
-      f.layout do
-        f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
-        flush
+      f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
+      flush
+
+      files, statuses = [], []
+      git.status(target_file_or_dir).each do |e|
+        files  << e_sh(shorten(e[:path], @base))
+        statuses << e_sh(e[:status][:short])
+      end
     
-        files, statuses = [], []
-        git.status(target_file_or_dir).each do |e|
-          files  << e_sh(shorten(e[:path], @base))
-          statuses << e_sh(e[:status][:short])
-        end
-        
-        msg, files = show_commit_dialog(files, statuses)
+      msg, files = show_commit_dialog(files, statuses)
 
-        puts "<h2>Commit Files:</h2><ul>"
-        puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
-        puts "</ul>"
+      puts "<h2>Commit Files:</h2><ul>"
+      puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
+      puts "</ul>"
 
-        puts "<h2>Using Message:</h2>"
-        puts "<pre>#{htmlize(msg)}</pre>"
-        STDOUT.flush
+      puts "<h2>Using Message:</h2>"
+      puts "<pre>#{htmlize(msg)}</pre>"
+      STDOUT.flush
 
-        unless files.empty?
-          puts "<h2>Result:</h2>"
-          auto_add_rm(files)
-          res = git.commit(msg, files)
-          f.output_commit_result(res)
-        end
+      unless files.empty?
+        puts "<h2>Result:</h2>"
+        auto_add_rm(files)
+        res = git.commit(msg, files)
+        f.output_commit_result(res)
       end
     end
     

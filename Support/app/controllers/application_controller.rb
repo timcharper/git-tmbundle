@@ -10,12 +10,17 @@ class ApplicationController
   end
   
   def with_layout(&block)
-    
+    render "/layouts/application", &block
   end
   
   def call(action, _params = {})
     self.params = _params
-    send(action)
+    
+    if params[:layout].to_s == "false"
+      send(action)
+    else
+      with_layout { send(action) }
+    end
   end
   
   def self.call(action, params = {})
@@ -24,8 +29,8 @@ class ApplicationController
   
   def render(name, options = {}, &block)
     name = "#{name}.html.erb" unless name.include?(".")
-    sub_dir = self.class.template_root
-    ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
+    sub_dir = name.include?("/") ? "" : self.class.template_root
+    ___template___ = File.read( File.join( VIEWS_ROOT, sub_dir, name))
     
     if options[:locals]
       __v__ = options[:locals].values

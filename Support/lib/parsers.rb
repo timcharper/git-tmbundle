@@ -17,6 +17,9 @@ module Parsers
         status = case status_description
         when "new file"
           state == :added ? "A" : "?"
+        when "renamed"
+          filename = filename.split(/ +\-> +/).last
+          "R"
         when "deleted"
           "D"
         when "modified"

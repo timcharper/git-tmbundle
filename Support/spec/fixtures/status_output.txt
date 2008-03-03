@@ -3,6 +3,7 @@
 #   (use "git reset HEAD <file>..." to unstage)
 #
 #	new file:   new_file_and_added.txt
+#	renamed:    lib/formatters/commit/layout.html.erb -> app/views/layouts/application.html.erb
 #
 # Changed but not updated:
 #   (use "git add/rm <file>..." to update what will be committed)

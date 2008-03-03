@@ -1,6 +1,6 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Status do
+describe SCM::Git do
   before(:each) do
     @status = Git.new
     Git.command_response["status"] = fixture_file("status_output.txt")
@@ -15,6 +15,7 @@ describe SCM::Git::Status do
     
     it "should execute a parse and return a sorted list of SCM commit dialog statuses" do
       @results.map{ |result| result[:path] }.should == [
+        "/base/app/views/layouts/application.html.erb", 
         "/base/dir/", 
         "/base/directory.txt", 
         "/base/new_file_and_added.txt", 
@@ -24,7 +25,7 @@ describe SCM::Git::Status do
     end
     
     it "should parse appropriate statuses" do
-      @results.map{ |result| result[:status][:short] }.should == ["?", "?", "A", "M", "D"]
+      @results.map{ |result| result[:status][:short] }.should == ["R", "?", "?", "A", "M", "D"]
     end
   end
   
@@ -59,7 +60,9 @@ describe SCM::Git::Status do
      "new_file_and_added.txt"=>"A",
      "small.diff"=>"D",
      "directory.txt"=>"?",
-     "project.txt"=>"M"
+     "project.txt"=>"M",
+     "app/views/layouts/application.html.erb" => "R"
+     
     }
   end
 end
