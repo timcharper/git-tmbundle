@@ -225,6 +225,20 @@ module SCM
       end
       EOF
     end
+    
+    def annotate(filepath, revision = nil)
+      file = make_local_path(filepath)
+      args = [file]
+      args << revision unless revision.nil? || revision.empty?
+      chdir_base
+      output = command("annotate", *args)
+      if output.match(/^fatal:/)
+        puts output 
+        return nil
+      end
+      parse_annotation(output)
+    end
+    
 
     include Parsers
   end

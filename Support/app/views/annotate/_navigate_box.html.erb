@@ -3,11 +3,14 @@
   <div style='float:right; margin-right: 15px;'>
     <b>Commands</b>: (<strong>n</strong>)ext / (<strong>p</strong>)revious</em> / (<strong>o</strong>)pen / (<strong>b</strong>)ranch.
   </div>
-  <%= @header %>
+  Annotations for ‘<%= htmlize(shorten(@filepath)) %>’
   <br clear='both'/>
   <div style='margin-right: 15px'>
-    <%= select_box( "rev",
-      options_for_select(formatted_options, selected_revision),
+    <%= 
+    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+    
+    select_box( "rev",
+      options_for_select(formatted_options, @selected_revision),
       :onchange => "show_annotation($F(this))"
     ) %>
   </div>

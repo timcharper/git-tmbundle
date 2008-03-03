@@ -1,0 +1,5 @@
+<script language="JavaScript">
+  selected_map = $A($('rev').options).map(function(o) { return o.value == '<%= revision %>'});
+  // $('debug').update(selected_map.join(", "));
+  $('rev').selectedIndex = selected_map.indexOf(true);
+</script>

@@ -55,17 +55,20 @@ class ApplicationController
     new.call(action, params)
   end
   
-  def render(name, options = {}, &block)
-    name = "#{name}.html.erb" unless name.include?(".")
-    sub_dir = name.include?("/") ? "" : self.class.template_root
-    ___template___ = File.read( File.join( VIEWS_ROOT, sub_dir, name))
+  def render(__name__, __options__ = {}, &block)
+    __name__ = "#{__name__}.html.erb" unless __name__.include?(".")
+    __sub_dir__ = __name__.include?("/") ? "" : self.class.template_root
+    __template_path__ = File.join( VIEWS_ROOT, __sub_dir__, __name__)
+    ___template___ = File.read( __template_path__)
     
-    if options[:locals]
-      __v__ = options[:locals].values
-      eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
+    if __options__[:locals]
+      __v__ = __options__[:locals].values
+      eval(__options__[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
     end
     
-    ERBStdout.new(___template___, nil, "-", "STDOUT").run(binding)
+    __erb__ = ERBStdout.new(___template___, nil, "-", "STDOUT")
+    __erb__.filename = __template_path__
+    __erb__.run(binding)
   end
   
   def render_component(params = {})
@@ -75,5 +78,44 @@ class ApplicationController
   def self.template_root
     to_s.gsub("::", "/").underscore.gsub(/_controller$/, "")
   end
+  
+  def content_for(name, &block)
+    var_name = "@content_for_#{name}"
+    content = instance_variable_get(var_name) || ""
+    content << capture_output(&block)
+    instance_variable_set(var_name, content)
+    ""
+  end
+  
+  private
+    def set_constant_forced(klass, constant_name, constant)
+      klass.class_eval do
+        remove_const(constant_name) if const_defined?(constant_name)
+        const_set(constant_name, constant)
+      end
+    end
+  
+    def capture_output(&block)
+      require 'stringio'
+      
+      old_stdout = Object::STDOUT
+      io_stream = StringIO.new
+      begin 
+        set_constant_forced(Object, "STDOUT", io_stream)
+        [::Git, ::ApplicationController, ::Formatters].each do |klass| 
+          klass.class_eval do 
+            def puts(*args)
+            args.each{ |arg| Object::STDOUT.puts arg}
+            end
+          end
+        end
+        yield
+      ensure
+        set_constant_forced(Object, "STDOUT", old_stdout)
+      end
+      io_stream.rewind
+      io_stream.read
+    end
+  
   
 end

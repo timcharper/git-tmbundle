@@ -1,6 +1,7 @@
 SPEC_ROOT = File.dirname(__FILE__)
 FIXTURES_DIR = "#{SPEC_ROOT}/fixtures"
 require SPEC_ROOT + '/../environment.rb'
+require 'rubygems'
 require 'stringio'
 require 'hpricot'
 

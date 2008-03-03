@@ -1,3 +1,37 @@
+<%
+  # puts annotations.inspect
+  last_formatted_line = {}
+
+  formatted_annotations = annotations.map do |annotation|
+    line_class = []
+    line_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
+    line_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
+    line_class = line_class * " "
+    formatted_line = {
+      :rev => annotation[:rev], 
+      :author => annotation[:author], 
+      :date => relative_date(annotation[:date]), 
+      :ln => annotation[:ln], 
+      :text => annotation[:text]
+    }
+    display = formatted_line.dup
+  
+    [:rev, :author, :date].each { |k| display[k] = "…" } if display[:rev]==last_formatted_line[:rev]
+  
+    friendly_date = annotation[:date].is_a?(Time) ? annotation[:date].to_friendly : annotation[:date]
+  
+    display[:rev_tooltip] = <<EOF
+  Revision: #{annotation[:rev]}
+  Date: #{friendly_date} (#{display[:date]})
+  Author: #{annotation[:author]}
+EOF
+    display[:line_class] = line_class
+    
+    last_formatted_line = formatted_line
+    display
+  end
+%>
+
 <code>
 
 <% unless @as_partial %><div id='content' style='margin-top:60px;'><% end %>
@@ -32,11 +66,4 @@
     </tbody>
   </table>
 <% unless @as_partial %></div><!-- end div#content --><% end %>
-
-<script language="JavaScript">
-  selected_map = $A($('rev').options).map(function(o) { return o.value == '<%= @selected_revision %>'});
-  // $('debug').update(selected_map.join(", "));
-  $('rev').selectedIndex = selected_map.indexOf(true);
-</script>
-
 </code>

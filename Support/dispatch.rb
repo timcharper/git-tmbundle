@@ -7,6 +7,20 @@ def dispatch(params = {})
   controller_class.call(params[:action], params)
 end
 
-if $0 == __FILE__
-  puts "render the controller here"
+if $0 == __FILE__ && ! $dispatched
+  begin
+    $dispatched = true
+    params = ARGV.inject({}) do |hash, arg|
+      parts = arg.scan(/(.+?)=(.+)/).flatten
+      next hash if parts.empty?
+      key = parts.first.to_sym
+      value = parts.last
+      hash[key] = value
+      hash
+    end
+    dispatch(params)
+  rescue => e
+    puts $!
+    puts $!.backtrace
+  end
 end

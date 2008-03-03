@@ -1,0 +1,59 @@
+<% render "_navigate_box", :locals => { :log_entries => @log_entries } %>
+<% render "_content", :locals => { :annotations => @annotations } %>
+
+<% content_for :javascript do %>
+  <script language='JavaScript'>
+    function show_annotation(revision)
+    {
+      $('content').update( dispatch({controller: 'annotate', action: "update", revision: revision}) );
+    }
+  
+    function keypress_listener(e) 
+    {
+      // if (e.keyCode==Event.KEY_LEFT)
+      //   $('debug').update('escape!!!');
+      // else
+      //   $('debug').update(e.keyCode)
+      
+      switch(e.keyCode) {
+        case 110: // n
+          if ($('rev').selectedIndex >= 1)
+          {
+            $('rev').selectedIndex = $('rev').selectedIndex - 1
+            $('rev').onchange();
+          }
+          break;
+        case 112: // p
+          if ($('rev').selectedIndex < $('rev').options.length - 1)
+          {
+            $('rev').selectedIndex = $('rev').selectedIndex + 1
+            $('rev').onchange();
+          }
+          break;
+        case 78: // P
+          $('rev').selectedIndex = 0;
+          $('rev').onchange();
+          break;
+        case 80: // N
+          $('rev').selectedIndex = $('rev').options.length - 1;
+          $('rev').onchange();
+          break;
+        case 98: // b
+          gateway_command('create_branch_from_revision.rb', [$F('rev')] )
+          break;
+        case 111: // o
+          gateway_command('show.rb', ["<%=e_js ENV['TM_FILEPATH'] %>", $F('rev')] )
+          // 
+          break;
+      }
+      // $('debug').update(e.keyCode);
+    }
+  
+    try {
+      Event.observe(document, "keypress", keypress_listener.bindAsEventListener());
+    }
+    catch (e) {
+      $('debug').update(e)
+    }
+  </script>
+<% end %>
