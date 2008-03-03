@@ -5,7 +5,7 @@
   formatted_annotations = annotations.map do |annotation|
     line_class = []
     line_class << "selected" if ENV["TM_LINE_NUMBER"].to_i == annotation[:ln].to_i
-    line_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == @selected_revision
+    line_class << "ins" if annotation[:rev] == "-current-" || annotation[:rev] == revision
     line_class = line_class * " "
     formatted_line = {
       :rev => annotation[:rev], 

@@ -1,5 +1,5 @@
-<% render "_navigate_box", :locals => { :log_entries => @log_entries } %>
-<% render "_content", :locals => { :annotations => @annotations } %>
+<% render "_navigate_box", :locals => { :log_entries => @log_entries, :revision => @revision } %>
+<% render "_content", :locals => { :annotations => @annotations, :revision => @revision } %>
 
 <% content_for :javascript do %>
   <script language='JavaScript'>

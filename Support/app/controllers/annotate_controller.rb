@@ -30,7 +30,7 @@ class AnnotateController < ApplicationController
       # f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
       # f.header "Annotations for ‘#{htmlize(shorten(filepath))}’"
       # f.content annotations
-     render "_content", :locals => { :annotations => @annotations } 
+     render "_content", :locals => { :annotations => @annotations, :revision => revision } 
      render "_select_revision", :locals => { :revision => revision}
   end
 end
