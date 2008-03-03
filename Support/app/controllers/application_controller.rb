@@ -2,19 +2,47 @@ class ApplicationController
   include ApplicationHelper
   attr_accessor :params
   class << self
-    attr_accessor :layout
+    attr_writer :layouts_conditions
     
-    def layout
-      @layout 
+    def layouts_conditions
+      @layouts_conditions ||= []
+    end
+    
+    def layout(layout, conditions = {})
+      layout = "/layouts/#{layout}" unless layout.to_s.include?("/")
+      raise "bad params!" unless conditions.is_a?(Hash)
+      layouts_conditions << [layout, conditions]
+    end
+    
+    def layout_for_action(action)
+      return "/layouts/application" if layouts_conditions.empty?
+      layouts_conditions.each do |layout, condition|
+        if condition[:except]
+          next if condition[:except].map{|c| c.to_s}.include?(action.to_s)
+        end
+        
+        if condition[:only]
+          next unless condition[:only].map{|c| c.to_s}.include?(action.to_s)
+        end
+        
+        return layout
+      end
+      nil
     end
   end
   
-  def with_layout(&block)
-    render "/layouts/application", &block
+  def with_layout(action = nil, &block)
+    this_actions_layout = self.class.layout_for_action(action || params[:action])
+    if this_actions_layout
+      render this_actions_layout, &block
+    else
+      yield
+    end
   end
   
   def call(action, _params = {})
     self.params = _params
+    params[:action] = action.to_s
     
     if params[:layout].to_s == "false"
       send(action)

@@ -1,6 +1,7 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 class BranchController < ApplicationController
+  layout "application", :except => [:create, :delete]
   def switch
     locals = git.branch.list_names(:local)
     remotes = git.branch.list_names(:remote)
