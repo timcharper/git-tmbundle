@@ -8,7 +8,9 @@ class CommitController < ApplicationController
     end
     
     if git.merge_message
-      run_merge_commit
+      @status = git.status
+      @message = git.merge_message 
+      render "merge_commit"
     else
       run_partial_commit
     end
@@ -26,18 +28,6 @@ class CommitController < ApplicationController
   end
   
   protected
-    def run_merge_commit
-      f = Formatters::Commit.new
-      f.header "Resolve a merge conflict"
-      
-      render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base)
-      # puts statuses(git_base).inspect
-      if git.status.any? {|status_options| status_options[:status][:short] == "C"}
-        puts "<p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>"
-        abort
-      end
-      f.commit_merge_dialog(git.merge_message)
-    end
       
     def run_partial_commit
       f = Formatters::Commit.new

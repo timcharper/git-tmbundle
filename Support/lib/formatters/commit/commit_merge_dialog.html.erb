@@ -1,8 +1,0 @@
-<p class="infobox">Commit the result of a merge conflict</p>
-<div id='commit_output'>
-  <h4>Message:</h4>
-  <div>
-    <textarea id="commit_message" name='commit_message' cols="80" rows="20"><%= @message %></textarea>
-  </div>
-  <input type="button" name="commit" value="Commit" onclick="$('commit_output').update(gateway_command('merge_commit.rb', [$F('commit_message')]));"/>
-</div>

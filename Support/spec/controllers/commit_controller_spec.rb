@@ -29,7 +29,6 @@ describe CommitController do
       output = capture_output do
         dispatch(:controller => "commit")
       end
-      
       output.should include(@merge_message)
     end
   end

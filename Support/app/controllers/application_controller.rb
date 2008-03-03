@@ -73,7 +73,7 @@ class ApplicationController
   end
   
   def self.template_root
-    to_s.gsub("::", "/").underscore
+    to_s.gsub("::", "/").underscore.gsub(/_controller$/, "")
   end
   
 end
