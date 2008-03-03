@@ -13,7 +13,7 @@ base = git.nca(paths)
 
 Formatters::Diff.new(:base =&gt; base) do |f|
   paths.each do |path|
-    f.header("Uncomitted Changes for ‘#{htmlize(git.shorten(path, base))}’")
+    f.header("Uncomitted Changes for ‘#{htmlize(shorten(path, base))}’")
     f.open_in_tm_link
     f.content(git.diff_file(path))
   end
