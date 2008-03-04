@@ -85,4 +85,17 @@ module Parsers
     output
   end
   
+  def parse_merge(input)
+    output = {:text => "", :conflicts => []}
+    input.split("\n").each do |line|
+      case line
+      when /^CONFLICT \(.+\): Merge conflict in (.+)$/
+        output[:conflicts] << $1
+      else
+        output[:text] << "#{line}\n"
+      end
+    end
+    output
+  end
+  
 end

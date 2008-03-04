@@ -39,10 +39,12 @@
           $('rev').onchange();
           break;
         case 98: // b
-          gateway_command('create_branch_from_revision.rb', [$F('rev')] )
+          $('debug').update( 
+          dispatch({controller: 'log', action: 'create_branch_from_revision', revision: $F('rev') })
+          )
           break;
         case 111: // o
-          gateway_command('show.rb', ["<%=e_js ENV['TM_FILEPATH'] %>", $F('rev')] )
+          dispatch({controller: 'log', action: 'open_revision', filepath: "<%=e_js ENV['TM_FILEPATH'] %>", revision: $F('rev') })
           // 
           break;
       }

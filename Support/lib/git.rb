@@ -218,6 +218,28 @@ module SCM
       command("rm", *files)
     end
     
+    def merge(merge_from_branch)
+      parse_merge(command("merge", merge_from_branch))
+    end
+    def show(fullpath, revision)
+      path = make_local_path(fullpath)
+      path = "" if path=="."
+      command("show", "#{revision}:#{path}")
+    end
+
+    def show_to_tmp_file(fullpath, revision)
+      temp_name = '/tmp/' + human_readable_mktemp(fullpath, revision)
+      File.open(temp_name, "w") {|f| f.puts show(fullpath, revision) }
+      temp_name
+    end
+
+    def human_readable_mktemp(filename, rev)
+      extname = File.extname(filename)
+      filename = File.basename(filename)
+      # TODO: Make sure the filename can fit in 255 characters, the limit on HFS+ volumes.
+      "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
+    end
+    
     %w[config branch].each do |command|
       class_eval <<-EOF
       def #{command}

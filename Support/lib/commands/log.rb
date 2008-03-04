@@ -15,27 +15,6 @@ class SCM::Git::Log < SCM::Git
     chdir_base
   end
   
-  
-  def human_readable_mktemp(filename, rev)
-    extname = File.extname(filename)
-    filename = File.basename(filename)
-    # TODO: Make sure the filename can fit in 255 characters, the limit on HFS+ volumes.
-
-    "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
-  end
-  
-  def show(fullpath, revision)
-    path = make_local_path(fullpath)
-    path = "" if path=="."
-    command("show", "#{revision}:#{path}")
-  end
-  
-  def show_to_tmp_file(fullpath, revision)
-    temp_name = '/tmp/' + human_readable_mktemp(fullpath, revision)
-    File.open(temp_name, "w") {|f| f.puts show(fullpath, revision) }
-    temp_name
-  end
-
   def run(fullpath = paths.first)
     path = make_local_path(fullpath)
     # Get the desired revision number

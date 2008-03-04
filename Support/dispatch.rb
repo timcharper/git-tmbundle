@@ -20,7 +20,7 @@ if $0 == __FILE__ && ! $dispatched
     end
     dispatch(params)
   rescue => e
-    puts $!
-    puts $!.backtrace
+    puts htmlize($!)
+    puts htmlize($!.backtrace)
   end
 end

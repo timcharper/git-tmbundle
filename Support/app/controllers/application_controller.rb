@@ -9,13 +9,14 @@ class ApplicationController
     end
     
     def layout(layout, conditions = {})
-      layout = "/layouts/#{layout}" unless layout.to_s.include?("/")
+      layout = "/layouts/#{layout}" if layout && !layout.to_s.include?("/")
       raise "bad params!" unless conditions.is_a?(Hash)
       layouts_conditions << [layout, conditions]
     end
     
     def layout_for_action(action)
       return "/layouts/application" if layouts_conditions.empty?
+      
       layouts_conditions.each do |layout, condition|
         if condition[:except]
           next if condition[:except].map{|c| c.to_s}.include?(action.to_s)

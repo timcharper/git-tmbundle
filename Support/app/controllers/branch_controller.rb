@@ -64,6 +64,38 @@ class BranchController < ApplicationController
     end
   end
   
+  def merge
+    # prompt for which branch to merge from
+    c_branch = git.branch.current_name
+    all_branches = git.branch.list_names - [c_branch]
+    all_branches << "" # keep the dialog from auto-selecting if there's only one other branch
+    merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{c_branch}':", :items => all_branches)
+
+    if merge_from_branch.blank?
+      puts "Aborted"
+      abort
+    end
+
+    puts "<h2>Merging #{merge_from_branch} into #{c_branch}</h2>"
+    flush
+
+    result = git.merge(merge_from_branch)
+    # run the merge
+    puts "<pre>"
+    puts result[:text]
+    puts "</pre>"
+
+    unless result[:conflicts].empty?
+      puts "<h2>Conflicts - edit each of the following, resolve, commit, then merge again:</h2>"
+      result[:conflicts].each do |conflicted_file|
+        full_path = File.join(@base, conflicted_file)
+        tm_open(full_path)
+        puts "<div><a href='txmt://open?url=file://#{e_url full_path}'>#{conflicted_file}</a></div>"
+      end
+    end
+    rescan_project
+  end
+    
   protected
     def switch_remote(target)
       remote_alias, remote_branch_name = target.split("/")
