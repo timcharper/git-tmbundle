@@ -27,7 +27,7 @@ class BranchController < ApplicationController
   
   def create
     if name = TextMate::UI.request_string(:title => "Create Branch", :prompt => "Enter the name of the new branch:")
-      puts git.branch.create(name)
+      puts git.branch.create_and_switch(name)
     end
   end
   

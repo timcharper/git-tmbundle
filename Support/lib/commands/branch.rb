@@ -1,9 +1,24 @@
 class SCM::Git::Branch < SCM::Git::SubmoduleBase
   
-  def create(name)
+  def create_and_switch(name)
     base.command("checkout", "-b", name)
   end
-
+  
+  def create(name, options = {})
+    args = ["branch"]
+    args << "--track" if options[:autotrack]
+    args << name
+    case
+    when ! options[:source].blank?
+      args << options[:source]
+    when ! options[:tag].blank?
+      args << options[:tag]
+    when ! options[:revision].blank?
+      args << options[:revision]
+    end
+    base.command(*args)
+  end
+  
   def switch(name)
     base.chdir_base
     result = base.command("checkout", name)

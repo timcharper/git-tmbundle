@@ -1,7 +1,7 @@
 <div style='position:fixed; top:0px; background: #fff; width: 100%; '>
   <div id='debug'></div>
   <div style='float:right; margin-right: 15px;'>
-    <b>Commands</b>: (<strong>n</strong>)ext / (<strong>p</strong>)revious</em> / (<strong>o</strong>)pen / (<strong>b</strong>)ranch.
+    <b>Commands</b>: <%= %w[next previous open branch tag].map { |word| "<strong>(#{word[0..0]})</strong>#{word[1..-1]}" } * ' / ' %>
   </div>
   Annotations for ‘<%= htmlize(shorten(@filepath)) %>’
   <br clear='both'/>

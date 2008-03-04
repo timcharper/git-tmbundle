@@ -47,6 +47,10 @@
           dispatch({controller: 'log', action: 'open_revision', filepath: "<%=e_js ENV['TM_FILEPATH'] %>", revision: $F('rev') })
           // 
           break;
+        case 116: // t
+          dispatch({controller: 'log', action: 'create_tag_from_revision', filepath: "<%=e_js ENV['TM_FILEPATH'] %>", revision: $F('rev') })
+          // 
+          break;
       }
       // $('debug').update(e.keyCode);
     }
