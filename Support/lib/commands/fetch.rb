@@ -9,7 +9,7 @@ class SCM::Git::Fetch < SCM::Git
   end
   
   def run
-    c_branch = current_branch
+    c_branch = branch.current_name
     branch_remote_config_key = "branch.#{c_branch}.remote"
     branch_remote_merge_key = "branch.#{c_branch}.merge"
     branch_default_source = config[branch_remote_config_key]
