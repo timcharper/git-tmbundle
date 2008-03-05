@@ -7,7 +7,7 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 git = SCM::Git.new
 puts "&lt;pre&gt;"
 git.sources.each do |source|

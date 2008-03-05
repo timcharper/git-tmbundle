@@ -7,7 +7,7 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 
-require ENV['TM_BUNDLE_SUPPORT'] + '/lib/git.rb'
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 
 git = SCM::Git::Diff.new
