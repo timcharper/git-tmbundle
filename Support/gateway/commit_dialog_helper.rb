@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
-require File.dirname(__FILE__) + '/../lib/git.rb'
-status = Git::Status.new
+require File.dirname(__FILE__) + '/../environment.rb'
 git = Git.new
 command = ARGV.shift
 case command
