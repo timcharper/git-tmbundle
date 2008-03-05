@@ -7,18 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-stash = SCM::Git::Stash.new
-
-if stash.stash_list.empty?
-  puts "No stashes for current branch (#{stash.current_branch})"
-  abort
-end
-
-if stash.clear_with_confirmation
-  puts "Stash cleared"
-else
-  puts "Cancelled"
-end</string>
+dispatch :controller =&gt; "stash", :action =&gt; "clear"
+</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

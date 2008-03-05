@@ -7,24 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-stash = SCM::Git::Stash.new
-
-if stash.stash_list.empty?
-  puts "Stash list is empty"
-end
-
-stash_item = stash.select_stash
-
-if stash_item.nil?
-  puts "Aborted"
-  exit_show_tool_tip
-end
-
-Formatters::Diff.new() do |f|
-  f.header("Diff for stash ‘#{stash_item[:description]}’")
-  f.content(stash.stash_diff(stash_item[:name]))
-end
-exit_show_html</string>
+dispatch :controller =&gt; "stash", :action =&gt; "show"
+</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
@@ -32,7 +16,7 @@ exit_show_html</string>
 	<key>name</key>
 	<string>Show Stash</string>
 	<key>output</key>
-	<string>showAsTooltip</string>
+	<string>showAsHTML</string>
 	<key>uuid</key>
 	<string>5E37F050-85A0-4CAE-91D1-DC50E2F65024</string>
 </dict>

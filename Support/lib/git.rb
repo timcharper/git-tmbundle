@@ -162,22 +162,12 @@ module SCM
       file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
       file_or_dir = file_or_dir.dup if file_or_dir
       chdir_base
-      base_dir = git_base
-
-      file_statuses = {}
-
+      
       results = parse_status(command("status"))
-      results.each do |file, status|
-        file_statuses[expand_path_preserving_trailing_slash(file, base_dir)] = status
-      end
-
-      sorted_results = file_statuses.sort.map do |filepath, display_status|
-        {:path => filepath, :display => shorten(filepath, base_dir), :status => GIT_SCM_STATUS_MAP[display_status]}
-      end
-
+      
       if file_or_dir
         file_or_dir << "/" if File.directory?(file_or_dir) unless /\/$/.match(file_or_dir)
-        sorted_results.select do |status|
+        results.select do |status|
           if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
             # promote this status on down and keep it if it's the parent folder of our target file_or_dir
             status[:path] = file_or_dir
@@ -188,7 +178,7 @@ module SCM
           end
         end
       else
-        sorted_results
+        results
       end
     end
 
@@ -240,7 +230,7 @@ module SCM
       "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
     end
     
-    %w[config branch].each do |command|
+    %w[config branch stash].each do |command|
       class_eval <<-EOF
       def #{command}
         @#{command} ||= SCM::Git::#{command.classify}.new(self)

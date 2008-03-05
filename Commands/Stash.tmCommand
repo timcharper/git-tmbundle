@@ -7,8 +7,8 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-stash = Git::Stash.new
-stash.run_stash_save</string>
+dispatch :controller =&gt; "stash", :action =&gt; "save"
+</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
@@ -16,7 +16,7 @@ stash.run_stash_save</string>
 	<key>name</key>
 	<string>Stash</string>
 	<key>output</key>
-	<string>showAsTooltip</string>
+	<string>showAsHTML</string>
 	<key>uuid</key>
 	<string>917D405B-0488-4FDE-966A-54E1F922FCBD</string>
 </dict>
