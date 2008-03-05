@@ -121,6 +121,9 @@ class Git
   def paths
     [git_base]
   end
+  
+  attr_writer :version
+  def version; @version ||= "1.5.4.3"; end
 end
 
 [:exit_show_html, :exit_discard, :exit_show_tool_tip].each do |exit_method|

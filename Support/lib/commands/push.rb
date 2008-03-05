@@ -57,7 +57,7 @@ class SCM::Git::Push < SCM::Git
       when /(?-:remote: )?^Everything up\-to\-date/
         output[:nothing_to_push] = true
       when /(?-:remote: )?^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
-        output[:pushes][$1] = [$2,$3]
+        output[:pushes][$1] = [$2,$3] unless version_1_5_4?
       when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
         output[:pushes][$2] = get_rev_range($1)
 

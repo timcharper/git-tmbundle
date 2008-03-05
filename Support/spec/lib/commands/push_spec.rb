@@ -7,6 +7,7 @@ describe SCM::Git::Push do
   
   before(:each) do
     @push = Git::Push.new
+    @push.version = "1.5.3"
   end
     
   describe "standard push" do
@@ -81,6 +82,7 @@ EOF
   describe "for git 1.5.4.3" do
     before(:each) do
       @process_io = StringIO.new(fixture_file("push_1_5_4_3_output.txt"))
+      @push.version = "1.5.4.3"
     end
 
     it "should call the progress proc 6 times for state Compressing" do

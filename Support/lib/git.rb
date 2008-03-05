@@ -27,6 +27,18 @@ module SCM
       chdir_base
     end
     
+    def version
+      @version ||= command("version").scan(/[0-9\.]+/).first
+    end
+    
+    def version_1_5_3?
+      /^1\.5\.3\./.match(version)
+    end
+    
+    def version_1_5_4?
+      /^1\.5\.4\./.match(version)
+    end
+    
     def command_str(*args)
       %{#{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
     end
