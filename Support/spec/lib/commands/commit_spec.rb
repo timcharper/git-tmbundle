@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Commit do
+describe Git do
   before(:each) do
-    @commit = SCM::Git::Commit.new
+    @commit = Git.new
   end
   include SpecHelpers
   
