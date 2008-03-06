@@ -8,9 +8,7 @@
 	<string>#!/usr/bin/env ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-git = Git::Fetch.new
-git.run
-</string>
+dispatch :controller =&gt; "remote", :action =&gt; "fetch"</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>keyEquivalent</key>

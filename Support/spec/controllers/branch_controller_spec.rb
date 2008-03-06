@@ -26,9 +26,7 @@ describe "deleting branches remotely recognizes success and failure responses", 
 
     Git.commands_ran.should include(["push", "origin", ":task"])
   end
-
-
-
+  
   it "should show a message when server reports branch doesn't exist" do
     @set_branch_to_choose.call("origin/task")
     Git.command_response["push", "origin", ":task"] = @failure_delete_response

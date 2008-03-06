@@ -19,7 +19,8 @@
     <% if log_entry[:diff] %>
       <a href="javascript:toggle('<%= branch %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Show Changes</a>
       <div class="diff" style="display: none;" rev="<%= log_entry[:rev] %>" branch="<%= branch%>" id="detail_<%= branch %>_<%= log_entry[:rev] %>" style="margin-left: 55px;">
-        <% Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]%>
+        <% # Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]
+        %>
       </div>
     <% end %>
   </div>  

@@ -223,10 +223,29 @@ module SCM
     def merge(merge_from_branch)
       parse_merge(command("merge", merge_from_branch))
     end
+    
     def show(fullpath, revision)
       path = make_local_path(fullpath)
       path = "" if path=="."
       command("show", "#{revision}:#{path}")
+    end
+    
+    def push(source, callbacks = {})
+      args = ["push", source]
+      p = popen_command(*args)
+      process_push(p, callbacks)
+    end
+    
+    def pull(source, remote_merge_branch = nil, callbacks = {})
+      args = ["pull", source]
+      args << remote_merge_branch.split('/').last if remote_merge_branch
+      p = popen_command(*args)
+      process_pull(p, callbacks)
+    end
+    
+    def fetch(source, callbacks = {})
+      p = popen_command("fetch", source)
+      process_fetch(p, callbacks)
     end
 
     def show_to_tmp_file(fullpath, revision)
@@ -262,8 +281,36 @@ module SCM
       end
       parse_annotation(output)
     end
-    
 
+    def diff(options = {})
+      options = {:file => options} unless options.is_a?(Hash)
+      params = ["diff"]
+      params << make_local_path(options[:file])
+      lr = get_range_arg(options)
+      params << lr if lr
+      
+      output = command(*params)
+      File.open("/tmp/output.diff", "w") {|f| f.puts output }
+      parse_diff(output)
+    end
+    
+    def log(options = {})
+      params = ["log"]
+      params << make_local_path(options[:path]) if options[:path]
+      lr = get_range_arg(options)
+      params << lr if lr
+      params << "-p" if options[:with_log]
+      params += ["-n", options[:limit]] if options[:limit]
+      parse_log(command(*params))
+    end
+    
+    protected
+      def get_range_arg(options, keys = [:revisions, :branches, :tags])
+        lr = [:revisions, :branches, :tags].map{ |k| options[k] }.compact.first
+        lr = "#{lr.first}..#{lr.last}" if lr.is_a?(Array) || lr.is_a?(Range)
+        lr
+      end
+    
     include Parsers
   end
 end

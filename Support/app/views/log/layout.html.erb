@@ -2,6 +2,9 @@
 <head>
   <title><%= @header %></title>
   <link type="text/css" rel="stylesheet" media="screen" href="<%= resource_url('style.css') %>"/>
+  <% if @script_at_top %>
+    <%= javascript_include_tag "prototype", "rb_gateway", "log_collapse" %>
+  <% end %>
 </head>
 <body>
   <div id='debug'></div>
@@ -10,5 +13,7 @@
   </div>
   <% yield %>
 </body>
-<%= javascript_include_tag "prototype", "rb_gateway", "log_collapse" %>
+<% unless @script_at_top %>
+  <%= javascript_include_tag "prototype", "rb_gateway", "log_collapse" %>
+<%= end %>
 </html>

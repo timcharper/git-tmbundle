@@ -2,8 +2,6 @@ class AnnotateController < ApplicationController
   include DateHelpers
   layout "application", :except => "update"
   def index
-    log = SCM::Git::Log.new
-
     @filepath = params[:filepath] || ENV['TM_FILEPATH']
     @annotations = git.annotate(@filepath)
 
@@ -12,7 +10,7 @@ class AnnotateController < ApplicationController
       abort
     end
 
-    @log_entries = log.log(@filepath)
+    @log_entries = git.log(:path => @filepath)
     render "index"
   end
   

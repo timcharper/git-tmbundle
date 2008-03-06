@@ -1,3 +1,5 @@
+require File.dirname(__FILE__) + "/stream_progress_methods.rb"
+
 module Parsers
   def parse_status(input)
     base_dir = git_base
@@ -111,6 +113,29 @@ module Parsers
     output
   end
   
+  def parse_log(log_content)
+    output = []
+    current = nil
+    log_blocks = log_content.split("\n\n")
+    log_blocks.each do |block|
+      case block.split("\n").first
+      when /^commit /
+        output << (current = {})
+        data = block.scan(/^([a-z]+):? (.*)$/i).inject({}) { |h, v| h[v.first] = v.last;  h }
+        current.merge!(
+          :rev => data["commit"],
+          :author => data["Author"],
+          :date => Time.parse(data["Date"])
+        )
+      when / {4}(.*)/
+        current[:msg] = block.gsub(/^ {4}/, "")
+      when /^diff /
+        current[:diff] = parse_diff(block)
+      end
+    end
+    output
+  end
+  
   def parse_diff(diff_content)
     output = []
     current = nil
@@ -165,5 +190,70 @@ module Parsers
     end
     output
   end
+  def process_push(stream, callbacks = {})
+    output = {:pushes => {}, :text => "", :nothing_to_push => false}
+    branch = nil
+    
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Deltifying|Writing) ([0-9]+) objects/) do |line|
+      case line
+      when /(?-:remote: )?^Everything up\-to\-date/
+        output[:nothing_to_push] = true
+      when /(?-:remote: )?^(.+): ([a-f0-9]{40}) \-\> ([a-f0-9]{40})/
+        output[:pushes][$1] = [$2,$3] unless version_1_5_4?
+      when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
+        output[:pushes][$2] = get_rev_range($1)
+
+      else
+        output[:text] << line
+      end
+      
+    end
+    output
+  end
   
+  def process_pull(stream, callbacks = {})
+    output = {:pulls => {}, :text => "", :nothing_to_pull => false}
+    branch = nil
+    branch = self.branch.current_name
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Unpacking) ([0-9]+) objects/) do |line|
+      case line
+      when /^Already up\-to\-date/
+        output[:nothing_to_pull] = true
+      when /^\* ([^:]+):/
+        branch = $1
+      when /^([a-z]+) ([0-9a-f]+\.\.[0-9a-f]+)/i
+        output[:pulls][branch] = get_rev_range($2)
+      when /^  (old\.\.new|commit): (.+)/
+        output[:pulls][branch] = get_rev_range($2)
+      when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
+        output[:pulls][$2] = get_rev_range($1)
+      end
+      
+      output[:text] << line
+    end
+    output
+  end
+  
+  def process_fetch(stream, callbacks = {})
+    output = {:fetches => {}, :text => ""}
+    branch = nil
+    branch = self.branch.current_name
+    process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Compressing) ([0-9]+) objects/) do |line|
+      case line
+      when /^\* ([^:]+):/
+        branch = $1
+      # when /^([a-z]+) ([0-9a-f]+\.\.[0-9a-f]+)/i
+      #   output[:pulls][branch] = get_rev_range($2)
+      # when /^  (old\.\.new|commit): (.+)/
+      #   output[:pulls][branch] = get_rev_range($2)
+      when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
+        output[:fetches][$2] = get_rev_range($1)
+      end
+      
+      output[:text] << line
+    end
+    output
+  end
+  
+  include StreamProgressMethods
 end

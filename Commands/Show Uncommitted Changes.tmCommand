@@ -6,18 +6,9 @@
 	<string>nop</string>
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
-require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-git = SCM::Git::Diff.new
-paths = git.paths(:fallback =&gt; :current_file, :unique =&gt; true)
-base = git.nca(paths)
 
-Formatters::Diff.new(:base =&gt; base) do |f|
-  paths.each do |path|
-    f.header("Uncomitted Changes for ‘#{htmlize(shorten(path, base))}’")
-    f.open_in_tm_link
-    f.content(git.diff_file(path))
-  end
-end</string>
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch :controller =&gt; "diff", :action =&gt; "uncommitted_changes"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

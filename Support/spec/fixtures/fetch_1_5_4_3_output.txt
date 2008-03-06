@@ -1,0 +1,5 @@
+remote: Counting objects: 5, done.[K
+remote: Compressing objects:  33% (1/3)   [Kremote: Compressing objects:  66% (2/3)   [Kremote: Compressing objects: 100% (3/3)   [Kremote: Compressing objects: 100% (3/3), done.[K
+remote: Total 3 (delta 2), reused 0 (delta 0)[K
+From ../satellite
+   74c0fdf..d1c6bdd  asdf       -> satellite/asdf

@@ -1,8 +1,19 @@
+require 'stringio'
+require 'thread'
+
 class ApplicationController
   include ApplicationHelper
   attr_accessor :params
   class << self
     attr_writer :layouts_conditions
+    
+    def filters
+      @filters ||= {:before => [], :after => []}
+    end
+    
+    def before_filter(method)
+      filters[:before] << [method, nil]
+    end
     
     def layouts_conditions
       @layouts_conditions ||= []
@@ -32,24 +43,70 @@ class ApplicationController
     end
   end
   
-  def with_layout(action = nil, &block)
-    this_actions_layout = self.class.layout_for_action(action || params[:action])
-    if this_actions_layout
-      render this_actions_layout, &block
-    else
-      yield
+  def initialize
+    @output_buffer = StringIO.new
+  end
+  
+  def puts(*args)
+    @output_buffer.puts(*args)
+  end
+  
+  def flush
+    return if @capturing
+    start_layout
+    Object::STDOUT << @output_buffer.string
+    Object::flush
+    @output_buffer.string = ""
+  end
+  
+  def start_layout
+    return if @layout_started
+    @layout_started = true
+    this_actions_layout = self.class.layout_for_action(params[:action])
+    return unless this_actions_layout
+    
+    current_output = @output_buffer.string
+    @output_buffer.string = ""
+    
+    @layout_thread_mutex = Mutex.new
+    @layout_thread = Thread.new do
+      @layout_thread_mutex.lock
+      render(this_actions_layout) { @layout_thread_mutex.unlock; Thread.stop; @layout_thread_mutex.lock }
+      @layout_thread_mutex.unlock
+    end
+    Thread.pass
+    @layout_thread_mutex.wait_for_lock
+    
+    @output_buffer << current_output
+  end
+  
+  def end_layout
+    return unless @layout_started && @layout_thread
+    @layout_thread.run
+    Thread.pass
+    @layout_thread_mutex.wait_for_lock
+    
+    @layout_thread = @layout_thread_mutex = nil
+  end
+  
+  def with_filters(&block)
+    self.class.filters[:before].each do |method, options|
+      return false unless send(method)
+    end
+    yield
+    self.class.filters[:after].each do |method, options|
+      return false unless send(method)
     end
   end
   
   def call(action, _params = {})
     self.params = _params
     params[:action] = action.to_s
-    
-    if params[:layout].to_s == "false"
-      send(action)
-    else
-      with_layout { send(action) }
-    end
+    @output_buffer = params.delete(:__output_buffer__) if params[:__output_buffer__]
+    with_filters { send(action) }
+    flush
+    end_layout
+    flush
   end
   
   def self.call(action, params = {})
@@ -67,13 +124,13 @@ class ApplicationController
       eval(__options__[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
     end
     
-    __erb__ = ERBStdout.new(___template___, nil, "-", "STDOUT")
+    __erb__ = ERBStdout.new(___template___, nil, "-", "@output_buffer")
     __erb__.filename = __template_path__
     __erb__.run(binding)
   end
   
   def render_component(params = {})
-    dispatch(params)
+    dispatch(params.merge(:layout => false, :__output_buffer__  => @output_buffer))
   end
   
   def self.template_root
@@ -83,40 +140,32 @@ class ApplicationController
   def content_for(name, &block)
     var_name = "@content_for_#{name}"
     content = instance_variable_get(var_name) || ""
-    content << capture_output(&block)
+    @capturing = true
+    previous_content = @output_buffer.string
+    @output_buffer.string = ""
+    yield
+    content << @output_buffer.string
+    @output_buffer.string = ""
+    @output_buffer << previous_content
     instance_variable_set(var_name, content)
+    @capturing = false
     ""
   end
+end
+
+class Mutex
+  def pass_lock
+    Thread.pass
+    lock
+  end
   
-  private
-    def set_constant_forced(klass, constant_name, constant)
-      klass.class_eval do
-        remove_const(constant_name) if const_defined?(constant_name)
-        const_set(constant_name, constant)
-      end
-    end
+  def unlock_pass
+    Thread.pass
+    unlock
+  end
   
-    def capture_output(&block)
-      require 'stringio'
-      
-      old_stdout = Object::STDOUT
-      io_stream = StringIO.new
-      begin 
-        set_constant_forced(Object, "STDOUT", io_stream)
-        [::Git, ::ApplicationController, ::Formatters].each do |klass| 
-          klass.class_eval do 
-            def puts(*args)
-            args.each{ |arg| Object::STDOUT.puts arg}
-            end
-          end
-        end
-        yield
-      ensure
-        set_constant_forced(Object, "STDOUT", old_stdout)
-      end
-      io_stream.rewind
-      io_stream.read
-    end
-  
-  
+  def wait_for_lock
+    pass_lock
+    unlock_pass
+  end
 end

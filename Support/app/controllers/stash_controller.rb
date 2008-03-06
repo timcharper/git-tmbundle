@@ -58,7 +58,8 @@ class StashController < ApplicationController
     render "status/_status", :locals => {:status_data => status_data}
     
     puts "<h2>Diff of stash applied:</h2>"
-    Formatters::Diff.new.content(git.stash.diff(stash_item[:name]))
+    render("/diff/_diff_results", :locals => {:diff_results => git.stash.diff(stash_item[:name])})
+    
     rescan_project
   end
   

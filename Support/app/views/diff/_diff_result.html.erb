@@ -1,0 +1,51 @@
+<%    
+  filepath_right = diff_result[:right][:filepath]
+  start_line_right = diff_result[:right][:ln_start]
+  current_url = filepath_right ? "txmt://open?url=file://#{e_url File.join(git.git_base, filepath_right)}&line=#{start_line_right}" : "javascript:return false;"
+  
+  open_links = {}
+  files = [:left, :right].map do |lr|
+    filepath = diff_result[lr][:filepath]
+    next "(none)" unless filepath
+    
+    side_revision = case
+      when revision.blank? && lr == :right
+        nil
+      when revision.blank? && lr == :left
+        "HEAD"
+      when revision
+        lr == :left ? "#{revision}^" : revision
+    end
+    prev_url = %Q{javascript:dispatch({controller: "log", action: "open_revision", filepath: "#{e_js filepath}", revision: "#{side_revision}", line: "#{diff_result[lr][:ln_start]}" });}
+    open_links[lr] = "<a href='#{prev_url}'>#{lr}</a>"
+    %Q{<a href='#{current_url}'>#{htmlize filepath}</a>}
+  end
+%>
+
+<h4><%= files.uniq * ' --&gt; ' %></h4>
+<table class='codediff inline'>
+  <thead>
+    <tr>
+      <td class='line-numbers'><%= open_links[:left] %></td>
+      <td class='line-numbers'><%= open_links[:right] %></td>
+      <td/>
+    </tr>
+  </thead>
+  <tbody>
+    <% diff_result[:lines].each do |line|
+      line_num_class, row_class = case line[:type]
+        when :deletion then ["", "del"]
+        when :insertion then ["", "ins"]
+        when :eof then ["line-num-eof", "eof"]
+        when :cut then ["line-num-cut", "cut-line"]
+        else
+          ["", "unchanged"]
+      end
+      %>
+        <tr>
+          <td class="line-numbers <%= line_num_class %>"><%= line[:ln_left] %></td>
+          <td class="line-numbers <%= line_num_class %>"><%= line[:ln_right] %></td>
+          <td class="code <%= row_class %>"><%= htmlize(line[:text]) %></td></tr>
+    <% end %>
+  </tbody>
+</table>

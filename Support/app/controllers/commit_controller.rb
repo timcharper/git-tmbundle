@@ -18,21 +18,20 @@ class CommitController < ApplicationController
   
   def merge_commit
     message = params[:message]
-    f = Formatters::Commit.new
     statuses = git.status(git.git_base)
     files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
 
     auto_add_rm(files)
     res = git.commit(message, [])
-    f.output_commit_result(res)
+    
+    render "_commit_result", :locals => { :result => res, :files => files, :message => message }
   end
   
   protected
       
     def run_partial_commit
-      f = Formatters::Commit.new
       target_file_or_dir = git.paths.first
-      f.header "Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’"
+      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’</h1>"
       flush
 
       files, statuses = [], []
@@ -43,19 +42,10 @@ class CommitController < ApplicationController
     
       msg, files = show_commit_dialog(files, statuses)
 
-      puts "<h2>Commit Files:</h2><ul>"
-      puts files.map { |e| "<li>#{htmlize(e)}</li>\n" }.join
-      puts "</ul>"
-
-      puts "<h2>Using Message:</h2>"
-      puts "<pre>#{htmlize(msg)}</pre>"
-      STDOUT.flush
-
       unless files.empty?
-        puts "<h2>Result:</h2>"
         auto_add_rm(files)
         res = git.commit(msg, files)
-        f.output_commit_result(res)
+        render "_commit_result", :locals => { :files => files, :message => msg, :result => res}
       end
     end
     

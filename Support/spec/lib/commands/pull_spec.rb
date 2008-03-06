@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 require 'stringio'
 
-describe SCM::Git::Pull do
+describe Git do
   include SpecHelpers
   
   before(:each) do
-    @pull = Git::Pull.new
+    @pull = Git.new
     Git.reset_mock!
     Git.command_response["branch"] = "* master\n  task"
   end
@@ -64,28 +64,6 @@ EOF
     it "should return :nothing_to_pull if Everything up-to-date" do
       output = @pull.process_pull(StringIO.new("Already up-to-date.\n"))
       output[:nothing_to_pull].should == true
-    end
-  
-    it "should run and output log of changes pulled" do
-      # query the sources
-      Git.command_response["branch"] = "* master\n"
-      Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
-      Git.command_response["config", "remote.origin.fetch"] = "+refs/heads/*:refs/remotes/origin/*"
-      Git.command_response["config", "branch.master.remote"] = %Q{origin}
-      Git.command_response["config", "branch.master.merge"] = %Q{refs/heads/master}
-      Git.command_response["remote"] = %Q{origin}
-    
-      # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
-    
-      # Git.command_response[] 
-      Git.command_response["log", "-p", "a58264f..89e8f37", "."] = fixture_file("log_with_diffs.txt")
-      Git.command_response["log", "-p", "d8b3683^..d8b3683", "."] = fixture_file("log_with_diffs.txt")
-      Git.command_response["pull", "origin"] = TEST_INPUT
-      output = capture_output do
-        @pull.run
-      end
-    
-      output.should include("Log of changes pulled")
     end
   end
   

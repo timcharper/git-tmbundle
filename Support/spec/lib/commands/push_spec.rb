@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 require 'stringio'
 
-describe SCM::Git::Push do
+describe Git do
   include SpecHelpers
   
   before(:each) do
-    @push = Git::Push.new
+    @push = Git.new
     @push.version = "1.5.3"
   end
     
@@ -23,7 +23,10 @@ updating 'refs/heads/satellite'
 Generating pack...
 Done counting 6 objects.
 Deltifying 6 objects...
-  16% (1/6) done\r 33% (2/6) done\r 50% (3/6) done\r 66% (4/6) done\r 83% (5/6) done\r 100% (6/6) done\n
+  16% (1/6) done\r 33% (2/6) done\r 50% (3/6) done\r 66% (4/6) done\r 83% (5/6) def done(args)
+    
+  end
+  \r 100% (6/6) done\n
 Writing 6 objects...
   16% (1/6) done\r 33% (2/6) done\r 50% (3/6) done\r 66% (4/6) done\r 83% (5/6) done\r 100% (6/6) done\n
 Total 6 (delta 1), reused 0 (delta 0)
@@ -65,17 +68,6 @@ EOF
     it "should return :nothing_to_push if Everything up-to-date" do
       output = @push.process_push(StringIO.new("Everything up-to-date\n"))
       output[:nothing_to_push].should == true
-    end
-  
-    it "should run" do
-      Git.command_response["remote"] = %Q{origin}
-      Git.command_response["push", "origin"] = TEST_INPUT
-      Git.command_response["log", "-p", "60a254470cd97af3668ed4d6405633af850139c6..746fba2424e6b94570fc395c472805625ab2ed25", "."] = fixture_file("log_with_diffs.txt")
-      Git.command_response["branch"] = "* master\n  task"
-      Git.command_output << fixture_file("log_with_diffs.txt")
-      capture_output do
-        @push.run
-      end
     end
   end
   

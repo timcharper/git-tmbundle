@@ -6,11 +6,9 @@
 	<string>nop</string>
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
-require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-git = SCM::Git::SVNFetch.new
-git.run
 
-rescan_project</string>
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch :controller =&gt; "svn", :action =&gt; "fetch"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

@@ -1,0 +1,6 @@
+<% revision ||= nil %>
+<code>
+  <% diff_results.each do |diff_result| %>
+    <% render "diff/_diff_result", :locals => {:diff_result => diff_result, :revision => revision } %>
+  <% end %>
+</code>

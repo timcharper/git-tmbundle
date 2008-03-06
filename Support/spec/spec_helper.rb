@@ -36,7 +36,7 @@ module SpecHelpers
     io_stream = StringIO.new
     begin 
       set_constant_forced(Object, "STDOUT", io_stream)
-      [::Git, ::ApplicationController, ::Formatters].each do |klass| 
+      [::Git, ::Formatters].each do |klass| 
         klass.class_eval do 
           def puts(*args)
           args.each{ |arg| Object::STDOUT.puts arg}
@@ -118,8 +118,12 @@ class Git
     "/base/"
   end
   
-  def paths
+  def paths(*args)
     [git_base]
+  end
+  
+  def nca(*args)
+    git_base
   end
   
   attr_writer :version

@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Diff do
+describe Git do
   before(:each) do
-    @diff = SCM::Git::Diff.new
+    @diff = Git.new
   end
   include SpecHelpers
   describe "when parsing a diff" do

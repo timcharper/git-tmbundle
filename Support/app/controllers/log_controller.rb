@@ -1,7 +1,42 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require "#{ENV["TM_SUPPORT_PATH"]}/lib/osx/plist"
+require "#{ENV["TM_SUPPORT_PATH"]}/lib/progress"
+require LIB_ROOT + '/date_helpers.rb'
+location = ENV["TM_BUNDLE_SUPPORT"]
+$nib = "#{location}/nibs/RevisionSelector.nib"
+ListNib = File.dirname(__FILE__) + "/../../nibs/RevisionSelector.nib"
+
 
 class LogController < ApplicationController
-  layout nil
+  layout "application", :only => "index"
+  before_filter :set_script_at_top
+  
+  def set_script_at_top
+    @script_at_top = true
+  end
+  
+  DEFAULT_LOG_LIMIT = 50
+  include DateHelpers
+  
+  def index
+    params[:path] ||= git.make_local_path(git.paths.first)
+    params[:limit] ||= DEFAULT_LOG_LIMIT
+    path = params[:path]
+    # Get the desired revision number
+    if File.directory?(git.git_base + path)
+      title = "View revision of Directory #{path}"
+    else
+      title = "View revision of file #{File.basename(path)}"
+    end
+    
+    log
+  end
+  
+  def log
+    @log_entries = git.log(params)
+    @branch ||= Git.new.branch.current_name
+    render "log_entries"
+  end
   
   def open_revision
     filepath = params[:filepath]
@@ -57,5 +92,82 @@ class LogController < ApplicationController
     else
       TextMate::UI.alert(:warning, "Error!", "#{output}", 'OK') 
     end  
+  end
+  
+  protected
+    # on failure: returns nil
+    def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1, options = {})
+      path = make_local_path(path)
+      # Validate file
+      # puts command("status", path)
+      if /error: pathspec .+ did not match any file.+ known to git./.match(command("status", path))
+        TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
+        return nil
+      end
+
+      # # Get the server name   
+      # info = YAML::load(svn_cmd("info #{escaped_path}"))
+      # repository = info['Repository Root']
+      # uri = URI::parse(repository)
+
+      # the above will fail for users that run a localized system
+      # instead we should do ‘svn info --xml’, though since the
+      # code is not used, I just commented it. --Allan 2007-02-20
+
+      # Display progress dialog
+      # Show the log
+      revision = 0
+      log_data = nil
+    
+      TextMate::UI.dialog(:nib => ListNib,
+                              :center => true,
+                              :parameters => {'title' => prompt,'entries' => [], 'hideProgressIndicator' => false}) do |dialog|
+
+        # Parse the log
+        log_data = stringify(log(path, :limit => 200))
+        dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
+
+        dialog.wait_for_input do |params|
+          revision = params['returnArgument']
+          button_clicked = params['returnButton']
+
+          if (button_clicked != nil) and (button_clicked == 'Cancel')
+            false # exit
+          else
+            unless (number_of_revisions == :multiple) or (revision.length == number_of_revisions) then
+              TextMate::UI.alert(:warning, "Please select #{number_of_revisions} revision#{number_of_revisions == 1 ? '' : 's'}.", "So far, you have selected #{revision.length} revision#{revision.length == 1 ? '' : 's'}.")
+              true # continue
+            else
+              false # exit
+            end
+          end
+        end
+      end
+
+      # Return the revision number or nil
+      revision = nil if revision == 0
+      if options[:sort] && revision
+        time_revision_pairs = []
+        selected_entries = log_data.select{ |l| revision.include?(l["rev"]) }
+        selected_entries.sort!{ |a,b| a["date"] <=> b["date"] } # sorts them descending (latest on the bottom)
+        selected_entries.reverse! if options[:sort] == :asc
+        revision = selected_entries.map{|se| se["rev"]}
+      end
+      revision
+    end
+  
+    def stringify(results)
+      results.each{|r| r.stringify_keys! }
+    end
+end
+
+class Hash
+  def stringify_keys!
+    keys.each{|k|
+      if k.is_a?(Symbol)
+        value = delete(k)
+        self[k.to_s] = value
+      end
+    }
   end
 end
