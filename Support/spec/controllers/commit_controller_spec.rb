@@ -10,15 +10,27 @@ describe CommitController do
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
   
+  after(:each) do
+    # puts Git.commands_ran.inspect
+  end
   describe "normal commit" do
-    it "should run a commit" do
+    before(:each) do
       @message = "My commit message"
       @git.should_receive(:merge_message).and_return(nil)
       @controller.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
-      output = capture_output do
+      Git.command_response["commit", "-m", "My commit message", "file1.txt", "file2.txt"] = fixture_file("commit_result.txt")
+      Git.command_response["diff", "24ff719^..24ff719"] = fixture_file("small.diff")
+      @output = capture_output do
         dispatch(:controller => "commit")
       end
-      output.should include(@message)
+    end
+    
+    it "should output the commit message" do
+      @output.should include(@message)
+    end
+    
+    it "should output the diff" do
+      @output.should include("No newline at end of file")
     end
   end
   

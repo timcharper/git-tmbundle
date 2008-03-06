@@ -285,7 +285,7 @@ module SCM
     def diff(options = {})
       options = {:file => options} unless options.is_a?(Hash)
       params = ["diff"]
-      params << make_local_path(options[:file])
+      params << make_local_path(options[:file]) if options[:file]
       lr = get_range_arg(options)
       params << lr if lr
       

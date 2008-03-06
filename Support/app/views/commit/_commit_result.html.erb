@@ -14,12 +14,5 @@
   
 <% if result[:rev] %>
   <h2>Diff of committed changes:</h2>
-  <% 
-    flush 
-    diff_formatter = Formatters::Diff.new
-    diff = SCM::Git::Diff.new
-    diff_result = diff.diff_revisions(".", "#{result[:rev]}^", "#{result[:rev]}")
-    
-    diff_formatter.content diff_result
-  %>
+  <% render_component(:controller => "diff", :action => "diff", :path => ".", :revisions => "#{result[:rev]}^..#{result[:rev]}") %>
 <% end %>
