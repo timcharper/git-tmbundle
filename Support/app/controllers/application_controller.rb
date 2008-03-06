@@ -151,6 +151,14 @@ class ApplicationController
     @capturing = false
     ""
   end
+  
+  def output_discard
+    $exit_status = EXIT_DISCARD
+  end
+  
+  def output_show_html
+    $exit_status = EXIT_SHOW_HTML
+  end
 end
 
 class Mutex

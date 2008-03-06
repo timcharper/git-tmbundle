@@ -5,6 +5,7 @@ def dispatch(params = {})
   params[:action] ||= "index"
   controller_class = "#{controller}_controller".classify.constantize
   controller_class.call(params[:action], params)
+  exit_with_output_status
 end
 
 if $0 == __FILE__ && ! $dispatched

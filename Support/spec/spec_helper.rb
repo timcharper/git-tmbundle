@@ -130,6 +130,9 @@ class Git
   def version; @version ||= "1.5.4.3"; end
 end
 
+def exit_with_output_status
+end
+
 [:exit_show_html, :exit_discard, :exit_show_tool_tip].each do |exit_method|
   Object.send :define_method, exit_method do
     $exit_status = exit_method

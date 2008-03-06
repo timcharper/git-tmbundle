@@ -5,6 +5,19 @@
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/escape"
 
 public
+
+EXIT_DISCARD = 200
+EXIT_SHOW_HTML = 205
+EXIT_SHOW_TOOL_TIP = 206
+
+def exit_with_output_status
+  if $exit_status
+    exit $exit_status
+  else
+    exit 0
+  end
+end
+
 def exit_discard
   exit 200;
 end

@@ -168,13 +168,13 @@ class BranchController < ApplicationController
         if response=="Yes"
           output = git.command("checkout", "-m", target_branch)
           puts htmlize(output)
-          exit_show_html
+          output_show_html and return
         else
-          exit_discard
+          output_discard and return
         end
       else
         puts htmlize(output)
-        exit_show_html
+        output_show_html and return
       end
     end
   
