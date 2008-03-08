@@ -304,6 +304,13 @@ module SCM
       parse_log(command(*params))
     end
     
+    def init(directory)
+      Dir.chdir(directory) do
+        command("init")
+      end
+    end
+    
+    
     protected
       def get_range_arg(options, keys = [:revisions, :branches, :tags])
         lr = [:revisions, :branches, :tags].map{ |k| options[k] }.compact.first
