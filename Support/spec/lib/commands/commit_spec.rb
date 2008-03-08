@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 describe Git do
   before(:each) do
     @commit = Git.new
+    Git.reset_mock!
   end
   include SpecHelpers
   

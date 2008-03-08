@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Log do  
+describe Git do  
   before(:each) do
-    @log = Git::Log.new
+    @log = Git.new
   end
   include SpecHelpers
   

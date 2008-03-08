@@ -25,7 +25,7 @@ describe RemoteController do
     end
     
     it "should output log of changes pulled" do
-      puts htmlize(@output)
+      # puts htmlize(@output)
       puts Git.commands_ran.inspect
     end
   end

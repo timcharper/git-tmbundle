@@ -1,8 +1,8 @@
 require File.dirname(__FILE__) + '/../../spec_helper'
 
-describe SCM::Git::Merge do
+describe Git do
   before(:each) do
-    @merge = SCM::Git::Merge.new
+    @merge = Git.new
   end
   
   include SpecHelpers

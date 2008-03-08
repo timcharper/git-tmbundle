@@ -33,8 +33,8 @@ module StreamProgressMethods
         else
           yield line
         end
-
-        if state
+        
+        if state && index
           callbacks[:progress] && callbacks[:progress].call(state, percentage, index, count)
           if percentage == 100
             callbacks[:end] && callbacks[:end].call(state, count)
