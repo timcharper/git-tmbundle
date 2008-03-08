@@ -13,11 +13,9 @@ class StashController < ApplicationController
       puts "Aborted"
       return
     end
-
-    Formatters::Diff.new() do |f|
-      f.header("Diff for stash ‘#{stash_item[:description]}’")
-      f.content(git.stash.diff(stash_item[:name]))
-    end
+    
+    puts "<h2>Diff for stash ‘#{stash_item[:description]}’</h2>"
+    render("diff/_diff_results", :locals => {:diff_results => (git.stash.diff(stash_item[:name]))})
   end
   
   def apply
