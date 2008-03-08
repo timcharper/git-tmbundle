@@ -10,10 +10,10 @@
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 
-git = SCM::Git::Diff.new
+git = Git.new
 git_base = File.expand_path('..', git.git_dir(git.paths.first))
 
-branches   = git.branches
+branches   = git.branch.list(:all)
 parameters = { "branches" =&gt; branches.map { |e| { "name" =&gt; e[:name] } } }
 
 token = open('|"$DIALOG" -a CompareBranches', 'r+') { |io| io &lt;&lt; parameters.to_plist; io.close_write; io.read.chomp }
@@ -23,12 +23,7 @@ res   = open('|"$DIALOG" -w' + token)               { |io| OSX::PropertyList.loa
 if res &amp;&amp; res['returnArgument']
   parent = res['returnArgument'].first['name']
   current = res['currentBranch'].first['name']
-
-  results = git.diff_branches(parent, current)
-  Formatters::Diff.new do |f|
-    f.header "Compare ‘#{parent}’ With ‘#{current}’"
-    f.content(results)
-  end
+  dispatch(:controller =&gt; "diff", :action =&gt; "diff", :branches =&gt; [parent, current])
 end
 </string>
 	<key>input</key>
