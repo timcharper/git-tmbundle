@@ -296,11 +296,14 @@ module SCM
     
     def log(options = {})
       params = ["log"]
-      params << make_local_path(options[:path]) if options[:path]
+      params += ["-n", options[:limit]] if options[:limit]
+      params << "-p" if options[:with_log]
+      params << options[:branch]  if options[:branch]
+      
       lr = get_range_arg(options)
       params << lr if lr
-      params << "-p" if options[:with_log]
-      params += ["-n", options[:limit]] if options[:limit]
+      
+      params << make_local_path(options[:path]) if options[:path]
       parse_log(command(*params))
     end
     
