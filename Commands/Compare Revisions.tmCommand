@@ -6,35 +6,9 @@
 	<string>nop</string>
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
+
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-log = SCM::Git::Log.new
-diff = SCM::Git::Diff.new
-
-filepaths = log.paths.first
-if filepaths.length &gt; 1
-  base = log.nca(filepaths)
-else 
-  base = filepaths.first
-end
-
-revisions = log.choose_revision(base, "Choose revisions for #{filepaths.map{|f| log.make_local_path(f)}.join(',')}", :multiple, :sort =&gt; true)
-
-if revisions.nil?
-  puts "Canceled"
-  abort
-end
-
-left = revisions.first
-right = revisions.last
-
-Formatters::Diff.new(:rev =&gt; right) do |f|
-  filepaths.each do |filepath|
-    f.header("Diff for  ‘#{htmlize(log.make_local_path(filepath))}’ between revisions #{left} and #{right}")
-    f.open_in_tm_link
-    puts filepath.inspect
-    f.content(diff.diff_revisions(filepath, left, right))
-  end
-end</string>
+dispatch :controller =&gt; "diff", :action =&gt; "compare_revisions"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>

@@ -95,13 +95,12 @@ class LogController < ApplicationController
     end  
   end
   
-  protected
     # on failure: returns nil
     def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1, options = {})
-      path = make_local_path(path)
+      path = git.make_local_path(path)
       # Validate file
       # puts command("status", path)
-      if /error: pathspec .+ did not match any file.+ known to git./.match(command("status", path))
+      if /error: pathspec .+ did not match any file.+ known to git./.match(git.command("status", path))
         TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
         return nil
       end
@@ -125,7 +124,7 @@ class LogController < ApplicationController
                               :parameters => {'title' => prompt,'entries' => [], 'hideProgressIndicator' => false}) do |dialog|
 
         # Parse the log
-        log_data = stringify(log(path, :limit => 200))
+        log_data = stringify(git.log(:path => path, :limit => 200))
         dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
 
         dialog.wait_for_input do |params|
@@ -157,6 +156,7 @@ class LogController < ApplicationController
       revision
     end
   
+  protected
     def stringify(results)
       results.each{|r| r.stringify_keys! }
     end
