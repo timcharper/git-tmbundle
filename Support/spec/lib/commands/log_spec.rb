@@ -47,33 +47,4 @@ made more failproof}
     end
   end
   
-  describe "when running" do
-    before(:each) do
-      Git.command_output << fixture_file("log_with_diffs.txt")
-      Git.command_output << "* master\n  task"
-      
-      @output = capture_output do
-        results = @log.run
-      end
-      @h = Hpricot(@output)
-    end
-    
-    it_should_behave_like "Formatter with layout"
-    
-    it "should output the revision in short format" do
-      rev_output = (@h / ".infobox > span > strong").first.to_s
-      # rev_output.should include("Revision")
-      rev_output.should match(/\b3dce1220\b/)
-    end
-    
-    it "should output div tags with the current branch" do
-      tag = (@h / "div#detail_master_3dce12204f8b81535ce10f579a78d71aa3fa1730").first
-      tag.should_not be_nil
-      
-      tag.attributes["branch"].should == "master"
-      tag.attributes["rev"].should == "3dce12204f8b81535ce10f579a78d71aa3fa1730"
-      
-    end
-    # puts htmlize(@output)
-  end
 end
