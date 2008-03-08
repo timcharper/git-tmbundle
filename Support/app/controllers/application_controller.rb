@@ -1,6 +1,14 @@
 require 'stringio'
 require 'thread'
 
+class StringIO
+  def retrieve_and_clear
+    s = self.string
+    self.string = ""
+    s
+  end
+end
+
 class ApplicationController
   include ApplicationHelper
   attr_accessor :params
@@ -56,37 +64,26 @@ class ApplicationController
     start_layout
     Object::STDOUT << @output_buffer.string
     Object::flush
-    @output_buffer.string = ""
+    @output_buffer.truncate(0)
   end
   
   def start_layout
-    return if @layout_started
-    @layout_started = true
+    return if @layout_rendered
+    @layout_rendered = true
     this_actions_layout = self.class.layout_for_action(params[:action])
     return unless this_actions_layout
     
-    current_output = @output_buffer.string
-    @output_buffer.string = ""
-    
-    @layout_thread_mutex = Mutex.new
-    @layout_thread = Thread.new do
-      @layout_thread_mutex.lock
-      render(this_actions_layout) { @layout_thread_mutex.unlock; Thread.stop; @layout_thread_mutex.lock }
-      @layout_thread_mutex.unlock
-    end
-    Thread.pass
-    @layout_thread_mutex.wait_for_lock
-    
-    @output_buffer << current_output
+    current_body_output = @output_buffer.retrieve_and_clear
+    render(this_actions_layout) { @layout_text_begin = @output_buffer.retrieve_and_clear }
+    @layout_text_end = @output_buffer.retrieve_and_clear
+    @output_buffer << @layout_text_begin << current_body_output
+    @layout_text_begin = nil
   end
   
   def end_layout
-    return unless @layout_started && @layout_thread
-    @layout_thread.run
-    Thread.pass
-    @layout_thread_mutex.wait_for_lock
-    
-    @layout_thread = @layout_thread_mutex = nil
+    return unless @layout_rendered && @layout_text_end
+    @output_buffer << @layout_text_end
+    @layout_text_end = nil
   end
   
   def with_filters(&block)
@@ -141,11 +138,9 @@ class ApplicationController
     var_name = "@content_for_#{name}"
     content = instance_variable_get(var_name) || ""
     @capturing = true
-    previous_content = @output_buffer.string
-    @output_buffer.string = ""
+    previous_content = @output_buffer.retrieve_and_clear
     yield
-    content << @output_buffer.string
-    @output_buffer.string = ""
+    content << @output_buffer.retrieve_and_clear
     @output_buffer << previous_content
     instance_variable_set(var_name, content)
     @capturing = false

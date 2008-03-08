@@ -5,7 +5,7 @@ class RemoteController < ApplicationController
   
   before_filter :set_script_at_top
   def set_script_at_top
-    @script_at_top  =true
+    @script_at_top = true
   end
   
   def fetch
