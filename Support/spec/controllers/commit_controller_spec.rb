@@ -19,10 +19,14 @@ describe CommitController do
       @git.should_receive(:merge_message).and_return(nil)
       @controller.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
       Git.command_response["commit", "-m", "My commit message", "file1.txt", "file2.txt"] = fixture_file("commit_result.txt")
-      Git.command_response["diff", "24ff719^..24ff719"] = fixture_file("small.diff")
+      Git.command_response["diff", "24ff719^..24ff719", "."] = fixture_file("small.diff")
       @output = capture_output do
         dispatch(:controller => "commit")
       end
+    end
+    
+    after(:each) do
+      # puts Git.commands_ran.inspect
     end
     
     it "should output the commit message" do

@@ -324,7 +324,7 @@ module SCM
         when Array, Range
           "#{lr.first}..#{lr.last}"
         when String
-          "#{lr}..#{lr}^"
+          lr.include?("..") ? lr : "#{lr}^..#{lr}"
         else
           lr
         end
