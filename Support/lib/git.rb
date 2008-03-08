@@ -183,7 +183,7 @@ module SCM
           if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
             # promote this status on down and keep it if it's the parent folder of our target file_or_dir
             status[:path] = file_or_dir
-            status[:display] = shorten(file_or_dir, base_dir)
+            status[:display] = shorten(file_or_dir, git_base)
             true
           else
             /^#{Regexp.escape(file_or_dir)}/i.match(status[:path])

@@ -55,7 +55,7 @@ describe SCM::Git do
   end
   
   it "should parse a status document correctly" do
-    result = @status.parse_status(fixture_file("status_output.txt"))
+    result = @status.parse_status_hash(fixture_file("status_output.txt"))
     result.should == {"dir/"=>"?",
      "new_file_and_added.txt"=>"A",
      "small.diff"=>"D",
