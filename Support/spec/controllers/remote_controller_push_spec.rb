@@ -28,8 +28,12 @@ describe RemoteController do
       end
       
       it "should output log with diffs" do
-        puts (@output)
+        # puts (@output)
         @output.should include("Branch 'asdf': 865f920..f9ca10d")
+      end
+      
+      it "should render the script on the top" do
+        (Hpricot(@output) / "head / script").length.should >= 2
       end
     end
   end
