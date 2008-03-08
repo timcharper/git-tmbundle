@@ -3,6 +3,11 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 class RemoteController < ApplicationController
   FETCH_ALL = "...fetch all remotes..."
   
+  before_filter :set_script_at_top
+  def set_script_at_top
+    @script_at_top  =true
+  end
+  
   def fetch
     branch = git.branch.current_name
     config_key = "branch.#{branch}.remote"
