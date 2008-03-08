@@ -15,6 +15,6 @@
     
     TODO - update me to work with dispatch.rb!
     
-    <input type="button" name="commit" value="Commit" onclick="$('commit_output').update(gateway_command('merge_commit.rb', [$F('commit_message')]));"/>
+    <input type="button" name="commit" value="Commit" onclick="$('commit_output').update(dispatch({controller: 'commit', action: 'merge_commit', message: $F('commit_message')}));"/>
   </div>
 <% end %>

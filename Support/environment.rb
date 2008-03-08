@@ -8,7 +8,7 @@ end
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'shellwords'
 require 'set'
-require "#{ROOT}/dispatch"
+require "#{ROOT}/dispatch" unless $dispatch_loaded
 
 def shorten(path, base = nil)
   return if path.blank?

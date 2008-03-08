@@ -1,3 +1,4 @@
+$dispatch_loaded = true
 require File.dirname(__FILE__) + "/environment.rb"
 
 at_exit { 

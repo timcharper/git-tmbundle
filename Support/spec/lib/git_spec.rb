@@ -3,6 +3,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe SCM::Git do
   before(:each) do
     @git = SCM::Git.new
+    Git.reset_mock!
   end
   
   it "should retrieve a value" do
