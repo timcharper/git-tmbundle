@@ -1,6 +1,10 @@
 require File.dirname(__FILE__) + "/environment.rb"
 
-at_exit { exit_with_output_status }
+at_exit { 
+  if $exit_status
+    exit $exit_status
+  end
+}
 
 def dispatch(params = {})
   raise "must supply a controller to use!" unless controller = params[:controller]
