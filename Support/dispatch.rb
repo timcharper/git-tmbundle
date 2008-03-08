@@ -1,11 +1,12 @@
 require File.dirname(__FILE__) + "/environment.rb"
 
+at_exit { exit_with_output_status }
+
 def dispatch(params = {})
   raise "must supply a controller to use!" unless controller = params[:controller]
   params[:action] ||= "index"
   controller_class = "#{controller}_controller".classify.constantize
   controller_class.call(params[:action], params)
-  exit_with_output_status
 end
 
 if $0 == __FILE__ && ! $dispatched
@@ -25,3 +26,4 @@ if $0 == __FILE__ && ! $dispatched
     puts htmlize($!.backtrace)
   end
 end
+
