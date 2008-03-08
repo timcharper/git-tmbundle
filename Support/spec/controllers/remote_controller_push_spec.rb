@@ -10,9 +10,8 @@ describe RemoteController do
   describe "pushing" do
     before(:each) do
       Git.command_response["push", "origin"] = (fixture_file("push_1_5_4_3_output.txt"))
-      Git.command_response["log", "-p", "60a254470cd97af3668ed4d6405633af850139c6..746fba2424e6b94570fc395c472805625ab2ed25", "."] = fixture_file("log_with_diffs.txt")
       Git.command_response["branch"] = "* master\n  task"
-      Git.command_response["log", ".", "865f920..f9ca10d"] = fixture_file("log_with_diffs.txt")
+      Git.command_response["log", ".", "865f920..f9ca10d"] = fixture_file("log.txt")
     end
     
     describe "to a server with one origin" do

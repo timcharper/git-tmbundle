@@ -33,6 +33,7 @@ class LogController < ApplicationController
   end
   
   def log
+    @path = params[:path]
     @log_entries = git.log(params)
     @branch ||= Git.new.branch.current_name
     render "log_entries"

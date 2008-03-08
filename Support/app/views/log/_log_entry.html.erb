@@ -1,10 +1,12 @@
 <div>
   <div class="infobox">
+    <a href="javascript:toggle_log('<%= branch %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>" class="expand_link">+</a>
     <span style='float:left'>
       <strong><%= short_rev(log_entry[:rev]) %></strong>
       committed by 
       <strong><%= log_entry[:author] %></strong>
     </span>
+    
     <span style='float:right'> 
       <abbr title="<%= log_entry[:date].to_friendly %>">
         <%= htmlize(relative_date(log_entry[:date])) %> ago
@@ -16,12 +18,10 @@
     <div>
       <%= htmlize(log_entry[:msg])%>
     </div>
-    <% if log_entry[:diff] %>
-      <a href="javascript:toggle('<%= branch %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>">Show Changes</a>
-      <div class="diff" style="display: none;" rev="<%= log_entry[:rev] %>" branch="<%= branch%>" id="detail_<%= branch %>_<%= log_entry[:rev] %>" style="margin-left: 55px;">
-        <% # Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]
-        %>
-      </div>
-    <% end %>
+    <br clear="both"/>
+    <div class="diff" style="display: none;" rev="<%= log_entry[:rev] %>" branch="<%= branch%>" path="<%= htmlize_attr(path) %>" id="detail_<%= branch %>_<%= log_entry[:rev] %>" style="margin-left: 55px;">
+      <% # Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]
+      %>
+    </div>
   </div>  
 </div>

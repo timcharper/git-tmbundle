@@ -285,9 +285,12 @@ module SCM
     def diff(options = {})
       options = {:file => options} unless options.is_a?(Hash)
       params = ["diff"]
-      params << make_local_path(options[:file]) if options[:file]
+      
+      params << options[:branch] if options[:branch]
+      
       lr = get_range_arg(options)
       params << lr if lr
+      params << make_local_path(options[:path]) if options[:path]
       
       output = command(*params)
       File.open("/tmp/output.diff", "w") {|f| f.puts output }
@@ -316,9 +319,15 @@ module SCM
     
     protected
       def get_range_arg(options, keys = [:revisions, :branches, :tags])
-        lr = [:revisions, :branches, :tags].map{ |k| options[k] }.compact.first
-        lr = "#{lr.first}..#{lr.last}" if lr.is_a?(Array) || lr.is_a?(Range)
-        lr
+        lr = [:revisions, :revision, :branches, :tags].map{ |k| options[k] }.compact.first
+        case lr
+        when Array, Range
+          "#{lr.first}..#{lr.last}"
+        when String
+          "#{lr}..#{lr}^"
+        else
+          lr
+        end
       end
     
     include Parsers

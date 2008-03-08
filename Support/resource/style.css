@@ -788,3 +788,12 @@ table.codediff td.line-num-eof {
   width: 48%;
   clear:right; 
 }
+
+.expand_link {
+  border: 1px solid black;
+  font-family: courier;
+  padding: 1px 3px;
+  margin-right: 5px;
+  display: block;
+  float:left;
+}

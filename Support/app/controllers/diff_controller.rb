@@ -3,7 +3,6 @@ class DiffController < ApplicationController
   def diff
     @rev = params[:rev]
     @title = params[:title] || "Uncomitted changes"
-    
     render("_diff_results", :locals => {:diff_results => git.diff(params)})
   end
   

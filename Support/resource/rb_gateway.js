@@ -1,7 +1,7 @@
 /* Git JS gateway */
 /* Tim Harper (tim.harper at leadmediapartners.org) */
 function e_sh(str) { 
-  return '"' + (str.toString().replace('"', '\\"')) + '"';
+  return '"' + (str.toString().gsub('"', '\\"')) + '"';
 }
 
 function exec(command, params) {
@@ -30,7 +30,8 @@ function gateway_command(command, params) {
 function dispatch(params) {
   try {
     params = $H(params).map(function(pair) { return(pair.key + "=" + pair.value.toString())})
-    command = "ruby " + e_sh(TM_BUNDLE_PATH) + "/Support/dispatch.rb"
+    command = "ruby " + e_sh(TM_BUNDLE_PATH) + "/Support/dispatch.rb";
+    // return params.map(function(a) { return e_sh(a) }).join(" ")
     return exec(command, params).outputString
   }
   catch(err) {

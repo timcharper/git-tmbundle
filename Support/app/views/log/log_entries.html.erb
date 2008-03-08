@@ -1,3 +1,4 @@
 <% @log_entries.each do |log_entry| %>
-  <% render("_log_entry", :locals => {:log_entry => log_entry, :branch => @branch}) %>
+  <% render("_log_entry", :locals => {:log_entry => log_entry, :branch => @branch, :path => @path, }) %>
+  <% flush %>
 <% end %>

@@ -9,10 +9,10 @@ describe LogController do
   
   describe "showing a log" do
     before(:each) do
-      Git.command_response["log", ".", "-n", LogController::DEFAULT_LOG_LIMIT] = fixture_file("log.txt")
+      Git.command_response["log", "-n", LogController::DEFAULT_LOG_LIMIT, "."] = fixture_file("log.txt")
       Git.command_response["branch"] = "* master\n  task"
       @output = capture_output do
-        dispatch :controller => "log", :action => "index"
+        dispatch :controller => "log", :action => "index", :path => "."
       end
     end
     
@@ -21,6 +21,7 @@ describe LogController do
     end
     
     it "should show a log" do
+      puts htmlize(@output)
       @output.should include("<strong>198fc930</strong>")
     end
   end
