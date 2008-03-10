@@ -14,7 +14,7 @@ dispatch(:controller =&gt; "branch", :action =&gt; "switch")
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Branches (show/switch)…</string>
+	<string>Branches (Show/Switch)…</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>

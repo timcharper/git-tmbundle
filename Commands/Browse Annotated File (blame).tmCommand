@@ -14,7 +14,7 @@ dispatch(:controller =&gt; "annotate")</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Browse Annotated File (blame)</string>
+	<string>Browse Annotated File (Blame)</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>

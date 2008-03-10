@@ -27,7 +27,7 @@ Process.detach(pid)
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Visualize Branch History with GitK</string>
+	<string>Visualize Branch History With GitK</string>
 	<key>output</key>
 	<string>discard</string>
 	<key>uuid</key>
