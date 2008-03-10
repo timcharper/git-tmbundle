@@ -1,8 +1,5 @@
 <h2>Resolve a merge conflict</h2>
 
-<%= render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base) %>
-<!-- # puts statuses(git_base).inspect -->
-
 <% if @status.any? {|status_options| status_options[:status][:short] == "C"} %>
   <p class='infobox'>You still have outstanding merge conflicts.  Resolve them, and try to commit again.</p>
 <% else %>
@@ -13,8 +10,9 @@
       <textarea id="commit_message" name='commit_message' cols="80" rows="20"><%= @message %></textarea>
     </div>
     
-    TODO - update me to work with dispatch.rb!
-    
     <input type="button" name="commit" value="Commit" onclick="$('commit_output').update(dispatch({controller: 'commit', action: 'merge_commit', message: $F('commit_message')}));"/>
   </div>
 <% end %>
+
+<% render_component(:controller => "status", :action => "index", :layout => false, :path => git.git_base) %>
+<!-- # puts statuses(git_base).inspect -->
