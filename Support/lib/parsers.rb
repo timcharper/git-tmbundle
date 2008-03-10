@@ -108,9 +108,8 @@ module Parsers
         output[:conflicts] << $1
       when /^CONFLICT \(delete\/modify\): (.+) deleted in /
         output[:conflicts] << $1
-      else
-        output[:text] << "#{line}\n"
       end
+      output[:text] << "#{line}\n"
     end
     output
   end
