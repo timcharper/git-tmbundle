@@ -15,7 +15,7 @@ class LogController < ApplicationController
     @script_at_top = true
   end
   
-  DEFAULT_LOG_LIMIT = 50
+  DEFAULT_LOG_LIMIT = 100
   include DateHelpers
   
   def index
