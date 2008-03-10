@@ -31,7 +31,7 @@ end
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Compare Branches</string>
+	<string>Compare Branches…</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>

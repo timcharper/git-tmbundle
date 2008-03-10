@@ -14,7 +14,7 @@ dispatch :controller =&gt; "diff", :action =&gt; "compare_revisions"</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Compare Revisions</string>
+	<string>Compare Revisions…</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>

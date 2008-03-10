@@ -22,7 +22,7 @@ end
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Create Tag</string>
+	<string>Create Tag…</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>

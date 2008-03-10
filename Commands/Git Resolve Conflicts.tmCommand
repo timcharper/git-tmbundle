@@ -64,7 +64,7 @@ File.open(right_file, "w") { |f| f.puts right }
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Edit Conflicts with FileMerge</string>
+	<string>Edit Conflicts with FileMerge…</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>
