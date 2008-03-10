@@ -12,7 +12,7 @@ dispatch :controller =&gt; "svn", :action =&gt; "fetch"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
-	<string>^~g</string>
+	<string>~@g</string>
 	<key>name</key>
 	<string>SVN Fetch</string>
 	<key>output</key>
