@@ -104,7 +104,9 @@ module Parsers
     output = {:text => "", :conflicts => []}
     input.split("\n").each do |line|
       case line
-      when /^CONFLICT \(.+\): Merge conflict in (.+)$/
+      when /^CONFLICT \(.+?\): Merge conflict in (.+)/
+        output[:conflicts] << $1
+      when /^CONFLICT \(delete\/modify\): (.+) deleted in /
         output[:conflicts] << $1
       else
         output[:text] << "#{line}\n"
