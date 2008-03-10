@@ -1,0 +1,42 @@
+TODO
+
+This is a road map to experimental branches and what they should do once they're done.   
+
+Anyone's encouraged to add to this list or take an idea and develop in their own clone of the git repository.  When they are completed, notify me (timcharper - at - gmail) to get your changes pulled into the next release branch, and guarantee your name's immortality.
+
+- git-gui (Sam Granieri overcame the "beachballing" issue with GitK.  Follow Sam's example and implement in similarly)
+- cherry-picking -- 
+  - pick a SHA ref and merge the commit associated with it from one branch to another
+  - Would be nice to use the html-log view, and include checkmarks next to each entry.  This way, you could browse the log, see the commit message, and check the contents of the commit, making it easier to select which changes you'd like to cherry-pick.
+- amending and signing off on commits
+- setting up the .gitignore file for a standard rails project
+- Rebase command.  Have a permanantly dismissable dialog to warn Git-newbies about the potential problems of rebasing on a shared repository.
+- Config "page" where a user can adjust settings of Git itself.  Utilize the git-config system to store the git-bundle specific settings.  Reuse existing settings where possible, first.
+  - default number of log entries to get
+- Centralized branch / tag management page.  Have a single, interactive page in textmate where you can switch branches, rebase, merge, diff, log, tag, etc.  This will help make the git-menu considerably shorter
+- Annotate
+  - Find a way to clean-up the drop-down (use fixed font, make it a bit smaller, manually truncate the log message so it doesn't get chopped.
+  - Use "porcelin" format of annotations.  Support showing the commit message in the tool-tip hover.
+  - Follow line numbers when navigating next/previous to assist in tracking a certain piece of code.  Have the ability to change the "tracked" line.
+  - Focus the line number on open dialog
+  - Show commit message
+  - Currently, the annotation browser doesn't follow renames (though Git knows about them).  It would be nice if the annotation browser was smart enough to figure this out
+  - It would be nice to be able to change the "current line" in the annotation browser, and have it update as history is navigated (probably would only be possible with next/previous commands).
+- Push
+  - Ability to push a new branch to a remote where it didn't before exist
+- Show unpushed changes command
+  - Show a log of all local commits that have not been pushed to remote branches.
+- Make a "branch" management dialog - centralize all branch commands to it.
+- Spruce up the stash
+  - Auto "clear" stash on successful apply
+  - Central "stash" management page - browse, apply, clear, and create new stash all from one page.
+  - Choose a stash to delete
+- Pull dialog - make it show the current branch first.  Show delimiters to split up sections between branches (<hr/> plus margin)
+- Make fetch show a diff of changes fetched
+- Some option to show unpushed changes
+- Log
+  - ability to search
+  - Paginate (show more)
+  - adjust number of context lines
+  - Buttons on every log entry where you can create a tag, branch, or checkout any revision.
+  
