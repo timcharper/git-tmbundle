@@ -5,7 +5,7 @@ class SCM::Git::Svn < SCM::Git::SubmoduleBase
   end
   
   def fetch
-    command("svn","fetch")
+    base.command("svn","fetch")
   end
   
   def rebase

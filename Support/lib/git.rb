@@ -261,7 +261,7 @@ module SCM
       "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
     end
     
-    %w[config branch stash].each do |command|
+    %w[config branch stash svn].each do |command|
       class_eval <<-EOF
       def #{command}
         @#{command} ||= SCM::Git::#{command.classify}.new(self)

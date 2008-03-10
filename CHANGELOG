@@ -1,3 +1,6 @@
+Release 1.1.2 [2008-03-10]
+ - SVN Rebase command broke.  Eegad!  Fixed.  We like to release a lot today!
+
 Release 1.1.1 [2008-03-10]
  - Bugfix - merge command was breaking when trying to show links to conflicted files
  - Removed "fix me" notice (it was fixed).  Status listing on merge commit was being filtered down to the selected file or directory, when it should show the status for the whole project (since it's doing a whole commit)
