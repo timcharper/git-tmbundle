@@ -88,7 +88,7 @@ class BranchController < ApplicationController
     unless result[:conflicts].empty?
       puts "<h2>Conflicts - edit each of the following, resolve, commit, then merge again:</h2>"
       result[:conflicts].each do |conflicted_file|
-        full_path = File.join(@base, conflicted_file)
+        full_path = File.join(git.git_base, conflicted_file)
         tm_open(full_path)
         puts "<div><a href='txmt://open?url=file://#{e_url full_path}'>#{conflicted_file}</a></div>"
       end
