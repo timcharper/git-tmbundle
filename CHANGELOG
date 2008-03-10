@@ -1,9 +1,15 @@
+[2008-03-08] 
+ - Huge refactoring effort - built a mini-mvc framework to meet the specific needs of the bundle, and ported all existing code to it.
+ - Fixed compatibility issues with Git 1.5.4.3. 
+ - Log commands lazy-load their diffs now
+ - Option to force apply a stash, even if Git warns you there might be a conflict
+ - Push / Pull commands properly parse output for 
+ - Git shortcut keys for svn commands were conflicting with existing textmate commands.  Updated to Command-Option-G
+ - A few UI-enhancements
+ 
+ 
 [2008-02-20] Commit dialog graceful handling of conflict resolutions
 
 [2008-02-20] Commit dialog limits down to the selected file/folder selected in drawer.
 
-[2008-02-14] Deleted experimental gitk branch since the feature is now merged into master
-
-[2008-02-14] Visualize Gitk feature added (Sam Granieri and Tim Harper)
-
-[2008-02-14] Started Changelog (Sam Granieri)
+[2008-02-14] Visualize Gitk feature added (Sam Granieri)
