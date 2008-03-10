@@ -4,7 +4,7 @@ class CommitController < ApplicationController
   def index
     if git.clean_directory?
       puts "Working directory is clean (nothing to commit)"
-      exit
+      return
     end
     
     if git.merge_message
