@@ -67,7 +67,7 @@ class BranchController < ApplicationController
   def merge
     # prompt for which branch to merge from
     c_branch = git.branch.current_name
-    all_branches = git.branch.list_names(:remote) - [c_branch]
+    all_branches = git.branch.list_names(:all) - [c_branch]
     all_branches << "" # keep the dialog from auto-selecting if there's only one other branch
     merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{c_branch}':", :items => all_branches)
 
