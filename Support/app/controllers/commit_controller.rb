@@ -2,11 +2,6 @@ CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow
 
 class CommitController < ApplicationController
   def index
-    if git.clean_directory?
-      puts "Working directory is clean (nothing to commit)"
-      return
-    end
-    
     if git.merge_message
       @status = git.status
       @message = git.merge_message 
@@ -31,7 +26,7 @@ class CommitController < ApplicationController
       
     def run_partial_commit
       target_file_or_dir = git.paths.first
-      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir))}’</h1>"
+      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY']))}’ on branch ‘#{htmlize(git.branch.current_name)}’</h1>"
       flush
 
       files, statuses = [], []
@@ -39,7 +34,12 @@ class CommitController < ApplicationController
         files  << e_sh(shorten(e[:path], @base))
         statuses << e_sh(e[:status][:short])
       end
-    
+      
+      if files.empty?
+        puts (git.clean_directory? ? "Working directory is clean (nothing to commit)" : "No changes to commit within the current scope. (Try selecting the root folder in the project drawer?)")
+        return
+      end
+      
       msg, files = show_commit_dialog(files, statuses)
 
       unless files.empty?

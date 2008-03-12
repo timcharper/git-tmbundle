@@ -18,6 +18,8 @@ def shorten(path, base = nil)
   case
   when base && path =~ /^#{Regexp.escape base}\/(.+)$/
     $1
+  when base && path =~ /^#{Regexp.escape base}\/?$/
+    "./"
   when path == project_path
     File.basename(path)
   when ENV['TM_PROJECT_DIRECTORY'] && path =~ /^#{Regexp.escape ENV['TM_PROJECT_DIRECTORY']}\/(.+)$/
