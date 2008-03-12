@@ -32,7 +32,6 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     when :all then params << "-a"
     when :remote then params << "-r"
     end
-    
     result = base.command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
     if options[:remote_name]
       r_prefix = remote_branch_prefix(options[:remote_name])
@@ -50,7 +49,7 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
   end
   
   def current_name
-    current[:name]
+    current && current[:name]
   end
 
   def remote_branch_prefix(remote_name)
