@@ -1,3 +1,8 @@
+Release 1.1.3 [2008-03-12]
+ - prompt to merge from local or remote branches
+ - path for project home now showing as "./" in commit dialog.  Path always displays relative to project_path, if it exists.
+    message for directory is clean more explicit (rather than showing nothing if you simply selected a scope with no changes, it tells you that's the case, with a
+
 Release 1.1.2 [2008-03-10]
  - SVN Rebase command broke.  Eegad!  Fixed.  We like to release a lot today!
 
