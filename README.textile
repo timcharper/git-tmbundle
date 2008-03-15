@@ -1,6 +1,7 @@
 The Git Textmate Bundle.
 Version 1.1.3 (released Mar 12, 2008)
 
+
 <h2>Installation</h2>
 
 * Run this:
@@ -16,13 +17,18 @@ git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 
 <h2>Support</h2>
 
-Refer to the <a href="http://groups.google.com/group/git-tmbundle">git-tmbundle group</a> for questions, feedback, anything.
+* <a href="http://groups.google.com/group/git-tmbundle">Mailing list</a>.
+* Repositories: 
+
+  * <a href="http://gitorious.com/projects/git-tmbundle">On Gitorious</a>.
+  
+  * <a href="http://github.com/timcharper/git-tmbundle/">On GitHub</a>.
 
 <hr />
 
 <h3>Maintainer, Lead Developer:</h3>
 
-* Tim Harper (with <a href="http://leadmediapartners.com">Lead Media Partners</a>)
+* <a href="http://tim.theenchanter.com/">Tim Harper</a> (with <a href="http://leadmediapartners.com">Lead Media Partners</a>)
 
 <h2>The git bundle wouldn't be possible without the contributions of the following fine gentlemen:</h2>
 
