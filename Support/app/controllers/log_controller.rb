@@ -9,11 +9,6 @@ ListNib = File.dirname(__FILE__) + "/../../nibs/RevisionSelector.nib"
 
 class LogController < ApplicationController
   layout "application", :only => "index"
-  before_filter :set_script_at_top
-  
-  def set_script_at_top
-    @script_at_top = true
-  end
   
   DEFAULT_LOG_LIMIT = 100
   include DateHelpers
