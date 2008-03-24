@@ -46,3 +46,4 @@ git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 * <b>Humberto Di&oacute;genes</b> - Git-svn fetch command
 * <b>Lee Marlow</b>
 * <b>Geoff Cheshire</b> - Textile'd the README to make it look good on GitHub.
+* <b>Martin Kühl</b> - Patch to allow committing into a git repository that's not the project root.
