@@ -45,3 +45,4 @@ git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 * <b>Jay Soffian</b> - Bug report with patch (missing environment variables)
 * <b>Humberto Di&oacute;genes</b> - Git-svn fetch command
 * <b>Lee Marlow</b>
+* <b>Geoff Cheshire</b> - Textile'd the README to make it look good on GitHub.
