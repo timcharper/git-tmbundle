@@ -9,7 +9,7 @@ describe DiffController do
   
   describe "uncommitted changes" do
     before(:each) do
-      Git.command_response["diff"] = fixture_file("changed_files.diff")
+      Git.command_response["diff", "HEAD"] = fixture_file("changed_files.diff")
       @output = capture_output do 
         dispatch(:controller => "diff", :action => "uncommitted_changes")
       end

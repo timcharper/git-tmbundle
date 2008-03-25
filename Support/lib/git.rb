@@ -317,6 +317,7 @@ module SCM
     
     protected
       def get_range_arg(options, keys = [:revisions, :branches, :tags])
+        return options[:since] if options[:since]
         lr = [:revisions, :revision, :branches, :tags].map{ |k| options[k] }.compact.first
         case lr
         when Array, Range
