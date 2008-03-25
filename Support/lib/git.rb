@@ -92,6 +92,8 @@ module SCM
         ENV['TM_FILEPATH'].to_a
       elsif ENV.has_key?('TM_DIRECTORY')
         ENV['TM_DIRECTORY'].to_a
+      elsif ENV.has_key?('TM_PROJECT_DIRECTORY')
+        ENV['TM_PROJECT_DIRECTORY'].to_a
       else
         raise "No selected files." # FIXME throw an object with more info
       end
