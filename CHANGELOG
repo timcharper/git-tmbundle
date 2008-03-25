@@ -1,3 +1,8 @@
+Release 1.1.6 [2008-03-25]
+ - You can now push to "all" remotes in one command.
+ - Bugfix: show uncommitted changes ALWAYS shows uncommitted changes, even if the changes have been staged with git add.
+ - Resolution of some incorrect environment variable usage.  [Thanks, Allan Odgaard]
+
 Release 1.1.5 [2008-03-24]
  - fixed an issue with committing files within git-submodules, or git repositories in a non-project-root path.
 
