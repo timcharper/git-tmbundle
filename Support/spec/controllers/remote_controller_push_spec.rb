@@ -23,7 +23,7 @@ describe RemoteController do
       end
       
       it "should run all git commands" do
-        Git.commands_ran.should == [["remote"], ["push", "origin"], ["log", "865f920..f9ca10d", "."], ["branch"]]
+        Git.commands_ran.should == [["remote"], ["push", "origin"], ["log", "865f920..f9ca10d", "."], ["branch"], ["branch"]]
       end
       
       it "should output log with diffs" do

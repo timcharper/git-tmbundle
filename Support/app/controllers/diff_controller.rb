@@ -19,7 +19,7 @@ class DiffController < ApplicationController
     open_in_tm_link
     
     paths.each do |path|
-      render("_diff_results", :locals => {:diff_results => git.diff(:file => path) })
+      render("_diff_results", :locals => {:diff_results => git.diff(:file => path, :since => "HEAD") })
     end
   end
   
