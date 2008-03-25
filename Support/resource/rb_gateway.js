@@ -18,7 +18,7 @@ function gateway_command(command, params) {
   // var cmd = arguments.shift
   // var params = arguments
   try {
-    command = "ruby " + e_sh(TM_BUNDLE_PATH) + "/Support/gateway/" + command
+    command = "ruby " + e_sh(TM_BUNDLE_SUPPORT) + "/gateway/" + command
     return exec(command, params).outputString
   }
   catch(err) {
@@ -30,7 +30,7 @@ function gateway_command(command, params) {
 function dispatch(params) {
   try {
     params = $H(params).map(function(pair) { return(pair.key + "=" + pair.value.toString())})
-    command = "ruby " + e_sh(TM_BUNDLE_PATH) + "/Support/dispatch.rb";
+    command = "ruby " + e_sh(TM_BUNDLE_SUPPORT) + "/dispatch.rb";
     // return params.map(function(a) { return e_sh(a) }).join(" ")
     return exec(command, params).outputString
   }
@@ -38,4 +38,4 @@ function dispatch(params) {
     return "ERROR!" + err;
   }
 }
-TM_BUNDLE_PATH = ENV('TM_BUNDLE_PATH')
+TM_BUNDLE_SUPPORT = ENV('TM_BUNDLE_SUPPORT')
