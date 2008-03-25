@@ -1,7 +1,7 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 class RemoteController < ApplicationController
-  FETCH_ALL = "...fetch all remotes..."
+  ALL_REMOTES = "...all remotes..."
   
   before_filter :set_script_at_top
   def set_script_at_top
@@ -12,18 +12,13 @@ class RemoteController < ApplicationController
     branch = git.branch.current_name
     config_key = "branch.#{branch}.remote"
     default_source = git.config[config_key]
-    sources = git.sources
-    sources = ([default_source] + sources).uniq if default_source
-    sources_with_all = sources + (sources.length > 1 ? [FETCH_ALL] : [])
-    TextMate::UI.request_item(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => sources_with_all) do |selected_source|
-      ((selected_source == FETCH_ALL) ? sources : [selected_source]).each do |source|
-        puts "<h2>Fetching from #{source}</h2>"
-        flush
-        result = git.fetch(source)
-        puts htmlize(result[:text])
-        puts "<p>Done.</p>"
-      end
+    
+    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => default_source) do |source|
+      puts "<h2>Fetching from #{source}</h2>"
       flush
+      result = git.fetch(source)
+      puts htmlize(result[:text])
+      puts "<p>Done.</p>"
     end
   end
   
@@ -81,7 +76,7 @@ class RemoteController < ApplicationController
   end
   
   def push
-    TextMate::UI.request_item(:title => "Push", :prompt => "Select a remote source to push to:", :items => git.sources) do |name|
+    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push to:", :items => git.sources) do |name|
       puts "<p>Pushing to remote source '#{name}'\n</p>"
       flush
       output = git.push(name, 
@@ -131,5 +126,21 @@ class RemoteController < ApplicationController
       EOF
       flush
     end
-  
+    
+    def for_each_selected_remote(options, &block)
+      options = {:title => "Select remote", :prompt => "Select a remote..."}.merge(options)
+      default = options.delete(:default)
+      sources = options[:items]
+      if default
+        sources.unshift(default)
+        sources.uniq!
+      end
+      
+      sources << ALL_REMOTES if sources.length > 1
+      TextMate::UI.request_item(options) do |selections|
+        ((selections == ALL_REMOTES) ? (sources-[ALL_REMOTES]) : [selections]).each do |selection|
+          yield selection
+        end
+      end
+    end
 end
