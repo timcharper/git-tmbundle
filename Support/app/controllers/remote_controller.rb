@@ -59,7 +59,7 @@ class RemoteController < ApplicationController
         :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
         :end => lambda { |state, count| progress_end(state, count) }
       )
-      
+      rescan_project
       puts "<pre>#{output[:text]}</pre>"
       
       if ! output[:pulls].empty?
@@ -70,7 +70,7 @@ class RemoteController < ApplicationController
         end
       elsif output[:nothing_to_pull]
       else
-        puts "<h3>Error:</h3>"
+        puts "<h3>Error</h3>"
       end
     end
   end
