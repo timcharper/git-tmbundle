@@ -9,11 +9,10 @@ class RemoteController < ApplicationController
   end
   
   def fetch
-    branch = git.branch.current_name
-    config_key = "branch.#{branch}.remote"
-    default_source = git.config[config_key]
+    branch = git.branch.current_branch
+    config_key = "branch.#{branch.name}.remote"
     
-    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => default_source) do |source|
+    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => branch.remote) do |source|
       puts "<h2>Fetching from #{source}</h2>"
       flush
       result = git.fetch(source)
@@ -23,38 +22,34 @@ class RemoteController < ApplicationController
   end
   
   def pull
-    branch = git.branch.current_name
-    config_key = "branch.#{branch}.remote"
-    merge_key = "branch.#{branch}.merge"
-    default_source = git.config[config_key]
-    default_merge =  git.config[merge_key]
+    branch = git.branch.current_branch
     sources = git.sources
-    sources = ([default_source] + sources).uniq if default_source
+    sources = ([branch.remote] + sources).uniq if branch.remote
     
     TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources) do |source|
       # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
-      if source != default_source || default_merge.nil?
+      if (source != branch.remote) || branch.merge.nil?
         # select a branch to merge from
         remote_branches = git.branch.list_names(:remote)
         # by default, select a branch with the same name first
-        remote_branches = (remote_branches.grep(/(\/|^)#{branch}$/) + remote_branches).uniq
+        remote_branches = (remote_branches.grep(/(\/|^)#{branch.name}$/) + remote_branches).uniq
         # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
         remote_branches << ""
-        remote_branch = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch}'?", :items => remote_branches)
-        if remote_branch.nil? || remote_branch.empty?
+        remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches)
+        if remote_branch_name.nil? || remote_branch_name.empty?
           puts "Aborted"
           return
         end
         
-        if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch} -> #{branch}?", 'Yes', 'No')  == "Yes"
-          git.config[config_key] = source
-          git.config[merge_key] = "refs/heads/" + remote_branch.split("/").last
+        if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch_name} -> #{branch.name}?", 'Yes', 'No')  == "Yes"
+          branch.remote = source
+          branch.merge = "refs/heads/" + remote_branch_name.split("/").last
         end
       end
       
       puts "<p>Pulling from remote source '#{source}'\n</p>"
       flush
-      output = git.pull(source, remote_branch,
+      output = git.pull(source, remote_branch_name,
         :start => lambda { |state, count| progress_start(state, count) }, 
         :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
         :end => lambda { |state, count| progress_end(state, count) }
@@ -64,8 +59,8 @@ class RemoteController < ApplicationController
       
       if ! output[:pulls].empty?
         puts("<h2>Log of changes pulled</h2>")
-        output[:pulls].each do |branch, revisions|
-          puts "<h2>Branch '#{branch}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
+        output[:pulls].each do |branch_name, revisions|
+          puts "<h2>Branch '#{branch_name}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
           render_component(:controller => "log", :action => "log", :path => ".", :revisions => [revisions.first, revisions.last])
         end
       elsif output[:nothing_to_pull]
@@ -88,8 +83,8 @@ class RemoteController < ApplicationController
       if ! output[:pushes].empty?
         puts "<pre>#{output[:text]}</pre>"
         
-        output[:pushes].each do |branch, revisions|
-          puts "<h2>Branch '#{branch}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
+        output[:pushes].each do |branch_name, revisions|
+          puts "<h2>Branch '#{branch_name}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
           render_component(:controller => "log", :action => "log", :path => ".", :revisions => [revisions.first, revisions.last])
         end
       elsif output[:nothing_to_push]

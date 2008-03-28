@@ -14,7 +14,7 @@ dispatch :controller =&gt; "stash", :action =&gt; "clear"
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Clear Stash</string>
+	<string>Clear Stash…</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>

@@ -1,4 +1,7 @@
 class SCM::Git::Branch < SCM::Git::SubmoduleBase
+  def [](name)
+    SCM::Git::BranchProxy.new(@base, self, name)
+  end
   
   def create_and_switch(name)
     base.command("checkout", "-b", name)
@@ -51,6 +54,10 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
   def current_name
     current && current[:name]
   end
+  
+  def current_branch
+    self[current_name]
+  end
 
   def remote_branch_prefix(remote_name)
     /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote_name}.fetch"])
@@ -93,5 +100,35 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
       :unknown
     end
     { :outcome => outcome, :output => output, :remote => remote, :branch => branch }
+  end
+end
+
+class SCM::Git::BranchProxy
+  attr_reader :name
+  
+  def initialize(base, parent, name)
+    @base = base
+    @parent = parent
+    @name = name
+  end
+  
+  def default?
+    raise "implement me"
+  end
+  
+  def remote
+    @base.config["branch.#{name}.remote"]
+  end
+  
+  def remote=(value)
+    @base.config["branch.#{name}.remote"] = value
+  end
+  
+  def merge
+    @base.config["branch.#{name}.merge"]
+  end
+  
+  def merge=(value)
+    @base.config["branch.#{name}.merge"] = value
   end
 end
