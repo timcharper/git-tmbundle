@@ -1,54 +1,27 @@
-module CommonFormatters
-  def short_rev(rev)
-    rev.to_s[0..7]
-  end
-end
-
-
-class Formatters
+module HtmlHelpers
   include ERB::Util
-  include CommonFormatters
-  
-  def self.template_root
-    to_s.gsub("::", "/").downcase
-  end
   
   def initialize(*params, &block)
     @stdout = STDOUT
     layout {yield self} if block_given?
   end
   
-  def layout(&block)
-    render("layout", &block)
-  end
-
-  def header(text)
-    @stdout.puts "<h2>#{text}</h2>"
-    @header = text
+  def path_for(default_path, path)
+    if path.include?("/")
+      path
+    else
+      default_path(path)
+    end
   end
   
-  def sub_header(text)
-    puts "<h3>#{text}</h3>"
+  def layout(&block)
+    render("layout", &block)
   end
   
 protected  
   def resource_url(filename)
     "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
   end
-  
-  def render(name, options = {}, &block)
-    name = "#{name}.html.erb" unless name.include?(".")
-    sub_dir = self.class.template_root
-    ___template___ = File.read( File.join( File.dirname(__FILE__), sub_dir, name))
-    
-    if options[:locals]
-      __v__ = options[:locals].values
-      eval(options[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
-    end
-    
-    ERBStdout.new(___template___, nil, "-", "STDOUT").run(binding)
-  end
-  
   
   def select_box(name, select_options = [], options = {})
     options[:name] ||= name
@@ -92,16 +65,5 @@ protected
       %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
     end
   end
-  
-  def self.const_missing(name)
-    @last_try||=nil
-    raise "Can't find constant #{name}" if @last_try==name
-    @last_try = name
-    
-    file = File.dirname(__FILE__) + "/formatters/#{name.to_s.downcase}.rb"
-    require file
-    klass = const_get(name)
-  rescue LoadError
-    raise "Class not found: #{name} (couldn't find file formatters/#{name.to_s.downcase})"
-  end
 end
+

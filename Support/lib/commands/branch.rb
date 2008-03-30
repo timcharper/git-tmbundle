@@ -29,6 +29,14 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     result
   end
   
+  def all
+    [:local, :remote].each do |side|
+      list(:local, options).map { |branch_params| 
+        SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :local => (side==:local))
+      }
+    end
+  end
+  
   def list(which = :local, options= {})
     params = []
     case which
@@ -110,6 +118,14 @@ class SCM::Git::BranchProxy
     @base = base
     @parent = parent
     @name = name
+  end
+  
+  def local?
+    @local
+  end
+  
+  def remote?
+    ! @local
   end
   
   def default?

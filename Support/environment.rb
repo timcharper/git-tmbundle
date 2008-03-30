@@ -1,14 +1,12 @@
-ROOT = File.dirname(__FILE__)
+require File.dirname(__FILE__) + '/tmvc/tmvc.rb'
+
 LIB_ROOT = ROOT + "/lib"
-CONTROLLERS_ROOT = ROOT + "/app/controllers"
-VIEWS_ROOT = ROOT + "/app/views"
 %w[string auto_load ruby_tm_helpers date_helpers formatters git].each do |filename|
   require "#{LIB_ROOT}/#{filename}.rb"
 end
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 require 'shellwords'
 require 'set'
-require "#{ROOT}/dispatch" unless $dispatch_loaded
 
 def shorten(path, base = nil)
   return if path.blank?
