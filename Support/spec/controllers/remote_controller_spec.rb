@@ -61,7 +61,7 @@ describe RemoteController do
   
   describe "pushing" do
     before(:each) do
-      Git.command_response["push", "origin"] = (fixture_file("push_1_5_4_3_output.txt"))
+      Git.command_response["push", "origin", "master"] = (fixture_file("push_1_5_4_3_output.txt"))
       Git.command_response["branch"] = "* master\n  task"
       Git.command_response["log", ".", "865f920..f9ca10d"] = fixture_file("log.txt")
     end
@@ -75,7 +75,7 @@ describe RemoteController do
       end
       
       it "should run all git commands" do
-        Git.commands_ran.should == [["remote"], ["push", "origin"], ["log", "865f920..f9ca10d", "."], ["branch"], ["branch"]]
+        Git.commands_ran.should == [["branch"], ["remote"], ["push", "origin", "master"], ["log", "865f920..f9ca10d", "."], ["branch"], ["branch"]]
       end
       
       it "should output log with diffs" do

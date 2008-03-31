@@ -71,10 +71,12 @@ class RemoteController < ApplicationController
   end
   
   def push
-    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push to:", :items => git.sources) do |name|
-      puts "<p>Pushing to remote source '#{name}'\n</p>"
+    current_name = git.branch.current.name
+    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.sources) do |source_name|
+      puts "<p>Pushing to remote source '#{source_name}'\n</p>"
       flush
-      output = git.push(name, 
+      output = git.push(source_name, 
+        :branch => current_name, 
         :start => lambda { |state, count| progress_start(state, count) }, 
         :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
         :end => lambda { |state, count| progress_end(state, count) }
