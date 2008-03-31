@@ -93,7 +93,7 @@ class RemoteController < ApplicationController
         puts "There's nothing to push!"
         puts output[:text]
       else
-        puts "<h3>Error:</h3>"
+        puts "<h3>Output:</h3>"
         puts "<pre>#{output[:text]}</pre>"
       end
     end
