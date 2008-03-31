@@ -22,7 +22,7 @@ at_exit {
 def dispatch(params = {})
   begin
     $dispatched = true
-    params = parse_dispatch_args if params.is_a?(Array)
+    params = parse_dispatch_args(ARGV) if params.is_a?(Array)
     
     raise "must supply a controller to use!" unless controller = params[:controller]
     params[:action] ||= "index"
