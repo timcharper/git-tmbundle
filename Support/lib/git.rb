@@ -232,10 +232,13 @@ module SCM
       command("show", "#{revision}:#{path}")
     end
     
-    def push(source, callbacks = {})
+    def push(source, options = {})
+      options = options.dup
       args = ["push", source]
+      args << options.delete(:branch) if options[:branch]
+      
       p = popen_command(*args)
-      process_push(p, callbacks)
+      process_push(p, options)
     end
     
     def pull(source, remote_merge_branch = nil, callbacks = {})
