@@ -29,12 +29,15 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     result
   end
   
-  def all
-    [:local, :remote].each do |side|
-      list(:local, options).map { |branch_params| 
-        SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :local => (side==:local))
+  def all(which = [:local, :remote])
+    branches = []
+    [which].flatten.each do |side|
+      branches.concat list(which).map { |branch_params| 
+        SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
       }
     end
+    
+    branches
   end
   
   def list(which = :local, options= {})
@@ -56,11 +59,11 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
   end
   
   def current
-    list.find { |b| b[:default] }
+    all(:local).find { |b| b.current? }
   end
   
   def current_name
-    current && current[:name]
+    current && current.name
   end
   
   def current_branch
@@ -114,14 +117,20 @@ end
 class SCM::Git::BranchProxy
   attr_reader :name
   
-  def initialize(base, parent, name)
+  def initialize(base, parent, name, options = {})
     @base = base
     @parent = parent
     @name = name
+    @current = options[:current]
+    @local = options[:local]
   end
   
   def local?
     @local
+  end
+  
+  def current?
+    @current
   end
   
   def remote?
