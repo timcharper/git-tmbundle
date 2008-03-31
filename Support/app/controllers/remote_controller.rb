@@ -17,6 +17,9 @@ class RemoteController < ApplicationController
       flush
       result = git.fetch(source)
       puts htmlize(result[:text])
+      
+      puts "<h2>Pruning stale branches from #{source}</h2>"
+      puts git.command('remote', 'prune', source)
       puts "<p>Done.</p>"
     end
   end
