@@ -42,9 +42,7 @@ class RemoteController < ApplicationController
         remote_branches = git.branch.list_names(:remote)
         # by default, select a branch with the same name first
         remote_branches = (remote_branches.grep(/(\/|^)#{branch.name}$/) + remote_branches).uniq
-        # hack - make it always prompt (we don't want to just jump the gun and merge the only branch if only one is available... give them the choice)
-        remote_branches << ""
-        remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches)
+        remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches, :force_pick => true)
         if remote_branch_name.nil? || remote_branch_name.empty?
           puts "Aborted"
           return
@@ -134,7 +132,7 @@ class RemoteController < ApplicationController
     end
     
     def for_each_selected_remote(options, &block)
-      options = {:title => "Select remote", :prompt => "Select a remote..."}.merge(options)
+      options = {:title => "Select remote", :prompt => "Select a remote...", :force_pick => true}.merge(options)
       default = options.delete(:default)
       sources = options[:items]
       if default
@@ -142,7 +140,6 @@ class RemoteController < ApplicationController
         sources.uniq!
       end
       
-      sources << ALL_REMOTES if sources.length > 1
       TextMate::UI.request_item(options) do |selections|
         ((selections == ALL_REMOTES) ? (sources-[ALL_REMOTES]) : [selections]).each do |selection|
           yield selection
