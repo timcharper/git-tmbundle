@@ -172,7 +172,9 @@ class BranchController < ApplicationController
       else
         puts htmlize(output)
         output_show_html
+        
         unless git.submodule.list.empty?
+          puts "<br /><br /><h3>Updating submodules</h3>"
           puts htmlize(git.submodule.init_and_update)
         end
         rescan_project
