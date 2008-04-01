@@ -85,6 +85,19 @@ EOF
         
         output.should include("CONFLICT (content): Merge conflict in Support/spec/lib/commands/branch_spec.rb")
       end
+      
+      describe "when you have submodules" do
+        it "should call submodules.init_and_update" do
+          @set_branch_to_choose.call("task")
+          
+          git = Git.singleton_git
+          git.submodule.should_receive(:list).and_return([{:name => "mod"}])
+          git.submodule.should_receive(:init_and_update)
+          output = capture_output do
+            dispatch(:controller => "branch", :action => "switch")
+          end
+        end
+      end
     end
     
     describe "when switching to a remote branch" do

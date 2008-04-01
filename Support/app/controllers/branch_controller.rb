@@ -6,13 +6,11 @@ class BranchController < ApplicationController
     locals = git.branch.list_names(:local)
     remotes = git.branch.list_names(:remote)
     current = git.branch.current_name
-    
-    items = ([current] + locals + remotes).uniq
-    
+    items = ([current] + locals + remotes).compact.uniq
     if items.length == 0
-      puts "Current branch is '#{current}'. There are no other branches."
+      puts "Current branch is '#{current || '(no branch)'}'. There are no other branches."
     else
-      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current}'.\nSelect a new branch to switch to:", :items => items) 
+      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items) 
       if target_branch.blank?
         exit_discard
       end
@@ -173,8 +171,12 @@ class BranchController < ApplicationController
         end
       else
         puts htmlize(output)
-        output_show_html and return
+        output_show_html
+        unless git.submodule.list.empty?
+          puts htmlize(git.submodule.init_and_update)
+        end
+        rescan_project
       end
+      
     end
-  
 end
