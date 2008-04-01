@@ -158,7 +158,7 @@ class BranchController < ApplicationController
         puts htmlize(output)
         output_show_html
         
-        unless git.submodule.list.empty?
+        unless git.submodule.all.empty?
           puts "<br /><br /><h3>Updating submodules</h3>"
           puts htmlize(git.submodule.init_and_update)
         end
