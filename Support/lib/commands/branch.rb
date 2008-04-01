@@ -33,11 +33,12 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     branches = []
     [which].flatten.each do |side|
       branches.concat list(which).map { |branch_params| 
+        next if branch_params[:name] == "(no branch)"
         SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
       }
     end
     
-    branches
+    branches.compact
   end
   
   def list(which = :local, options= {})
@@ -66,9 +67,7 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     current && current.name
   end
   
-  def current_branch
-    self[current_name]
-  end
+  alias current_branch current
 
   def remote_branch_prefix(remote_name)
     /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote_name}.fetch"])

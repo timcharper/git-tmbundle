@@ -26,8 +26,14 @@ class CommitController < ApplicationController
       
     def run_partial_commit
       @base = git.git_base
+      current_branch_name = git.branch.current_name
+      if current_branch_name.nil?
+        render "not_on_a_branch"
+        return false
+      end
+      
       target_file_or_dir = git.paths.first
-      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(git.branch.current_name)}’</h1>"
+      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(current_branch_name)}’</h1>"
       flush
 
       files, statuses = [], []

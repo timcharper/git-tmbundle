@@ -13,13 +13,14 @@ describe CommitController do
   after(:each) do
     # puts Git.commands_ran.inspect
   end
-  describe "normal commit" do
+  describe "normal commit (partial commit)" do
     before(:each) do
       @message = "My commit message"
       @git.should_receive(:merge_message).and_return(nil)
       @controller.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
       Git.command_response["commit", "-m", "My commit message", "file1.txt", "file2.txt"] = fixture_file("commit_result.txt")
       Git.command_response["diff", "24ff719^..24ff719", "."] = fixture_file("small.diff")
+      Git.command_response["branch"] = "* master"
       @output = capture_output do
         dispatch(:controller => "commit")
       end
@@ -35,6 +36,19 @@ describe CommitController do
     
     it "should output the diff" do
       @output.should include("No newline at end of file")
+    end
+  end
+  
+  describe "when not on a branch" do
+    before(:each) do
+      Git.command_response["branch"] = "* (no branch)"
+      @output = capture_output do
+        dispatch(:controller => "commit")
+      end
+    end
+    
+    it "freak out" do
+      @output.should include("Eegad")
     end
   end
   
