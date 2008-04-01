@@ -38,4 +38,12 @@ function dispatch(params) {
     return "ERROR!" + err;
   }
 }
+
+function dispatch_streaming(iframe_target, params) {
+  params['streaming']="true"
+  port = dispatch(params)
+  $(iframe_target).src = "http://127.0.0.1:" + port + "/"
+  return false;
+}
+
 TM_BUNDLE_SUPPORT = ENV('TM_BUNDLE_SUPPORT')
