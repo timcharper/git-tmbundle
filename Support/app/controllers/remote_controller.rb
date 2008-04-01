@@ -140,6 +140,7 @@ class RemoteController < ApplicationController
         sources.uniq!
       end
       
+      sources << ALL_REMOTES if sources.length > 1
       TextMate::UI.request_item(options) do |selections|
         ((selections == ALL_REMOTES) ? (sources-[ALL_REMOTES]) : [selections]).each do |selection|
           yield selection
