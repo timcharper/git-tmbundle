@@ -96,6 +96,13 @@ class Git
         end
       end
     end
+    
+    def singleton_git
+      git = Git.new
+      Git.stub!(:new).and_return(git)
+      git
+    end
+  
   end
   
   def command(*args)
