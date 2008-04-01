@@ -47,7 +47,7 @@ describe BranchController do
   describe "when switching branches" do
     before(:each) do
       @set_branch_to_choose = lambda { |response|
-        TextMate::UI.should_receive(:request_item).with({:prompt=>"Current branch is 'master'.\nSelect a new branch to switch to:", :items=>["master", "task", "origin/master", "origin/release", "origin/task"], :title=>"Switch to Branch"}).and_return(response)
+        TextMate::UI.should_receive(:request_item).with({:prompt=>"Current branch is 'master'.\nSelect a new branch to switch to:", :items=>["master", "task", "origin/master", "origin/release", "origin/task"], :title=>"Switch to Branch", :force_pick => true}).and_return(response)
       }
     end
     

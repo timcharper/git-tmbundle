@@ -8,7 +8,7 @@ class BranchController < ApplicationController
     if items.length == 0
       puts "Current branch is '#{current_name || '(no branch)'}'. There are no other branches."
     else
-      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current_name || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items) 
+      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current_name || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items, :force_pick => true) 
       if target_branch.blank?
         exit_discard
       end
