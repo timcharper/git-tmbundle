@@ -1,4 +1,4 @@
-require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require LIB_ROOT + '/ui.rb'
 
 class BranchController < ApplicationController
   layout "application", :except => [:create, :delete]
@@ -64,32 +64,19 @@ class BranchController < ApplicationController
   
   def merge
     # prompt for which branch to merge from
-    c_branch = git.branch.current_name
-    all_branches = git.branch.list_names(:all) - [c_branch]
-    all_branches << "" # keep the dialog from auto-selecting if there's only one other branch
-    merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{c_branch}':", :items => all_branches)
-
-    if merge_from_branch.blank?
+    @c_branch = git.branch.current_name
+    all_branches = git.branch.list_names(:all) - [@c_branch]
+    
+    @merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{@c_branch}':", :items => all_branches, :force_pick => true)
+    if @merge_from_branch.blank?
       puts "Aborted"
-      abort
+      return
     end
-
-    puts "<h2>Merging #{merge_from_branch} into #{c_branch}</h2>"
+    
+    puts "<h2>Merging #{@merge_from_branch} into #{@c_branch}</h2>"
     flush
-
-    result = git.merge(merge_from_branch)
-    # run the merge
-    puts "<pre>"
-    puts result[:text]
-    puts "</pre>"
-
-    unless result[:conflicts].empty?
-      puts "<h2>Conflicts - resolve each of the following then commit:</h2>"
-      result[:conflicts].each do |conflicted_file|
-        full_path = File.join(git.git_base, conflicted_file)
-        puts "<div><a href='txmt://open?url=file://#{e_url full_path}'>#{conflicted_file}</a></div>"
-      end
-    end
+    @result = git.merge(@merge_from_branch)
+    render "merge"
     rescan_project
   end
     
