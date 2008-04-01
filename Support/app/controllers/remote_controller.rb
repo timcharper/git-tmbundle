@@ -10,7 +10,7 @@ class RemoteController < ApplicationController
   
   def fetch
     branch = git.branch.current_branch
-    config_key = "branch.#{branch.name}.remote"
+    branch_remote = branch && branch_remote
     
     for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => branch.remote) do |source|
       puts "<h2>Fetching from #{source}</h2>"
@@ -26,8 +26,14 @@ class RemoteController < ApplicationController
   
   def pull
     branch = git.branch.current_branch
+    if branch.nil?
+      puts "You can't pull while not being on a branch (and you are not on a branch).  Please switch to a branch, and try again."
+      output_show_html
+      return
+    end
+    
     sources = git.sources
-    sources = ([branch.remote] + sources).uniq if branch.remote
+    sources = ([branch.remote] + sources).compact.uniq if branch.remote
     
     TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources) do |source|
       # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
