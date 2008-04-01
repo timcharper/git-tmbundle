@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe RemoteController do
   include SpecHelpers
+  include Parsers
   
   before(:each) do
     Git.reset_mock!
@@ -13,10 +14,10 @@ describe RemoteController do
       Git.command_response["branch"] = "* master\n"
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
-    
-      # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
-    
-      # Git.command_response[] 
+      
+      git = Git.singleton_git
+      git.should_receive(:log).with ({:path=>".", :revisions=>["74c0fdf", "d1c6bdd"]}).and_return(parse_log(fixture_file("log_with_diffs.txt")))
+      
       Git.command_response["fetch", "origin"] = fixture_file("fetch_1_5_4_3_output.txt")
       
       @output = capture_output do
@@ -24,10 +25,15 @@ describe RemoteController do
       end
     end
     
-    it "should output log of changes pulled" # do
-      # puts htmlize(@output)
-    #   puts Git.commands_ran.inspect
-    # end
+    it "should use javascript to output the progress" do
+      @output.should include("$('Compressing_progress').update('Done')")
+    end
+    
+    it "should output a log" do
+      @output.should include("<h2>Log of changes fetched</h2>")
+      @output.should include("<h2>Branch 'asdf': 74c0fdf..d1c6bdd</h2>")
+      @output.should include("tim@email.com")
+    end
   end
   
   describe "pulling" do

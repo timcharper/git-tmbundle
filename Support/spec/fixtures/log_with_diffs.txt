@@ -1,5 +1,5 @@
 commit 3dce12204f8b81535ce10f579a78d71aa3fa1730
-Author: Tim Harper <timcharper@gmail.com>
+Author: Tim Harper <tim@email.com>
 Date:   Fri Feb 8 13:22:36 2008 -0700
 
     overrode ERB to have ability to put all content onto a buffer (like STDOUT, for example), making ERB suit our needs better
@@ -369,7 +369,7 @@ index e29567e..e2a0cc3 100644
      @base = ENV["TM_PROJECT_DIRECTORY"]
 
 commit 382052cb014438e43045c0277a5d3f8273fa032d
-Author: Tim Harper <timcharper@gmail.com>
+Author: Tim Harper <tim@email.com>
 Date:   Fri Feb 8 12:35:01 2008 -0700
 
     commit the whole directory

@@ -28,8 +28,9 @@ class LogController < ApplicationController
   end
   
   def log
+    log_params = params.delete_if { |key,value| [:controller, :action, :layout].include?(key) }
     @path = params[:path]
-    @log_entries = git.log(params)
+    @log_entries = git.log(log_params)
     @branch ||= Git.new.branch.current_name
     render "log_entries"
   end

@@ -15,8 +15,20 @@ class RemoteController < ApplicationController
     for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => branch.remote) do |source|
       puts "<h2>Fetching from #{source}</h2>"
       flush
-      result = git.fetch(source)
-      puts htmlize(result[:text])
+      output = git.fetch(source,
+        :start => lambda { |state, count| progress_start(state, count) }, 
+        :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
+        :end => lambda { |state, count| progress_end(state, count) }
+      )
+      puts htmlize(output[:text])
+      
+      unless output[:fetches].empty?
+        puts("<h2>Log of changes fetched</h2>")
+        output[:fetches].each do |branch_name, revisions|
+          puts "<h2>Branch '#{branch_name}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
+          render_component(:controller => "log", :action => "log", :path => ".", :revisions => [revisions.first, revisions.last])
+        end
+      end
       
       puts "<h2>Pruning stale branches from #{source}</h2>"
       puts git.command('remote', 'prune', source)
@@ -70,7 +82,7 @@ class RemoteController < ApplicationController
         end
       elsif output[:nothing_to_pull]
       else
-        puts "<h3>Error</h3>"
+        # puts "<h3>Error</h3>"
       end
     end
   end
