@@ -97,6 +97,7 @@ class ApplicationController
   end
   
   def call(action, _params = {})
+    at_exit { flush }
     self.params = _params
     params[:action] = action.to_s
     @output_buffer = params.delete(:__output_buffer__) if params[:__output_buffer__]
