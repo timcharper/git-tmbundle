@@ -38,11 +38,11 @@ class ApplicationController
       
       layouts_conditions.each do |layout, condition|
         if condition[:except]
-          next if condition[:except].map{|c| c.to_s}.include?(action.to_s)
+          next if [condition[:only]].flatten.map{|c| c.to_s}.include?(action.to_s)
         end
         
         if condition[:only]
-          next unless condition[:only].map{|c| c.to_s}.include?(action.to_s)
+          next unless [condition[:only]].flatten.map{|c| c.to_s}.include?(action.to_s)
         end
         
         return layout
