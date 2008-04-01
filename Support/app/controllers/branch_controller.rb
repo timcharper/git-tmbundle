@@ -3,19 +3,17 @@ require LIB_ROOT + '/ui.rb'
 class BranchController < ApplicationController
   layout "application", :except => [:create, :delete]
   def switch
-    locals = git.branch.list_names(:local)
-    remotes = git.branch.list_names(:remote)
-    current = git.branch.current_name
-    items = ([current] + locals + remotes).compact.uniq
+    current_name = git.branch.current_name
+    items = ([current_name] + git.branch.names(:local) + git.branch.names(:remote)).compact.uniq
     if items.length == 0
-      puts "Current branch is '#{current || '(no branch)'}'. There are no other branches."
+      puts "Current branch is '#{current_name || '(no branch)'}'. There are no other branches."
     else
-      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items) 
+      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current_name || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items) 
       if target_branch.blank?
         exit_discard
       end
       
-      if locals.include?(target_branch)
+      if git.branch.names(:local).include?(target_branch)
         switch_local(target_branch)
       else
         switch_remote(target_branch)
