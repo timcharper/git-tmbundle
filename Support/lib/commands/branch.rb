@@ -60,6 +60,8 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     list(*args).map{|b| b[:name]}
   end
   
+  alias names list_names
+  
   def current
     all(:local).find { |b| b.current? }
   end
