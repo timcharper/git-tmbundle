@@ -51,3 +51,16 @@ class Module
     end
   end
 end
+
+class Array
+  def with_this_at_front(front_matcher)
+    case front_matcher
+    when Array
+      (front_matcher + self).uniq
+    when String, Symbol
+      ([front_matcher] + self).uniq
+    when Regexp
+      (self.grep(front_matcher) + self).uniq
+    end
+  end
+end

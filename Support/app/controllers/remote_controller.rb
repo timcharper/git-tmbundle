@@ -33,15 +33,13 @@ class RemoteController < ApplicationController
     end
     
     sources = git.sources
-    sources = ([branch.remote] + sources).compact.uniq if branch.remote
+    sources = sources.with_this_at_front(branch.remote) if branch.remote
     
     TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources) do |source|
       # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
       if (source != branch.remote) || branch.merge.nil?
         # select a branch to merge from
-        remote_branches = git.branch.list_names(:remote)
-        # by default, select a branch with the same name first
-        remote_branches = (remote_branches.grep(/(\/|^)#{branch.name}$/) + remote_branches).uniq
+        remote_branches = git.branch.list_names(:remote).with_this_at_front(/(\/|^)#{branch.name}$/)
         remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches, :force_pick => true)
         if remote_branch_name.nil? || remote_branch_name.empty?
           puts "Aborted"
@@ -148,3 +146,4 @@ class RemoteController < ApplicationController
       end
     end
 end
+

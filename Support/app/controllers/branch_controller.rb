@@ -4,7 +4,7 @@ class BranchController < ApplicationController
   layout "application", :except => [:create, :delete]
   def switch
     current_name = git.branch.current_name
-    items = ([current_name] + git.branch.names(:local) + git.branch.names(:remote)).compact.uniq
+    items = (git.branch.names(:local) + git.branch.names(:remote)).compact.with_this_at_front(current_name)
     if items.length == 0
       puts "Current branch is '#{current_name || '(no branch)'}'. There are no other branches."
     else
