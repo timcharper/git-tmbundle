@@ -1,0 +1,20 @@
+<h1>Submodules</h1>
+
+<table class="listing">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Revision</th>
+      <th>Tag</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @submodules.each do |submodule| %>
+    <tr>
+      <td><%= submodule.name %></td>
+      <td><%= submodule.revision %></td>
+      <td><%= submodule.tag %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
