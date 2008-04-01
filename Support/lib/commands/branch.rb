@@ -48,6 +48,7 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     when :remote then params << "-r"
     end
     result = base.command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+    result.delete_if { |r| r[:name] == "(no branch)"}
     if options[:remote_name]
       r_prefix = remote_branch_prefix(options[:remote_name])
       result.delete_if {|r| ! Regexp.new("^#{Regexp.escape(r_prefix)}\/").match(r[:name]) }
