@@ -3,9 +3,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe CommitController do
   include SpecHelpers
   before(:each) do
-    @git = Git.new
     @controller = CommitController.new
-    Git.stub!(:new).and_return(@git)
+    @git = Git.singleton_git
     CommitController.stub!(:new).and_return(@controller)
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
