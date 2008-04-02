@@ -15,7 +15,7 @@ describe RemoteController do
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
       
-      git = Git.singleton_git
+      git = Git.singleton_new
       git.should_receive(:log).with({:path=>".", :revisions=>["74c0fdf", "d1c6bdd"]}).and_return(parse_log(fixture_file("log_with_diffs.txt")))
       
       Git.command_response["fetch", "origin"] = fixture_file("fetch_1_5_4_3_output.txt")

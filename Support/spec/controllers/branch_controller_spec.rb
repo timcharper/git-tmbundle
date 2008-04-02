@@ -90,7 +90,7 @@ EOF
         it "should call submodules.init_and_update" do
           @set_branch_to_choose.call("task")
           
-          git = Git.singleton_git
+          git = Git.singleton_new
           git.submodule.should_receive(:list).and_return([{:name => "mod"}])
           git.submodule.should_receive(:init_and_update)
           output = capture_output do
@@ -128,7 +128,7 @@ EOF
     
     describe "when merging" do
       before(:each) do
-        @git = Git.singleton_git
+        @git = Git.singleton_new
         @git.branch.stub!(:current_name).and_return("master")
         @git.branch.stub!(:list_names).and_return(["master", "release", "old_skool"])
       end

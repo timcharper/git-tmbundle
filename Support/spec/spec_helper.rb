@@ -66,11 +66,6 @@ class Git
         end
       end
     end
-    
-    def singleton_git
-      singleton_new
-    end
-  
   end
   
   def command(*args)

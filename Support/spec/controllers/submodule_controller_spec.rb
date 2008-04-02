@@ -5,7 +5,7 @@ describe SubmoduleController do
   include Parsers
   
   before(:each) do
-    @git = Git.singleton_git
+    @git = Git.singleton_new
     @controller = SubmoduleController.singleton_new
   end
   

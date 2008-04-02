@@ -4,7 +4,7 @@ describe CommitController do
   include SpecHelpers
   before(:each) do
     @controller = CommitController.new
-    @git = Git.singleton_git
+    @git = Git.singleton_new
     CommitController.stub!(:new).and_return(@controller)
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
