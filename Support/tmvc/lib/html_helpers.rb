@@ -84,6 +84,10 @@ protected
     button_tag(name, {:onclick => remote_function(options)}.merge(html_options))
   end
   
+  def link_to_mate(name, file)
+    link_to_function(name, "exec('mate', [\"#{e_sh(file)}\"])")
+  end
+  
   include FormatHelpers::TagHelper
 end
 
