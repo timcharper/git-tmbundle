@@ -36,14 +36,14 @@ module TMVC
         raise "Couldn't find a port!"
       end
 
-      puts port
-      flush
-      fork do
+      pid = fork do
         socket = server.accept
         Object.send :remove_const, 'STDOUT'
         Object.const_set("STDOUT", socket)
         dispatch_normal(params)
       end
+      puts "#{port},#{pid}"
+      flush
     end
 
     def dispatch_normal(params = {})

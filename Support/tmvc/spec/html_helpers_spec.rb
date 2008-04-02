@@ -10,8 +10,8 @@ describe HtmlHelpers do
   end
   
   it "should use dispatch_streaming when update_streaming is passed" do
-    remote_function(:update_streaming => "iframe", :params => {:controller => "submodule", :action => "create"}).should == 
-      %q(dispatch_streaming('iframe', {action: "create", controller: "submodule"}))
+    remote_function(:update_streaming => "iframe", :params => {:controller => "submodule", :action => "create"}, :on_complete => "alert('done')").should == 
+      %q(dispatch_streaming('iframe', {params: {action: "create", controller: "submodule"}, on_complete: function() { alert('done') }}))
   end
   
   it "should, when called without an :update parameter, render link_to_remote just using dispatch " do
@@ -21,6 +21,10 @@ describe HtmlHelpers do
   
   it "should link to javascript" do
     link_to_function("click", "alert('Hi!');").should == %q(<a href="javascript:void(0)" onclick="alert('Hi!');">click</a>)
+  end
+  
+  it "should nest options_for_javascript" do
+    options_for_javascript({:a => {:b => 1}}).should == "{a: {b: \"1\"}}"
   end
   
   it "should render a button_tag" do

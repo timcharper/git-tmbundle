@@ -54,19 +54,21 @@ protected
   end
   
   def options_for_javascript(options = {})
-    output = options.map { |key, value| "#{key}: \"#{e_js(value)}\"" }
+    output = options.map { |key, value| "#{key}: " + (value.is_a?(Hash) ? options_for_javascript(value) : "\"#{e_js(value)}\"") }
     "{" + (output.sort * ", ") + "}"
   end
   
   def remote_function(options = {})
-    params_str = options_for_javascript(options[:params])
     case
     when options[:update]
-      "$('#{options[:update]}').update(dispatch(#{params_str}))" 
-    when options[:update_streaming]
-      "dispatch_streaming('#{options[:update_streaming]}', #{params_str})" 
+      "$('#{options[:update]}').update(dispatch(#{options_for_javascript(options[:params])}))" 
+    when target = options[:update_streaming]
+      other_options = ""
+      other_options << ", on_complete: function() { #{options[:on_complete]} }" if options[:on_complete]
+
+      "dispatch_streaming('#{target}', {params: #{options_for_javascript(options[:params])}#{other_options}})" 
     else
-      "dispatch(#{params_str})"
+      "dispatch(#{options_for_javascript(options[:params])})"
     end
   end
   
