@@ -3,9 +3,8 @@ require File.dirname(__FILE__) + '/../spec_helper'
 describe CommitController do
   include SpecHelpers
   before(:each) do
-    @controller = CommitController.new
+    @controller = CommitController.singleton_new
     @git = Git.singleton_new
-    CommitController.stub!(:new).and_return(@controller)
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
   
@@ -38,17 +37,18 @@ describe CommitController do
     end
   end
   
-  describe "when not on a branch" do
-    before(:each) do
-      Git.command_response["branch"] = "* (no branch)"
-      @output = capture_output do
-        dispatch(:controller => "commit")
-      end
-    end
+  it "should NOT be OK to proceed when not on a branch but performing an initial commit" do
+    @git.branch.should_receive(:current_name).and_return(nil)
+    @git.should_receive(:initial_commit_pending?).and_return(false)
     
-    it "freak out" do
-      @output.should include("Eegad")
-    end
+    @controller.send(:ok_to_proceed_with_partial_commit?).should == false
+  end
+  
+  it "should be OK to proceed when not on a branch but performing an initial commit" do
+    @git.branch.should_receive(:current_name).and_return(nil)
+    @git.should_receive(:initial_commit_pending?).and_return(true)
+    
+    @controller.send(:ok_to_proceed_with_partial_commit?).should == true
   end
   
   describe "when in the middle of a merge" do
