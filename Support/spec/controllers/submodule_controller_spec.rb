@@ -27,6 +27,7 @@ describe SubmoduleController do
     ).and_return(module_name)
     
     git.submodule.should_receive(:add).with(module_repo_path, File.join("/base/", module_name))
+    git.submodule.should_receive(:init_and_update).and_return("")
     
     output = capture_output do
       dispatch(:controller => "submodule", :action => "add")
