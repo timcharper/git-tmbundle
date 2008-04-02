@@ -32,7 +32,9 @@ class SubmoduleController < ApplicationController
     end
     
     puts "<pre>"
-    git.submodule.add(repository_path, File.join(parent_folder, module_name))
+    stream = git.submodule.add(repository_path, File.join(parent_folder, module_name))
+    stream.pipe_to(STDOUT)
+    
     puts "</pre>"
     
     puts git.submodule.init_and_update
