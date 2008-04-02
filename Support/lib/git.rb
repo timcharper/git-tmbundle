@@ -21,7 +21,9 @@ module SCM
       'X' => {:short => 'X', :long => 'external',     :foreground => '#800080', :background => '#edaef5'},
     }
     
-    include CommonFormatters
+    def short_rev(rev)
+      rev.to_s[0..7]
+    end
     
     def initialize
       chdir_base
