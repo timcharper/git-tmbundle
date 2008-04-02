@@ -11,16 +11,21 @@ class SCM::Git::Submodule < SCM::Git::SubmoduleBase
     end
   end
   
+  def add(repository, path)
+    path = @base.make_local_path(path)
+    @base.command("submodule", "add", "--", repository, path)
+  end
+  
   protected
     def list
       @base.command("submodule").split("\n").map do |line|
-        next unless line.match(/\s*([a-f0-9]+) (\w+) \((\w+)\)/)
+        next unless line.match(/[ -]*([a-f0-9]+) ([^ ]+)( \((.+)\)){0,1}/)
         {
           :revision => $1,
           :name => $2,
-          :tag => ($3 == "undefined" ? nil : $3)
+          :tag => ($4 == "undefined" ? nil : $4)
         }
-      end
+      end.compact
     end
     
   class SubmoduleProxy
