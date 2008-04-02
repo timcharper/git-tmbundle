@@ -7,7 +7,7 @@
   <% @result[:conflicts].each do |conflicted_file| %>
     <% full_path = File.join(git.git_base, conflicted_file) %>
     <div>
-      <a href='txmt://open?url=file://<%= e_url full_path %>'><%= conflicted_file %></a>
+      <%= link_to_textmate conflicted_file, full_path %>
     </div>
   <% end %>
 <% end %>

@@ -19,9 +19,6 @@
       <%= htmlize(log_entry[:msg])%>
     </div>
     <br clear="both"/>
-    <div class="diff" style="display: none;" rev="<%= log_entry[:rev] %>" branch="<%= branch%>" path="<%= htmlize_attr(path) %>" id="detail_<%= branch %>_<%= log_entry[:rev] %>" style="margin-left: 55px;">
-      <% # Formatters::Diff.new(:rev => log_entry[:rev]).content(log_entry[:diff]) if log_entry[:diff]
-      %>
-    </div>
+    <%= content_tag :div, :class => "diff", :style => "display: none;", :rev => log_entry[:rev], :branch => branch, :path => path, :id => "detail_#{branch}_#{log_entry[:rev]}" %>
   </div>  
 </div>
