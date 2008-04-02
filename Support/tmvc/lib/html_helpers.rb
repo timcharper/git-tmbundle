@@ -68,8 +68,8 @@ protected
     link_to_function(name, remote_function(options))
   end
   
-  def link_to_function(name, js)
-    content_tag(:a, name, :href => "javascript:void(0)", :onclick => js)
+  def link_to_function(name, js, html_options = {})
+    content_tag(:a, name, {:href => "javascript:void(0)", :onclick => js}.merge(html_options))
   end
   
   def button_tag(value, options = {})
