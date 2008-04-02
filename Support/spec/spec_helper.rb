@@ -68,9 +68,7 @@ class Git
     end
     
     def singleton_git
-      git = Git.new
-      Git.stub!(:new).and_return(git)
-      git
+      singleton_new
     end
   
   end
@@ -113,5 +111,14 @@ end
 [:exit_show_html, :exit_discard, :exit_show_tool_tip].each do |exit_method|
   Object.send :define_method, exit_method do
     $exit_status = exit_method
+  end
+end
+
+class Object
+  def self.singleton_new(*args)
+    return @new if @new
+    @new = new(*args)
+    self.stub!(:new).and_return(@new)
+    @new
   end
 end
