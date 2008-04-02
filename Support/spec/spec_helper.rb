@@ -111,9 +111,8 @@ end
 
 class Object
   def self.singleton_new(*args)
-    return @new if @new
-    @new = new(*args)
-    self.stub!(:new).and_return(@new)
-    @new
+    new_obj = new(*args)
+    self.stub!(:new).and_return(new_obj)
+    new_obj
   end
 end
