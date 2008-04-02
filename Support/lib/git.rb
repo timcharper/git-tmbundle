@@ -173,7 +173,11 @@ module SCM
       return unless File.exist?(File.join(git_base, ".git/MERGE_HEAD"))
       File.read(File.join(git_base, ".git/MERGE_MSG"))
     end
-
+    
+    def initial_commit_pending?
+      /^# Initial commit$/.match(command("status")) ? true : false
+    end
+    
     def status(file_or_dir = nil, options = {})
       file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
       file_or_dir = file_or_dir.dup if file_or_dir
