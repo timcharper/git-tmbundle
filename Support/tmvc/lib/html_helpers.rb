@@ -60,8 +60,9 @@ protected
   
   def link_to_remote(name, options = {})
     params = options.delete(:params)
+    js = "dispatch(#{options_for_javascript(params)})"
     
-    e_js
+    content_tag(:a, name, :href => "javascript:void(0)", :onclick => js)
   end
   
   include FormatHelpers::TagHelper
