@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/tmvc/tmvc.rb'
 
 LIB_ROOT = ROOT + "/lib"
-%w[string auto_load ruby_tm_helpers date_helpers formatters git].each do |filename|
+%w[auto_load date_helpers git].each do |filename|
   require "#{LIB_ROOT}/#{filename}.rb"
 end
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'

@@ -6,7 +6,7 @@ HELPERS_ROOT = ROOT + '/app/helpers'
 VIEWS_ROOT = ROOT + "/app/views"
 
 
-%w[erb_stdout html_helpers application_helper application_controller].each do |filename|
+%w[string erb_stdout ruby_tm_helpers format_helpers/tag_helper html_helpers application_helper application_controller].each do |filename|
   require TMVC_ROOT + "/lib/#{filename}.rb"
 end
 

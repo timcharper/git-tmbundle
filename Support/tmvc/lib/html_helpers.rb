@@ -1,11 +1,6 @@
 module HtmlHelpers
   include ERB::Util
   
-  def initialize(*params, &block)
-    @stdout = STDOUT
-    layout {yield self} if block_given?
-  end
-  
   def path_for(default_path, path)
     if path.include?("/")
       path
@@ -13,11 +8,7 @@ module HtmlHelpers
       default_path(path)
     end
   end
-  
-  def layout(&block)
-    render("layout", &block)
-  end
-  
+    
 protected  
   def resource_url(filename)
     "file://#{ENV['TM_BUNDLE_SUPPORT']}/resource/#{filename}"
@@ -50,10 +41,6 @@ protected
   end
   
   
-  def htmlize_attr(str)
-    str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
-  end
-  
   def e_js(str)
     str.to_s.gsub(/"/, '\"').gsub("\n", '\n')
   end
@@ -62,8 +49,10 @@ protected
     file_names = []
     params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
     params.map do |p|
-      %Q{<script type='text/javascript' src="#{resource_url(p)}"></script>}
+      content_tag :script, "", :type => "text/javascript", :src => resource_url(p)
     end
   end
+  
+  include FormatHelpers::TagHelper
 end
 
