@@ -35,6 +35,8 @@ class SubmoduleController < ApplicationController
     git.submodule.add(repository_path, File.join(parent_folder, module_name))
     puts "</pre>"
     
+    puts git.submodule.init_and_update
+    
     puts <<-EOF
 <p>Done.</p>
 EOF
