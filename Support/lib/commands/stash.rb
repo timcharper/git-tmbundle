@@ -1,6 +1,6 @@
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-class SCM::Git::Stash < SCM::Git::SubmoduleBase
+class SCM::Git::Stash < SCM::Git::CommandProxyBase
   def list
     base.command("stash", "list").split("\n").map do |line|
       /^(.+?):(.+)$/.match(line)

@@ -1,5 +1,5 @@
 require LIB_ROOT + "/parsers.rb"
-require LIB_ROOT + "/commands/submodule_base.rb"
+require LIB_ROOT + "/commands/proxy_command_base.rb"
 require LIB_ROOT + "/commands/config.rb" # we have to specifically require this
 module SCM
   class Git

@@ -1,4 +1,4 @@
-class SCM::Git::Branch < SCM::Git::SubmoduleBase
+class SCM::Git::Branch < SCM::Git::CommandProxyBase
   def [](name)
     SCM::Git::BranchProxy.new(@base, self, name)
   end

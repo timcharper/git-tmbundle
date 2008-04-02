@@ -1,4 +1,4 @@
-class SCM::Git::Submodule < SCM::Git::SubmoduleBase
+class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   def init_and_update
     output = @base.command("submodule", "init")
     output << @base.command("submodule", "update")

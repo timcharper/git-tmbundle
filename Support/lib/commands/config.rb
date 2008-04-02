@@ -1,4 +1,4 @@
-class SCM::Git::Config < SCM::Git::SubmoduleBase
+class SCM::Git::Config < SCM::Git::CommandProxyBase
   def [](key)
     r = base.command("config", key)
     r.empty? ? nil : r.gsub(/\n$/, '')
