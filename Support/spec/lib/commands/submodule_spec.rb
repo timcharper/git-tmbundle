@@ -26,7 +26,10 @@ EOF
   end
   
   it "should add a repository" do
-    @git.submodule.add("git@server:/repository.git", "/base/my-path")
-    Git.commands_ran.should == [["submodule", "add", "--", "git@server:/repository.git", "my-path"]]
+    repo = "git@server:/repository.git"
+    path = "my-path"
+    Git.command_response["submodule", "add", "--", repo, path] = ""
+    @git.submodule.add(repo, "/base/#{path}")
+    Git.commands_ran.should == [["submodule", "add", "--", repo, path]]
   end
 end

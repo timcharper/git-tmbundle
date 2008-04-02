@@ -59,9 +59,15 @@ protected
   end
   
   def remote_function(options = {})
-    js = "dispatch(#{options_for_javascript(options[:params])})"
-    js = "$('#{options[:update]}').update(#{js})" if options[:update]
-    js
+    params_str = options_for_javascript(options[:params])
+    case
+    when options[:update]
+      "$('#{options[:update]}').update(dispatch(#{params_str}))" 
+    when options[:update_streaming]
+      "dispatch_streaming('#{options[:update_streaming]}', #{params_str})" 
+    else
+      "dispatch(#{params_str})"
+    end
   end
   
   def link_to_remote(name, options = {})

@@ -797,3 +797,8 @@ table.codediff td.line-num-eof {
   display: block;
   float:left;
 }
+
+/* custom */
+iframe.output {
+  width: 100%;
+}

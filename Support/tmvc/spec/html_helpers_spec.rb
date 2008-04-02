@@ -9,6 +9,11 @@ describe HtmlHelpers do
     options_for_javascript(:controller => "log", :action => "index", :param => 'Grand "old" time').should == %q!{action: "index", controller: "log", param: "Grand \"old\" time"}!
   end
   
+  it "should use dispatch_streaming when update_streaming is passed" do
+    remote_function(:update_streaming => "iframe", :params => {:controller => "submodule", :action => "create"}).should == 
+      %q(dispatch_streaming('iframe', {action: "create", controller: "submodule"}))
+  end
+  
   it "should, when called without an :update parameter, render link_to_remote just using dispatch " do
     link_to_remote("link", :params => {:controller => "log", :action => "index", :param => 'Grand "old" time'}).should == 
       %q(<a href="javascript:void(0)" onclick="dispatch({action: &quot;index&quot;, controller: &quot;log&quot;, param: &quot;Grand \&quot;old\&quot; time&quot;})">link</a>)

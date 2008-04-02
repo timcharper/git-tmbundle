@@ -1,4 +1,5 @@
 class SCM::Git::Submodule < SCM::Git::SubmoduleBase
+  include StreamProgressMethods
   def init_and_update
     output = @base.command("submodule", "init")
     output << @base.command("submodule", "update")
@@ -13,7 +14,10 @@ class SCM::Git::Submodule < SCM::Git::SubmoduleBase
   
   def add(repository, path)
     path = @base.make_local_path(path)
-    @base.command("submodule", "add", "--", repository, path)
+    stream = @base.popen_command("submodule", "add", "--", repository, path)
+    each_line_from_stream(stream) do |line|
+      STDOUT << line
+    end
   end
   
   protected

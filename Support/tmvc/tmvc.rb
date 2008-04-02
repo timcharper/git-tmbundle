@@ -19,63 +19,70 @@ at_exit {
   end
 }
 
-def dispatch_streaming(params = {})
-  require 'socket'
-  streaming = params.delete(:streaming)
-  try_count = 0
-  port = 0
-  begin
-    port = 9999 + try_count
-    server = TCPServer.new('', port)
-  rescue => e
-    try_count += 1
-    retry if try_count < 10
-    raise "Couldn't find a port!"
+module TMVC
+  class << self
+    attr_accessor :catch_exceptions
+    def dispatch_streaming(params = {})
+      require 'socket'
+      streaming = params.delete(:streaming)
+      try_count = 0
+      port = 0
+      begin
+        port = 9999 + try_count
+        server = TCPServer.new('', port)
+      rescue => e
+        try_count += 1
+        retry if try_count < 10
+        raise "Couldn't find a port!"
+      end
+
+      puts port
+      flush
+      fork do
+        socket = server.accept
+        Object.send :remove_const, 'STDOUT'
+        Object.const_set("STDOUT", socket)
+        dispatch_normal(params)
+      end
+    end
+
+    def dispatch_normal(params = {})
+      # puts "hi"
+      # return false
+      begin
+        raise "must supply a controller to use!" unless controller = params[:controller]
+        params[:action] ||= "index"
+        controller_class = "#{controller}_controller".classify.constantize
+        controller_class.call(params[:action], params)
+      rescue => e
+        raise e unless $dont_catch_exceptions
+        puts htmlize($!)
+        puts htmlize($!.backtrace)
+      end
+    end
+
+    def dispatch(params = {})
+      $dispatched = true
+      params = parse_dispatch_args(ARGV) if params.is_a?(Array)
+      if params[:streaming]
+        dispatch_streaming(params) 
+      else
+        dispatch_normal(params)
+      end
+    end
+
+    def parse_dispatch_args(args = [])
+      params = args.inject({}) do |hash, arg|
+        parts = arg.scan(/(.+?)=(.+)/).flatten
+        next hash if parts.empty?
+        key = parts.first.to_sym
+        value = parts.last
+        hash[key] = value
+        hash
+      end
+    end
   end
-  
-  puts port
-  flush
-  fork do
-    socket = server.accept
-    Object.send :remove_const, 'STDOUT'
-    Object.const_set("STDOUT", socket)
-    dispatch_normal(params)
-  end
+  self.catch_exceptions = true
 end
 
-def dispatch_normal(params = {})
-  # puts "hi"
-  # return false
-  begin
-    raise "must supply a controller to use!" unless controller = params[:controller]
-    params[:action] ||= "index"
-    controller_class = "#{controller}_controller".classify.constantize
-    controller_class.call(params[:action], params)
-  rescue => e
-    puts htmlize($!)
-    puts htmlize($!.backtrace)
-  end
-  
-end
-
-def dispatch(params = {})
-  $dispatched = true
-  params = parse_dispatch_args(ARGV) if params.is_a?(Array)
-  if params[:streaming]
-    dispatch_streaming(params) 
-  else
-    dispatch_normal(params)
-  end
-end
-
-def parse_dispatch_args(args = [])
-  params = args.inject({}) do |hash, arg|
-    parts = arg.scan(/(.+?)=(.+)/).flatten
-    next hash if parts.empty?
-    key = parts.first.to_sym
-    value = parts.last
-    hash[key] = value
-    hash
-  end
-end
-
+def dispatch(params = {}); TMVC.dispatch(params); end
