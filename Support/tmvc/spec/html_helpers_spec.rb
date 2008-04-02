@@ -21,4 +21,8 @@ describe HtmlHelpers do
   it "should render a button_tag" do
     button_tag("Commit", :class => "commit_button").should == %q{<input class="commit_button" name="Commit" type="button" value="Commit" />}
   end
+  
+  it "should create a link with a url" do
+    link_to_textmate("text", "/hello", 10).should == %q{<a href="txmt://open?url=file:///hello&line=10">text</a>}
+  end
 end

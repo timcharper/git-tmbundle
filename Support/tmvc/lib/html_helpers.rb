@@ -76,6 +76,10 @@ protected
     content_tag(:input, {:type => "button", :name => value, :value => value }.merge(options))
   end
   
+  def link_to_textmate(name, file, line = nil)  
+    content_tag(:a, name, :href => "txmt://open?url=file://#{e_url file}&line=#{line}")
+  end
+  
   include FormatHelpers::TagHelper
 end
 
