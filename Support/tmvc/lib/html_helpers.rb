@@ -58,14 +58,22 @@ protected
     "{" + (output.sort * ", ") + "}"
   end
   
+  def remote_function(options = {})
+    js = "dispatch(#{options_for_javascript(options[:params])})"
+    js = "$('#{options[:update]}').update(#{js})" if options[:update]
+    js
+  end
+  
   def link_to_remote(name, options = {})
-    params = options.delete(:params)
-    js = "dispatch(#{options_for_javascript(params)})"
-    link_to_function(name, js)
+    link_to_function(name, remote_function(options))
   end
   
   def link_to_function(name, js)
     content_tag(:a, name, :href => "javascript:void(0)", :onclick => js)
+  end
+  
+  def button_tag(value, options = {})
+    content_tag(:input, {:type => "button", :name => value, :value => value }.merge(options))
   end
   
   include FormatHelpers::TagHelper

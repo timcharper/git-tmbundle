@@ -3,12 +3,16 @@ module FormatHelpers
     # Adapted from RubyOnRails
     BOOLEAN_ATTRIBUTES = %w(disabled readonly multiple)
     def content_tag_string(name, content = nil, options = {}, escape = true, close = true)
-      "#{content_tag_string_open(name, options)}#{content}#{content_tag_string_close(name)}"
+      if content
+        "#{content_tag_string_open(name, options)}#{content}#{content_tag_string_close(name)}"
+      else
+        content_tag_string_open(name, options, true, :self_closing => true)
+      end
     end
     
-    def content_tag_string_open(name, options, escape = true)
+    def content_tag_string_open(name, options, escape = true, self_closing = false)
       tag_option_string = tag_options(options, escape) if options
-      "<#{name}#{tag_option_string}>"
+      "<#{name}#{tag_option_string}#{self_closing ? ' /' : ''}>"
     end
     
     def content_tag_string_close(name)
@@ -22,7 +26,12 @@ module FormatHelpers
         yield
         STDOUT << content_tag_string_close(name)
       else
-        content = content_or_options_with_block
+        if content_or_options_with_block.is_a?(Hash)
+          content = nil
+          options = content_or_options_with_block
+        else
+          content = content_or_options_with_block.to_s
+        end
         content_tag_string(name, content, options, escape)
       end
     end

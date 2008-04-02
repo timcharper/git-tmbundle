@@ -17,4 +17,8 @@ describe HtmlHelpers do
   it "should link to javascript" do
     link_to_function("click", "alert('Hi!');").should == %q(<a href="javascript:void(0)" onclick="alert('Hi!');">click</a>)
   end
+  
+  it "should render a button_tag" do
+    button_tag("Commit", :class => "commit_button").should == %q{<input class="commit_button" name="Commit" type="button" value="Commit" />}
+  end
 end
