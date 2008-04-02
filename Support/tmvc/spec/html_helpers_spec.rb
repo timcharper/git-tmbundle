@@ -25,4 +25,8 @@ describe HtmlHelpers do
   it "should create a link with a url" do
     link_to_textmate("text", "/hello", 10).should == %q{<a href="txmt://open?url=file:///hello&line=10">text</a>}
   end
+  
+  it "should create a button to a remote" do
+    button_to_remote("Add", :params => {:controller => "log"}).should include("button")
+  end
 end

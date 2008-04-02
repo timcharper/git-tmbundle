@@ -80,6 +80,10 @@ protected
     content_tag(:a, name, :href => "txmt://open?url=file://#{e_url file}&line=#{line}")
   end
   
+  def button_to_remote(name, options = {}, html_options = {})
+    button_tag(name, {:onclick => remote_function(options)}.merge(html_options))
+  end
+  
   include FormatHelpers::TagHelper
 end
 
