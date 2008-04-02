@@ -27,19 +27,20 @@ describe SubmoduleController do
     @controller.send(:prompt_module_name, @module_repo_path)
   end
   
-  it "should add a repository" do
+  it "should add a repository and output the results of the add / initialize" do
     @controller.should_receive(:prompt_repository_path).and_return(@module_repo_path)
     @controller.should_receive(:prompt_parent_folder).and_return(@git.git_base)
     @controller.should_receive(:prompt_module_name).and_return(@module_name)
     
     @git.submodule.should_receive(:add).with(@module_repo_path, File.join("/base/", @module_name)).and_return(StringIO.new("Added!"))
-    @git.submodule.should_receive(:init_and_update).and_return("")
+    @git.submodule.should_receive(:init_and_update).and_return("Initialized!")
     
     output = capture_output do
       dispatch(:controller => "submodule", :action => "add")
     end
     
     output.should include("Added!")
+    output.should include("Initialized!")
     # puts "<pre>#{output}</pre>"
   end
 end
