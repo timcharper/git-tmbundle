@@ -53,6 +53,17 @@ protected
     end
   end
   
+  def options_for_javascript(options = {})
+    output = options.map { |key, value| "#{key}: \"#{e_js(value)}\"" }
+    "{" + (output.sort * ", ") + "}"
+  end
+  
+  def link_to_remote(name, options = {})
+    params = options.delete(:params)
+    
+    e_js
+  end
+  
   include FormatHelpers::TagHelper
 end
 
