@@ -2,8 +2,12 @@ require LIB_ROOT + '/ui.rb'
 
 class SubmoduleController < ApplicationController
   def index
-    @submodules = git.submodule.all
     render "index"
+  end
+  
+  def list
+    @submodules = git.submodule.all
+    render "list"
   end
   
   def add
@@ -30,6 +34,11 @@ class SubmoduleController < ApplicationController
     puts "<pre>"
     git.submodule.add(repository_path, File.join(parent_folder, module_name))
     puts "</pre>"
+    
+    puts <<-EOF
+<p>Done.</p>
+EOF
+    rescan_project
     # `CocoaDialog fileselect ‑‑select‑only‑directories`
     
   end

@@ -56,8 +56,6 @@ StreamingDispatchExecuter.prototype = {
     $(iframe_target).src = "http://127.0.0.1:" + this.port + "/"
     try {
       new PeriodicalExecuter(function(pe) { 
-        $('debug').update($H(this.options).inspect().escapeHTML())
-        
         if (TextMate.system("kill -0 " + this.pid, null).status == 1) {
           pe.stop()
           if (this.on_complete) this.on_complete();
