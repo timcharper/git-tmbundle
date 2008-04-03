@@ -1,4 +1,4 @@
-class SCM::Git::Svn < SCM::Git::SubmoduleBase
+class SCM::Git::Svn < SCM::Git::CommandProxyBase
   
   def dcommit
     base.command("svn","dcommit")

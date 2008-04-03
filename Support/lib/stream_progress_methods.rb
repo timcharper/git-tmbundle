@@ -1,17 +1,22 @@
+
 module StreamProgressMethods
-  protected  
-    def each_line_from_stream(stream, &block)
+  extend self
+  
+  def each_line_from_stream(stream, &block)
+    line = ""
+    f = File.open("/tmp/output", "wb")
+    stream.each_byte do |char|
+      f.putc(char)
+      char = [char].pack('c')
+      line << char
+      next unless char=="\n" || char=="\r"
+      yield line
       line = ""
-      f = File.open("/tmp/output", "wb")
-      stream.each_byte do |char|
-        f.putc(char)
-        char = [char].pack('c')
-        line << char
-        next unless char=="\n" || char=="\r"
-        yield line
-        line = ""
-      end
     end
+    yield line
+    stream
+  end
+  protected  
 
     def process_with_progress(stream, options = {}, &block)
       options[:start_regexp] ||= /(?-:remote: )?([a-z]+) ([0-9]+) objects/i
@@ -50,3 +55,20 @@ module StreamProgressMethods
       revs
     end
 end
+
+
+module EnhancedStream
+  def each_line_from_stream(&block)
+    StreamProgressMethods.each_line_from_stream(self, &block)
+  end
+  
+  def pipe_to(dest)
+    each_line_from_stream do |line|
+      dest << line
+      dest.flush
+    end
+  end
+end
+
+IO.send :include, EnhancedStream
+StringIO.send :include, EnhancedStream

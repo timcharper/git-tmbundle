@@ -10,9 +10,7 @@
       <% if e[:path][-1..-1]=="/" %>
         <%= htmlize(e[:display]) %>
       <% else %>
-        <a href="txmt://open?url=file://<%= e_url e[:path] %>">
-          <%= htmlize(e[:display]) %>
-        </a>
+        <%= link_to_textmate e[:display], e[:path] %>
       <% end %>
     </td>
   </tr>

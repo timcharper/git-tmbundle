@@ -16,4 +16,11 @@
   <%= script_tag %>
 <% end %>
 <%= @content_for_javascript %>
+<% if params[:on_complete] %>
+<script language="javascript">
+  try {
+    setTimeout(function() { a=1 }, 1)
+  } catch(e) { $('debug').update("Error" + e + " - <br/><%= e_js params[:on_complete] %>")}
+</script>
+<% end %>
 </html>

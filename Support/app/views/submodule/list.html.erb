@@ -1,0 +1,24 @@
+
+<table class="listing">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Revision</th>
+      <th>Tag</th>
+    </tr>
+  </thead>
+  <tbody>
+  <% @submodules.each do |submodule| %>
+    <tr>
+      <td><%= link_to_mate submodule.name, File.join(git.git_base, submodule.name) %></td>
+      <td><%= submodule.revision %></td>
+      <td><%= submodule.tag %></td>
+    </tr>
+  <% end %>
+  <% if @submodules.empty? %>
+    <tr>
+      <td colspan=3>No submodules defined.</td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>

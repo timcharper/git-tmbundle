@@ -2,15 +2,30 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe SCM::Git do
   before(:each) do
-    @status = Git.new
+    @git = Git.new
     Git.command_response["status"] = fixture_file("status_output.txt")
   end
   
   include SpecHelpers
   
+  it "should return the state of an initial_commit_pending? as false" do
+    @git.initial_commit_pending?.should == false
+  end
+  
+  it "should return the state of initial_commit_pending? as true when 'git status' reports it as such" do
+    Git.command_response["status"] = <<EOF
+# On branch master
+#
+# Initial commit
+#
+nothing to commit (create/copy files and use "git add" to track)
+EOF
+    @git.initial_commit_pending?.should == true
+  end
+  
   describe "when executing from a base directory" do
     before(:each) do
-      @results = @status.status
+      @results = @git.status
     end
     
     it "should execute a parse and return a sorted list of SCM commit dialog statuses" do
@@ -31,7 +46,7 @@ describe SCM::Git do
   
   it "should filter to a folder" do
     File.should_receive(:directory?).with("/base/dir").and_return(true)
-    @results = @status.status("/base/dir")
+    @results = @git.status("/base/dir")
     @results.map{ |result| result[:path] }.should == [
       "/base/dir/"
     ]
@@ -39,7 +54,7 @@ describe SCM::Git do
   
   it "should filter to a file" do
     File.should_receive(:directory?).with("/base/small.diff").and_return(false)
-    @results = @status.status("/base/small.diff")
+    @results = @git.status("/base/small.diff")
     @results.map{ |result| result[:path] }.should == [
       "/base/small.diff"
     ]
@@ -47,7 +62,7 @@ describe SCM::Git do
   
   it "should filter to a subfolder" do
     File.should_receive(:directory?).with("/base/dir/subfolder").and_return(true)
-    @results = @status.status("/base/dir/subfolder")
+    @results = @git.status("/base/dir/subfolder")
     @results.should have(1).result
     @result = @results.first
     @result[:path].should == "/base/dir/subfolder/"
@@ -55,7 +70,7 @@ describe SCM::Git do
   end
   
   it "should parse a status document correctly" do
-    result = @status.parse_status_hash(fixture_file("status_output.txt"))
+    result = @git.parse_status_hash(fixture_file("status_output.txt"))
     result.should == {"dir/"=>"?",
      "new_file_and_added.txt"=>"A",
      "small.diff"=>"D",

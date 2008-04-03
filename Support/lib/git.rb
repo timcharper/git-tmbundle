@@ -1,5 +1,5 @@
 require LIB_ROOT + "/parsers.rb"
-require LIB_ROOT + "/commands/submodule_base.rb"
+require LIB_ROOT + "/commands/proxy_command_base.rb"
 require LIB_ROOT + "/commands/config.rb" # we have to specifically require this
 module SCM
   class Git
@@ -21,7 +21,9 @@ module SCM
       'X' => {:short => 'X', :long => 'external',     :foreground => '#800080', :background => '#edaef5'},
     }
     
-    include CommonFormatters
+    def short_rev(rev)
+      rev.to_s[0..7]
+    end
     
     def initialize
       chdir_base
@@ -171,7 +173,11 @@ module SCM
       return unless File.exist?(File.join(git_base, ".git/MERGE_HEAD"))
       File.read(File.join(git_base, ".git/MERGE_MSG"))
     end
-
+    
+    def initial_commit_pending?
+      /^# Initial commit$/.match(command("status")) ? true : false
+    end
+    
     def status(file_or_dir = nil, options = {})
       file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
       file_or_dir = file_or_dir.dup if file_or_dir
@@ -232,10 +238,13 @@ module SCM
       command("show", "#{revision}:#{path}")
     end
     
-    def push(source, callbacks = {})
+    def push(source, options = {})
+      options = options.dup
       args = ["push", source]
+      args << options.delete(:branch) if options[:branch]
+      
       p = popen_command(*args)
-      process_push(p, callbacks)
+      process_push(p, options)
     end
     
     def pull(source, remote_merge_branch = nil, callbacks = {})
@@ -263,7 +272,7 @@ module SCM
       "#{filename.sub(extname, '')}-rev-#{rev}#{extname}"
     end
     
-    %w[config branch stash svn].each do |command|
+    %w[config branch stash svn remote submodule].each do |command|
       class_eval <<-EOF
       def #{command}
         @#{command} ||= SCM::Git::#{command.classify}.new(self)

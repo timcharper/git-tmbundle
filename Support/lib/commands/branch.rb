@@ -1,4 +1,7 @@
-class SCM::Git::Branch < SCM::Git::SubmoduleBase
+class SCM::Git::Branch < SCM::Git::CommandProxyBase
+  def [](name)
+    SCM::Git::BranchProxy.new(@base, self, name)
+  end
   
   def create_and_switch(name)
     base.command("checkout", "-b", name)
@@ -26,6 +29,18 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     result
   end
   
+  def all(which = [:local, :remote])
+    branches = []
+    [which].flatten.each do |side|
+      branches.concat list(which).map { |branch_params| 
+        next if branch_params[:name] == "(no branch)"
+        SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
+      }
+    end
+    
+    branches.compact
+  end
+  
   def list(which = :local, options= {})
     params = []
     case which
@@ -33,6 +48,7 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     when :remote then params << "-r"
     end
     result = base.command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
+    result.delete_if { |r| r[:name] == "(no branch)"}
     if options[:remote_name]
       r_prefix = remote_branch_prefix(options[:remote_name])
       result.delete_if {|r| ! Regexp.new("^#{Regexp.escape(r_prefix)}\/").match(r[:name]) }
@@ -44,13 +60,17 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
     list(*args).map{|b| b[:name]}
   end
   
+  alias names list_names
+  
   def current
-    list.find { |b| b[:default] }
+    all(:local).find { |b| b.current? }
   end
   
   def current_name
-    current && current[:name]
+    current && current.name
   end
+  
+  alias current_branch current
 
   def remote_branch_prefix(remote_name)
     /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote_name}.fetch"])
@@ -93,5 +113,49 @@ class SCM::Git::Branch < SCM::Git::SubmoduleBase
       :unknown
     end
     { :outcome => outcome, :output => output, :remote => remote, :branch => branch }
+  end
+end
+
+class SCM::Git::BranchProxy
+  attr_reader :name
+  
+  def initialize(base, parent, name, options = {})
+    @base = base
+    @parent = parent
+    @name = name
+    @current = options[:current]
+    @local = options[:local]
+  end
+  
+  def local?
+    @local
+  end
+  
+  def current?
+    @current
+  end
+  
+  def remote?
+    ! @local
+  end
+  
+  def default?
+    raise "implement me"
+  end
+  
+  def remote
+    @base.config["branch.#{name}.remote"]
+  end
+  
+  def remote=(value)
+    @base.config["branch.#{name}.remote"] = value
+  end
+  
+  def merge
+    @base.config["branch.#{name}.merge"]
+  end
+  
+  def merge=(value)
+    @base.config["branch.#{name}.merge"] = value
   end
 end

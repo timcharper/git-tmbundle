@@ -20,6 +20,9 @@ describe LogController do
       # puts Git.commands_ran.inspect
     end
     
+    it "should include render with a layout" do
+      @output.should include("<html>")
+    end
     it "should show a log" do
       # puts htmlize(@output)
       @output.should include("<strong>198fc930</strong>")

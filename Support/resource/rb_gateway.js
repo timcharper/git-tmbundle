@@ -1,12 +1,11 @@
 /* Git JS gateway */
 /* Tim Harper (tim.harper at leadmediapartners.org) */
 function e_sh(str) { 
-  return '"' + (str.toString().gsub('"', '\\"')) + '"';
+  return '"' + (str.toString().gsub('"', '\\"').gsub('\\$', '\\$')) + '"';
 }
 
 function exec(command, params) {
   params = params.map(function(a) { return e_sh(a) }).join(" ")
-  
   return TextMate.system(command + " " + params, null)
 }
 
@@ -38,4 +37,34 @@ function dispatch(params) {
     return "ERROR!" + err;
   }
 }
+
+function dispatch_streaming(iframe_target, options) {
+  new StreamingDispatchExecuter(iframe_target, options);
+  return false;
+}
+
+StreamingDispatchExecuter = Class.create();
+StreamingDispatchExecuter.prototype = {
+  initialize: function(iframe_target, options) {
+    this.options = options;
+    this.on_complete = options["on_complete"]
+    params = options['params']
+    params['streaming']="true"
+    var parts = dispatch(options['params']).split(",")
+    this.port = parts[0];
+    this.pid = parts[1];
+    $(iframe_target).src = "http://127.0.0.1:" + this.port + "/"
+    try {
+      new PeriodicalExecuter(function(pe) { 
+        if (TextMate.system("kill -0 " + this.pid, null).status == 1) {
+          pe.stop()
+          if (this.on_complete) this.on_complete();
+        }
+      }.bindAsEventListener(this), 0.5)
+    } catch(e) {$('debug').update(e)}
+    
+  },
+  
+}
+
 TM_BUNDLE_SUPPORT = ENV('TM_BUNDLE_SUPPORT')

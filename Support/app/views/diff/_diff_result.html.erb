@@ -1,7 +1,6 @@
 <%    
   filepath_right = diff_result[:right][:filepath]
   start_line_right = diff_result[:right][:ln_start]
-  current_url = filepath_right ? "txmt://open?url=file://#{e_url File.join(git.git_base, filepath_right)}&line=#{start_line_right}" : "javascript:return false;"
   
   open_links = {}
   files = [:left, :right].map do |lr|
@@ -16,9 +15,9 @@
       when revision
         lr == :left ? "#{revision}^" : revision
     end
-    prev_url = %Q{javascript:dispatch({controller: "log", action: "open_revision", filepath: "#{e_js filepath}", revision: "#{side_revision}", line: "#{diff_result[lr][:ln_start]}" });}
-    open_links[lr] = "<a href='#{prev_url}'>#{lr}</a>"
-    %Q{<a href='#{current_url}'>#{htmlize filepath}</a>}
+    open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :filepath => filepath, :revision => side_revision, :line => diff_result[lr][:ln_start] })
+    
+    filepath_right ? link_to_textmate(filepath, File.join(git.git_base, filepath_right), start_line_right) : filepath
   end
 %>
 

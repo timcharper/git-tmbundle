@@ -222,9 +222,9 @@ module Parsers
         output[:nothing_to_pull] = true
       when /^\* ([^:]+):/
         branch = $1
-      when /^([a-z]+) ([0-9a-f]+\.\.[0-9a-f]+)/i
+      when /^([a-z]+) ([0-9a-f]+\.\.[0-9a-f]+)/i # 1.5.3 format
         output[:pulls][branch] = get_rev_range($2)
-      when /^  (old\.\.new|commit): (.+)/
+      when /^  (old\.\.new|commit): (.+)/         # 1.5.3 format
         output[:pulls][branch] = get_rev_range($2)
       when /^ +([0-9a-f]+\.\.[0-9a-f]+) +([^ ]+) +\-\> (.+)$/
         output[:pulls][$2] = get_rev_range($1)

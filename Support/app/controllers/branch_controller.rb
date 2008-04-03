@@ -1,23 +1,19 @@
-require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
+require LIB_ROOT + '/ui.rb'
 
 class BranchController < ApplicationController
   layout "application", :except => [:create, :delete]
   def switch
-    locals = git.branch.list_names(:local)
-    remotes = git.branch.list_names(:remote)
-    current = git.branch.current_name
-    
-    items = ([current] + locals + remotes).uniq
-    
+    current_name = git.branch.current_name
+    items = (git.branch.names(:local) + git.branch.names(:remote)).compact.with_this_at_front(current_name)
     if items.length == 0
-      puts "Current branch is '#{current}'. There are no other branches."
+      puts "Current branch is '#{current_name || '(no branch)'}'. There are no other branches."
     else
-      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current}'.\nSelect a new branch to switch to:", :items => items) 
+      target_branch = TextMate::UI.request_item(:title => "Switch to Branch", :prompt => "Current branch is '#{current_name || '(no branch)'}'.\nSelect a new branch to switch to:", :items => items, :force_pick => true) 
       if target_branch.blank?
         exit_discard
       end
       
-      if locals.include?(target_branch)
+      if git.branch.names(:local).include?(target_branch)
         switch_local(target_branch)
       else
         switch_remote(target_branch)
@@ -66,32 +62,19 @@ class BranchController < ApplicationController
   
   def merge
     # prompt for which branch to merge from
-    c_branch = git.branch.current_name
-    all_branches = git.branch.list_names(:all) - [c_branch]
-    all_branches << "" # keep the dialog from auto-selecting if there's only one other branch
-    merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{c_branch}':", :items => all_branches)
-
-    if merge_from_branch.blank?
+    @c_branch = git.branch.current_name
+    all_branches = git.branch.list_names(:all) - [@c_branch]
+    
+    @merge_from_branch = TextMate::UI.request_item(:title => "Merge", :prompt => "Merge which branch into '#{@c_branch}':", :items => all_branches, :force_pick => true)
+    if @merge_from_branch.blank?
       puts "Aborted"
-      abort
+      return
     end
-
-    puts "<h2>Merging #{merge_from_branch} into #{c_branch}</h2>"
+    
+    puts "<h2>Merging #{@merge_from_branch} into #{@c_branch}</h2>"
     flush
-
-    result = git.merge(merge_from_branch)
-    # run the merge
-    puts "<pre>"
-    puts result[:text]
-    puts "</pre>"
-
-    unless result[:conflicts].empty?
-      puts "<h2>Conflicts - resolve each of the following then commit:</h2>"
-      result[:conflicts].each do |conflicted_file|
-        full_path = File.join(git.git_base, conflicted_file)
-        puts "<div><a href='txmt://open?url=file://#{e_url full_path}'>#{conflicted_file}</a></div>"
-      end
-    end
+    @result = git.merge(@merge_from_branch)
+    render "merge"
     rescan_project
   end
     
@@ -173,8 +156,14 @@ class BranchController < ApplicationController
         end
       else
         puts htmlize(output)
-        output_show_html and return
+        output_show_html
+        
+        unless git.submodule.all.empty?
+          puts "<br /><br /><h3>Updating submodules</h3>"
+          puts htmlize(git.submodule.init_and_update)
+        end
+        rescan_project
       end
+      
     end
-  
 end

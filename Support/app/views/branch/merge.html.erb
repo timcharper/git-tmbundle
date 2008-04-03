@@ -1,0 +1,13 @@
+<pre>
+  <%= @result[:text] %>
+</pre>
+
+<% unless @result[:conflicts].empty? %>
+  <h2>Conflicts - resolve each of the following then commit:</h2>
+  <% @result[:conflicts].each do |conflicted_file| %>
+    <% full_path = File.join(git.git_base, conflicted_file) %>
+    <div>
+      <%= link_to_textmate conflicted_file, full_path %>
+    </div>
+  <% end %>
+<% end %>

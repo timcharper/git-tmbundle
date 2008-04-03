@@ -47,7 +47,7 @@ describe BranchController do
   describe "when switching branches" do
     before(:each) do
       @set_branch_to_choose = lambda { |response|
-        TextMate::UI.should_receive(:request_item).with({:prompt=>"Current branch is 'master'.\nSelect a new branch to switch to:", :items=>["master", "task", "origin/master", "origin/release", "origin/task"], :title=>"Switch to Branch"}).and_return(response)
+        TextMate::UI.should_receive(:request_item).with({:prompt=>"Current branch is 'master'.\nSelect a new branch to switch to:", :items=>["master", "task", "origin/master", "origin/release", "origin/task"], :title=>"Switch to Branch", :force_pick => true}).and_return(response)
       }
     end
     
@@ -85,6 +85,19 @@ EOF
         
         output.should include("CONFLICT (content): Merge conflict in Support/spec/lib/commands/branch_spec.rb")
       end
+      
+      describe "when you have submodules" do
+        it "should call submodules.init_and_update" do
+          @set_branch_to_choose.call("task")
+          
+          git = Git.singleton_new
+          git.submodule.should_receive(:list).and_return([{:name => "mod"}])
+          git.submodule.should_receive(:init_and_update)
+          output = capture_output do
+            dispatch(:controller => "branch", :action => "switch")
+          end
+        end
+      end
     end
     
     describe "when switching to a remote branch" do
@@ -110,6 +123,24 @@ EOF
         TextMate::UI.should_receive(:request_string).once.with(@get_branch_name_params).and_return("task")
         TextMate::UI.should_receive(:alert).with(:warning, "Branch name already taken!", "The branch name 'task' is already in use.\nVery likely this is the branch you want to work on.\nIf not, pick another name.", "Pick another name", "Switch to it", "Cancel").and_return("Cancel")
         dispatch(:controller => "branch", :action => "switch")
+      end
+    end
+    
+    describe "when merging" do
+      before(:each) do
+        @git = Git.singleton_new
+        @git.branch.stub!(:current_name).and_return("master")
+        @git.branch.stub!(:list_names).and_return(["master", "release", "old_skool"])
+      end
+      
+      it "should merge a branch" do
+        TextMate::UI.should_receive(:request_item).with(:title => "Merge", :prompt => "Merge which branch into 'master':", :items => ["release", "old_skool"], :force_pick => true).and_return("release")
+        @git.should_receive(:merge).with("release").and_return({:text => "Success!", :conflicts => [] })
+        output = capture_output do
+          dispatch(:controller => "branch", :action => "merge")
+        end
+        
+        output.should include("Success!")
       end
     end
   end

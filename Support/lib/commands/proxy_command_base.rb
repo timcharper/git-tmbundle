@@ -1,6 +1,6 @@
 module SCM
   class Git
-    class SubmoduleBase
+    class CommandProxyBase
       attr_accessor :base
       def initialize(base)
         @base = base

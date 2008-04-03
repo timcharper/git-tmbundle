@@ -38,11 +38,11 @@ class ApplicationController
       
       layouts_conditions.each do |layout, condition|
         if condition[:except]
-          next if condition[:except].map{|c| c.to_s}.include?(action.to_s)
+          next if [condition[:except]].flatten.map{|c| c.to_s}.include?(action.to_s)
         end
         
         if condition[:only]
-          next unless condition[:only].map{|c| c.to_s}.include?(action.to_s)
+          next unless [condition[:only]].flatten.map{|c| c.to_s}.include?(action.to_s)
         end
         
         return layout
@@ -97,6 +97,7 @@ class ApplicationController
   end
   
   def call(action, _params = {})
+    at_exit { flush }
     self.params = _params
     params[:action] = action.to_s
     @output_buffer = params.delete(:__output_buffer__) if params[:__output_buffer__]
