@@ -7,6 +7,7 @@ class SvnController < ApplicationController
   def rebase
     puts "<h2>Rebasing Subversion Repository</h2>"
     puts htmlize(git.svn.rebase)
+    rescan_project
   end
   
   def fetch
