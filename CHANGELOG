@@ -1,3 +1,20 @@
+Release 1.2.0 [2008-04-03]
+
+Features:
+- Submodule support - Add and list submodules.  Automatically update them when switching branches or pulling.
+  - Automatically check Submodules when switching branches or pulling (switching to a branch pointing to an older version of a submodule automatically checks the submodule out to that version)
+  - Prevent accidental commit-loss by not allow commits while not on branch.
+- Stale remote branches are now pruned via "Fetch".
+- Push now only pushes the current branch (it's surprising behavior to push "master" and see a rejection notice for "release").  
+- If the branch does not exist remotely, it gets created.
+
+Fixes: 
+- Much internal refactoring and cleaning up code base
+- tell textmate to rescan after a svn rebase
+- Applied Jiho's patch for the git commit message language.  Thanks, Jiho!
+- tell textmate to rescan the project after a pull is completed
+- Fixed misleading output from pull/fetch commands.  show "Output" instead of "Error"
+
 Release 1.1.6 [2008-03-25]
  - You can now push to "all" remotes in one command.
  - Bugfix: show uncommitted changes ALWAYS shows uncommitted changes, even if the changes have been staged with git add.
