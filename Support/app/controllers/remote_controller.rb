@@ -61,8 +61,15 @@ class RemoteController < ApplicationController
     current_name = git.branch.current.name
     for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.sources) do |source_name|
       puts "<p>Pushing to remote source '#{source_name}'\n</p>"
-      flush
       display_push_output(run_push(source_name, :branch => current_name))
+    end
+  end
+  
+  def push_tag
+    tag = params[:tag] || (raise "select tag not yet implemented")
+    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the tag #{tag} to:", :items => git.sources) do |source_name|
+      puts "<p>Pushing tag #{tag} to '#{source_name}'\n</p>"
+      display_push_output(run_push(source_name, :tag => tag))
     end
   end
   
