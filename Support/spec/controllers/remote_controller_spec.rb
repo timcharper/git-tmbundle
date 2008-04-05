@@ -94,4 +94,23 @@ describe RemoteController do
       end
     end
   end
+  
+  describe "pushing a tag" do
+    before(:each) do
+      @git = Git.singleton_new
+      @git.should_receive(:sources).and_return(["origin"])
+      @controller = RemoteController.singleton_new
+      def @controller.for_each_selected_remote(options = {}, &block)
+        yield "origin"
+      end
+    end
+    
+    it "should call run_push and then display_push_output" do
+      @controller.should_receive(:run_push).with("origin", :tag => "mytag")
+      @controller.should_receive(:display_push_output)
+      @output = capture_output do
+        dispatch(:controller => "remote", :action => "push_tag", :tag => "mytag")
+      end
+    end
+  end
 end
