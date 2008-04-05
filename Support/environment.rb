@@ -61,6 +61,8 @@ class Array
       ([front_matcher] + self).uniq
     when Regexp
       (self.grep(front_matcher) + self).uniq
+    else
+      self
     end
   end
 end

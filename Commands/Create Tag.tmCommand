@@ -6,17 +6,9 @@
 	<string>nop</string>
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
-require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
-require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
-if name = TextMate::UI.request_string(:title =&gt; "Create Tag", :prompt =&gt; "Enter the name of the new tag:")
-  git = SCM::Git.new
-  git_base = File.expand_path('..', git.git_dir(git.paths.first))
-  git.create_tag(name, git_base)
-  puts "Tag #{name} created"
-end
-</string>
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch :controller =&gt; "tag", :action =&gt; "create"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
@@ -24,7 +16,7 @@ end
 	<key>name</key>
 	<string>Create Tag…</string>
 	<key>output</key>
-	<string>showAsTooltip</string>
+	<string>showAsHTML</string>
 	<key>uuid</key>
 	<string>C6CD5A2A-E1DA-4D94-B561-331A2366AAC8</string>
 </dict>
