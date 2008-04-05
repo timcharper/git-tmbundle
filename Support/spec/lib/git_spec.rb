@@ -6,23 +6,6 @@ describe SCM::Git do
     Git.reset_mock!
   end
   
-  it "should retrieve a value" do
-    Git.command_output << "../origin"
-    @git.config["remote.origin.url"].should == "../origin"
-  end
-  
-  it "should set a value" do
-    Git.command_output << "../origin"
-    Git.command_output << "../origin"
-    @git.config["remote.origin.url"] = "../origin"
-    @git.config["remote.origin.url"].should == "../origin"
-  end
-  
-  it "should return nil on blank, non-existing value" do
-    Git.command_output << ""
-    @git.config["remote.origin.url"].should be_nil
-  end
-  
   describe "when getting branches" do
     before(:each) do
     end

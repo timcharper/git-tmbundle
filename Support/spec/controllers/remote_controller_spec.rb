@@ -6,11 +6,13 @@ describe RemoteController do
   
   before(:each) do
     Git.reset_mock!
+    @git = Git.singleton_new
   end
   
   describe "fetching" do
     before(:each) do
       # query the sources
+      @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
       Git.command_response["branch"] = "* master\n"
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
@@ -41,9 +43,9 @@ describe RemoteController do
       # query the sources
       Git.command_response["branch"] = "* master\n"
       Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
-      Git.command_response["config", "remote.origin.fetch"] = "+refs/heads/*:refs/remotes/origin/*"
-      Git.command_response["config", "branch.master.remote"] = %Q{origin}
-      Git.command_response["config", "branch.master.merge"] = %Q{refs/heads/master}
+      @git.config.stub!(:[]).with("remote.origin.fetch").and_return("+refs/heads/*:refs/remotes/origin/*")
+      @git.config.stub!(:[]).with("branch.master.remote").and_return('origin')
+      @git.config.stub!(:[]).with("branch.master.merge").and_return("refs/heads/master")
       Git.command_response["remote"] = %Q{origin}
     
       # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
