@@ -1,0 +1,19 @@
+<h1>Config</h1>
+<form>
+  <table>
+    <thead>
+      <tr>
+        <th>Global Config</th>
+<!--        <th>Local Config Config</th>-->
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          Name: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.name"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.name', value: $F(this)})" %><br/>
+          Email: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.email"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.email', value: $F(this)})" %><br/>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</form>
