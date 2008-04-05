@@ -90,6 +90,7 @@ class RemoteController < ApplicationController
     end
     
     def display_push_output(output)
+      flush
       if ! output[:pushes].empty?
         puts "<pre>#{output[:text]}</pre>"
         output_branch_logs(output[:pushes])

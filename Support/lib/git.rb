@@ -139,11 +139,10 @@ module SCM
       command("ls-files", *params).split("\n")
     end
     
-    def create_tag(name, git_file)
-      base = File.expand_path("..", git_dir(git_file))
-      Dir.chdir(base)
-    
+    def create_tag(name)
+      chdir_base
       %x{#{command_str("tag", name)}}
+      true
     end
   
     def revert(paths = [])
@@ -242,6 +241,7 @@ module SCM
       options = options.dup
       args = ["push", source]
       args << options.delete(:branch) if options[:branch]
+      args << options.delete(:tag) if options[:tag]
       
       p = popen_command(*args)
       process_push(p, options)
