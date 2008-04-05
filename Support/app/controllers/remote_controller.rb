@@ -75,7 +75,7 @@ class RemoteController < ApplicationController
   
   protected
     def setup_auto_merge(source, branch)
-      remote_branches = git.branch.list_names(:remote).with_this_at_front(/(\/|^)#{branch.name}$/)
+      remote_branches = git.branch.list_names(:remote, :remote_name => source ).with_this_at_front(/(\/|^)#{branch.name}$/)
       remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches, :force_pick => true)
       if remote_branch_name.nil? || remote_branch_name.empty?
         puts "Aborted"
