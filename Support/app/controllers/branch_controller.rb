@@ -146,7 +146,7 @@ class BranchController < ApplicationController
         TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
         exit_discard
       when /fatal: Entry '(.+)' not uptodate\. Cannot merge\./
-        response = TextMate::UI.alert(:informational, "Conflict detected if you switch", "There are uncommitted changes that will cause conflicts by this switch (#{$1}).\nSwitch anyways?", "No", "Yes")
+        response = TextMate::UI.alert(:informational, "Conflicts may happen if you switch", "There are uncommitted changes that might cause conflicts by this switch (#{$1}).\nSwitch anyways?", "No", "Yes")
         if response=="Yes"
           output = git.command("checkout", "-m", target_branch)
           puts htmlize(output)
