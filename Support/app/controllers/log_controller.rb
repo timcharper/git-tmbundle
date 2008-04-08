@@ -15,7 +15,8 @@ class LogController < ApplicationController
   
   def index
     params[:path] ||= git.make_local_path(git.paths.first)
-    params[:limit] ||= DEFAULT_LOG_LIMIT
+    params[:limit] = git.config[:global, "log.limit"]
+    params[:limit] ||= DEFAULT_LOG_LIMIT 
     path = params[:path]
     # Get the desired revision number
     if File.directory?(git.git_base + path)
