@@ -32,6 +32,10 @@ describe SCM::Git do
     Git.commands_ran.first.should == ["config", "--file", "/base/.git/config", "remote.origin.url", "../origin"]
   end
   
+  it "should delete local values when assigning nil" do
+    @git.config[:local, "git-tmbundle.log.limit"] = nil
+    Git.commands_ran.first.should == ["config", "--file", "/base/.git/config", "--unset", "git-tmbundle.log.limit"]
+  end
   
   it "should allow reading global values" do
     Git.command_response["config", "--global", "remote.origin.url"] = "../origin"
