@@ -4,8 +4,9 @@ class DiffController < ApplicationController
     show_diff_title unless params[:layout].to_s=="false"
     @rev = params[:rev]
     @title = params[:title] || "Uncomitted changes"
-    params[:context_lines] = git.config["git-tmbundle.log.context-lines"] if git.config["git-tmbundle.log.context-lines"]
-    render("_diff_results", :locals => {:diff_results => git.diff(params)})
+    
+    diff_params = extract_diff_params(params)
+    render("_diff_results", :locals => {:diff_results => git.diff(diff_params)})
   end
   
   def uncommitted_changes
@@ -64,5 +65,12 @@ protected
     end
     puts "</h2>"
   end
-
+  
+  def extract_diff_params(params)
+    diff_params = params.dup.delete_if do |key, value|
+      ! [:revisions, :revision, :branches, :tags, :path].include?(key)
+    end
+    diff_params[:context_lines] = git.config["git-tmbundle.log.context-lines"] if git.config["git-tmbundle.log.context-lines"]
+    diff_params
+  end
 end

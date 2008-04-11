@@ -37,7 +37,14 @@ class CommitController < ApplicationController
       end
       
       target_file_or_dir = git.paths.first
-      puts "<h1>Committing Files in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(git.branch.current_name)}’</h1>"
+      
+      puts "<h1>"
+      if params[:type] == "amend"
+        puts "Amending the commit"
+      else
+        puts "Committing Files"
+      end
+      puts " in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(git.branch.current_name)}’</h1>"
       flush
 
       files, statuses = [], []
@@ -55,7 +62,7 @@ class CommitController < ApplicationController
 
       unless files.empty?
         auto_add_rm(files)
-        res = git.commit(msg, files)
+        res = git.commit(msg, files, :amend => (params[:type] == "amend"))
         render "_commit_result", :locals => { :files => files, :message => msg, :result => res}
       end
     end

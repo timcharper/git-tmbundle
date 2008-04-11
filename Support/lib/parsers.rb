@@ -257,4 +257,5 @@ module Parsers
   end
   
   include StreamProgressMethods
+  extend self
 end

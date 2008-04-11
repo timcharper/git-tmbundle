@@ -215,8 +215,11 @@ module SCM
       status.empty?
     end
 
-    def commit(msg, files = ["."])
-      parse_commit(command("commit", "-m", msg, *files))
+    def commit(msg, files = ["."], options = {})
+      args = ["commit"]
+      args << "--amend" if options[:amend]
+      args += ["-m", msg, *files]
+      parse_commit(command(*args))
     end
     
     def add(files = ["."])
