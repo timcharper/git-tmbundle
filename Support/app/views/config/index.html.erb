@@ -13,6 +13,7 @@
         <td>
           Name: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.name"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.name', value: $F(this)})" %><br/>
           Email: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.email"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.email', value: $F(this)})" %><br/>
+          Log limit: <%= content_tag :input, :type => "text", :value => git.config[:global, "log.limit"] || LogController::DEFAULT_LOG_LIMIT, :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'log.limit', value: $F(this)})" %><br/>
         </td>
       </tr>
       <tr>
