@@ -8,7 +8,13 @@ class SCM::Git::Config < SCM::Git::CommandProxyBase
   def []=(*params)
     value = params.pop
     scope, key = process_keys(params)
-    base.command(*(["config"] + config_args(scope) + [key, value]))
+    args = ["config"] + config_args(scope)
+    if value
+      args += [key, value]
+    else
+      args += ["--unset", key]
+    end
+    base.command(*args)
   end
   
   protected

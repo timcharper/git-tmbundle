@@ -14,7 +14,7 @@ dispatch :controller =&gt; "remote", :action =&gt; "push"</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Push</string>
+	<string>Push Current Branch</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>

@@ -1,10 +1,11 @@
-<h1>Config</h1>
-<form>
-  <table>
+<h1>Git Config</h1>
+<p>Values are saved when the form-field loses focus.</p>
+<form onsubmit="return false">
+  <table class="listing">
     <thead>
       <tr>
-        <th>Global Config</th>
-<!--        <th>Local Config Config</th>-->
+        <th>Global</th>
+        <th>Local</th>
       </tr>
     </thead>
     <tbody>
@@ -12,8 +13,16 @@
         <td>
           Name: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.name"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.name', value: $F(this)})" %><br/>
           Email: <%= content_tag :input, :type => "text", :value => git.config[:global, "user.email"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.email', value: $F(this)})" %><br/>
+          Log limit: <%= content_tag :input, :type => "text", :value => git.config[:global, "log.limit"] || LogController::DEFAULT_LOG_LIMIT, :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'log.limit', value: $F(this)})" %><br/>
         </td>
       </tr>
+      <tr>
+        <td>
+          Log limit: <%= content_tag :input, :type => "text", :value => git.config[:global, "git-tmbundle.log.limit"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'git-tmbundle.log.limit', value: $F(this)})" %><br/>
+        </td>
+        <td>
+          Log limit: <%= content_tag :input, :type => "text", :value => git.config[:local, "git-tmbundle.log.limit"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'local', key: 'git-tmbundle.log.limit', value: $F(this)})" %><br/>
+        </td>
     </tbody>
   </table>
 </form>
