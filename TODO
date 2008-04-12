@@ -11,7 +11,7 @@ Anyone's encouraged to add to this list or take an idea and develop in their own
 - amending and signing off on commits
 - setting up the .gitignore file for a standard rails project
 - Rebase command.  Have a permanantly dismissable dialog to warn Git-newbies about the potential problems of rebasing on a shared repository.
-- Config "page" where a user can adjust settings of Git itself.  Utilize the git-config system to store the git-bundle specific settings.  Reuse existing settings where possible, first.
+- Add items to git config page
   - default number of log entries to get
 - Centralized branch / tag management page.  Have a single, interactive page in textmate where you can switch branches, rebase, merge, diff, log, tag, etc.  This will help make the git-menu considerably shorter
 - Annotate
@@ -23,7 +23,6 @@ Anyone's encouraged to add to this list or take an idea and develop in their own
   - Currently, the annotation browser doesn't follow renames (though Git knows about them).  It would be nice if the annotation browser was smart enough to figure this out
   - It would be nice to be able to change the "current line" in the annotation browser, and have it update as history is navigated (probably would only be possible with next/previous commands).
 - Push
-  - Ability to push a new branch to a remote where it didn't before exist
 - Show unpushed changes command
   - Show a log of all local commits that have not been pushed to remote branches.
 - Make a "branch" management dialog - centralize all branch commands to it.
@@ -32,8 +31,6 @@ Anyone's encouraged to add to this list or take an idea and develop in their own
   - Central "stash" management page - browse, apply, clear, and create new stash all from one page.
   - Choose a stash to delete
 - Pull dialog - make it show the current branch first.  Show delimiters to split up sections between branches (<hr/> plus margin)
-- Make fetch show a diff of changes fetched
-- Some option to show unpushed changes
 - Log
   - ability to search
   - Paginate (show more)
