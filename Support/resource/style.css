@@ -365,9 +365,14 @@ table.listing {
   width: 100%;
 }
 
+table.listing td {
+  padding: 1px;
+}
+
 table.listing tr.odd {
   background: #efefef;
 }
+
 table.listing thead th {
   font-weight: bold;
   padding: 3px;
@@ -725,6 +730,15 @@ table.codediff td.eof {
 
 table.codediff td.line-num-eof {
 	font-style: italic !important;
+}
+
+#global-config {
+  float: left;
+  width: 50%;
+}
+
+#local-config {
+  width: 50%;
 }
 
 #newest_projects, #site_project_list {
