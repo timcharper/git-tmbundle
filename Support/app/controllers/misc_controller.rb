@@ -5,46 +5,33 @@ class MiscController < ApplicationController
   end
   
   def gitk
-    exit if fork            # Parent exits, child continues.
-    Process.setsid          # Become session leader.
-    exit if fork            # Zap session leader.
-
-    # After this point you are in a daemon process
-    fork do
-      
-      STDOUT.reopen(open('/dev/null'))
-      STDERR.reopen(open('/dev/null'))
-      Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
-      Thread.new do
-        sleep 0.05
-        %x{osascript -e 'tell app "Wish Shell" to activate'}
-      end
-      %x{gitk --all}
-    end
-
-    Process.detach(pid)
-
-    #copied from http://andrejserafim.wordpress.com/2007/12/16/multiple-threads-and-processes-in-ruby/
+    wishish_command("gitk --all")
   end
   
   def gitgui
-    exit if fork            # Parent exits, child continues.
-    Process.setsid          # Become session leader.
-    exit if fork            # Zap session leader.
-
-    # After this point you are in a daemon process
-    fork do
-      STDOUT.reopen(open('/dev/null'))
-      STDERR.reopen(open('/dev/null'))
-      Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
-      Thread.new do
-        sleep 0.05
-        %x{osascript -e 'tell app "Wish Shell" to activate'}
-      end
-      %x{git-gui}
-    end
-
-    Process.detach(pid)
+    wishish_command("git-gui")
   end
+  
+  protected
+    def wishish_command(cmd)
+      exit if fork            # Parent exits, child continues.
+      Process.setsid          # Become session leader.
+      exit if fork            # Zap session leader.
+
+      # After this point you are in a daemon process
+      fork do
+        STDOUT.reopen(open('/dev/null'))
+        STDERR.reopen(open('/dev/null'))
+        Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
+        Thread.new do
+          sleep 0.25
+          %x{osascript -e 'tell app "Wish Shell" to activate'}
+        end
+        system(cmd)
+      end
+
+      Process.detach(pid)
+      #inspired by http://andrejserafim.wordpress.com/2007/12/16/multiple-threads-and-processes-in-ruby/
+    end
   
 end
