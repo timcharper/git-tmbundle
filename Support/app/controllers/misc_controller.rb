@@ -12,6 +12,10 @@ class MiscController < ApplicationController
     wishish_command("git-gui", "Git Gui")
   end
   
+  def gitnub
+    wishish_command("nub", "Gitnub")
+  end
+  
   protected
     def wishish_command(cmd, app_name)
       exit if fork            # Parent exits, child continues.
