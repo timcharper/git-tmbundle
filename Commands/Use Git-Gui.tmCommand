@@ -7,12 +7,9 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-dispatch(:controller =&gt; "misc", :action =&gt; "gitgui")
-	</string>
-	<key>keyEquivalent</key>
-	<string>^G</string>
+dispatch(:controller =&gt; "misc", :action =&gt; "gitgui")</string>
 	<key>name</key>
-	<string>Use Git-Gui</string>
+	<string>Open Git-Gui</string>
 	<key>output</key>
 	<string>discard</string>
 	<key>uuid</key>
