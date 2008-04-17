@@ -4,7 +4,7 @@ This is a road map to experimental branches and what they should do once they're
 
 Anyone's encouraged to add to this list or take an idea and develop in their own clone of the git repository.  When they are completed, notify me (timcharper - at - gmail) to get your changes pulled into the next release branch, and guarantee your name's immortality.
 
-- git-gui (Sam Granieri overcame the "beachballing" issue with GitK.  Follow Sam's example and implement in similarly)
+- git-gui (Sam Granieri overcame the "beachballing" issue with GitK.  Follow Sam's example and implement in similarly) 
 - cherry-picking -- 
   - pick a SHA ref and merge the commit associated with it from one branch to another
   - Would be nice to use the html-log view, and include checkmarks next to each entry.  This way, you could browse the log, see the commit message, and check the contents of the commit, making it easier to select which changes you'd like to cherry-pick.
