@@ -32,4 +32,13 @@ EOF
     @git.submodule.add(repo, "/base/#{path}")
     Git.commands_ran.should == [["submodule", "add", "--", repo, path]]
   end
+  
+  it "should ignore 'fatal cannot describe' errors" do
+    Git.command_response["submodule"] = <<EOF
+fatal: cannot describe '23f26dec3851f50dbd4f7a132735b962b436898e'
+ 23f26dec3851f50dbd4f7a132735b962b436898e mod (undefined)
+EOF
+    submodules = @git.submodule.all
+    submodules.should have(1).submodules
+  end
 end

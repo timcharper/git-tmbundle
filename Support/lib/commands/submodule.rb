@@ -19,7 +19,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   protected
     def list
       @base.command("submodule").split("\n").map do |line|
-        next unless line.match(/[ -]*([a-f0-9]+) ([^ ]+)( \((.+)\)){0,1}/)
+        next unless line.match(/^[ -]*([a-f0-9]+) ([^ ]+)( \((.+)\)){0,1}/)
         {
           :revision => $1,
           :name => $2,
