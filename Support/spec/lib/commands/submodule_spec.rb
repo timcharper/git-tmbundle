@@ -19,14 +19,17 @@ EOF
     
     submodules[0].revision.should == "03a20cfe2e0e344f87ac3132ddc991899cef2567"
     submodules[0].name.should == "fixture-scenarios"
+    submodules[0].state.should == -1
     submodules[0].tag.should be_nil
 
     submodules[1].revision.should == "23f26dec3851f50dbd4f7a132735b962b436898e"
     submodules[1].name.should == "great-module"
+    submodules[1].state.should == +1
     submodules[1].tag.should be_nil
     
     submodules[2].revision.should == "e741e43171fd34c98ef98afa5877fb2d74841b82"
     submodules[2].name.should == "mod"
+    submodules[2].state.should == 0
     submodules[2].tag.should be_nil
   end
   
