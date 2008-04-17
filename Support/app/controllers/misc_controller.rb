@@ -37,6 +37,10 @@ class MiscController < ApplicationController
       STDOUT.reopen(open('/dev/null'))
       STDERR.reopen(open('/dev/null'))
       Dir.chdir(ENV['TM_PROJECT_DIRECTORY'])
+      Thread.new do
+        sleep 0.05
+        %x{osascript -e 'tell app "Wish Shell" to activate'}
+      end
       %x{git-gui}
     end
 
