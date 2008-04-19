@@ -2,14 +2,20 @@ require File.dirname(__FILE__) + '/../spec_helper'
 
 describe DiffController do
   include SpecHelpers
-    
+  include Parsers
   before(:each) do
     Git.reset_mock!
+    @git = Git.singleton_new
   end
   
   describe "uncommitted changes" do
     before(:each) do
-      Git.command_response["diff", "HEAD"] = fixture_file("changed_files.diff")
+      @git.should_receive(:diff).
+        with(:path => @git.git_base, :since => "HEAD" ).
+        and_return(
+          parse_diff(fixture_file("changed_files.diff"))
+        )
+      
       @output = capture_output do 
         dispatch(:controller => "diff", :action => "uncommitted_changes")
       end

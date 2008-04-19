@@ -15,12 +15,12 @@ class DiffController < ApplicationController
       else
         git.paths(:fallback => :current_file, :unique => true)
       end
-    base = git.nca(paths)
-    @title = "Uncomitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’"
+    base = git.git_base
+    puts "<h2>Uncomitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’</h2>"
     open_in_tm_link
     
     paths.each do |path|
-      render("_diff_results", :locals => {:diff_results => git.diff(:file => path, :since => "HEAD") })
+      render("_diff_results", :locals => {:diff_results => git.diff(:path => path, :since => "HEAD") })
     end
   end
   
