@@ -1,57 +1,43 @@
 <h1>Git Config</h1>
 <p>Values are saved when the form-field loses focus.</p>
 <form onsubmit="return false">
-  <table id="global-config" class="listing">
+  <table class="listing">
     <thead>
       <tr>
         <th>Global</th>
         <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Name:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:global, "user.name"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.name', value: $F(this)})", :tabindex => "1" %></td>        
-      </tr>
-      <tr>
-        <td>Email:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:global, "user.email"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'user.email', value: $F(this)})", :tabindex => "2" %></td>
-      </tr>      
-      <tr>
-        <td>Log limit:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:global, "git-tmbundle.log.limit"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'git-tmbundle.log.limit', value: $F(this)})", :tabindex => "3" %></td>
-      </tr>
-      <tr>
-        <td>Log context lines:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:global, "git-tmbundle.log.context-lines"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'global', key: 'git-tmbundle.log.context-lines', value: $F(this)})", :tabindex => "5" %></td>
-      </tr>
-    </tbody>
-  </table>
-  
-  <table id="local-config" class="listing">
-    <thead>
-      <tr>
         <th>Local</th>
         <th></th>
       </tr>
     </thead>
     <tbody>
+      <%
+        tabindex = 0
+        [
+          ["Name",              "user.name",                      [:global]],
+          ["Email",             "user.email",                     [:global]],
+          [],
+          ["Log limit",         "git-tmbundle.log.limit",         [:global, :local], {:style => "width: 40px"}],
+          ["Log context lines", "git-tmbundle.log.context-lines", [:global, :local], {:style => "width: 40px"}],
+          [],
+          ["Gitnub path",       "git-tmbundle.gitnub-path",       [:global], {:style => "width: 250px"}],
+        ].each do |label, key, scopes, input_options|
+      %>
       <tr>
-        <td>&nbsp;</td>
-        <td></td>
+        <% [:global, :local].each do |scope| %>
+          <% if scopes && scopes.include?(scope) 
+            tabindex += 1 %>
+            <td><%= label %></td>
+            <td><%= config_text_field scope, key, {:tabindex => tabindex}.merge(input_options || {}) %></td>
+          <% else %>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+          <% end %>
+        <% end %>
       </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td></td>
-      </tr>
-      <tr>
-        <td>Log limit:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:local, "git-tmbundle.log.limit"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'local', key: 'git-tmbundle.log.limit', value: $F(this)})", :tabindex => "4" %></td>
-      </tr>
-      <tr>
-        <td>Log context lines:</td>
-        <td><%= content_tag :input, :type => "text", :value => git.config[:local, "git-tmbundle.log.context-lines"], :onchange => "dispatch({controller: 'config', action: 'set', scope: 'local', key: 'git-tmbundle.log.context-lines', value: $F(this)})", :tabindex => "6" %></td>
-      </tr>
+      <% end %>
     </tbody>
-  </table>  
+  </table>
+  
 </form>
+

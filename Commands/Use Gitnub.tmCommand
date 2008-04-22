@@ -7,17 +7,15 @@
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-dispatch(:controller =&gt; "misc", :action =&gt; "gitk")
-</string>
-	<key>input</key>
-	<string>none</string>
+dispatch(:controller =&gt; "misc", :action =&gt; "gitnub")
+	</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Visualize Branch History With GitK</string>
+	<string>Visualize History with Gitnub</string>
 	<key>output</key>
 	<string>discard</string>
 	<key>uuid</key>
-	<string>20F5C491-F71C-4963-9C61-DF7294976550</string>
+	<string>1FF5FF82-13A0-4C83-BAD6-D67AE8180FA9</string>
 </dict>
 </plist>
