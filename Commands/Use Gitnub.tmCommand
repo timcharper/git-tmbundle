@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch(:controller =&gt; "misc", :action =&gt; "gitnub")
+	</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Visualize History with Gitnub</string>
+	<key>output</key>
+	<string>discard</string>
+	<key>uuid</key>
+	<string>1FF5FF82-13A0-4C83-BAD6-D67AE8180FA9</string>
+</dict>
+</plist>
