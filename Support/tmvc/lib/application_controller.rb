@@ -155,6 +155,10 @@ class ApplicationController
   def output_show_html
     $exit_status = EXIT_SHOW_HTML
   end
+  
+  def output_show_tool_tip
+    $exit_status = EXIT_SHOW_TOOL_TIP
+  end
 end
 
 class Mutex

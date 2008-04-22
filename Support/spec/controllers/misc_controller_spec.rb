@@ -4,13 +4,13 @@ describe MiscController do
   include SpecHelpers
   
   before(:each) do
-    Git.reset_mock!
+    @git = Git.singleton_new
   end
   
   it "should initialize a repository" do
+    @git.should_receive(:init)
     output = capture_output do
       dispatch(:controller => "misc", :action => "init");
     end
-    Git.commands_ran.should == [ ["init"]]
   end
 end
