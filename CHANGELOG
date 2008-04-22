@@ -1,3 +1,10 @@
+Release 1.4.0 [2008-04-22]
+ - "Visualize History with Gitnub" (Sam Granieri)
+ - Config option to set gitnub path
+ - bugfix - show uncommitted now properly filters to the selected files/folders in the project drawer
+ - bugfix - external application windows (gitk, git-gui) are no longer launched behind TextMate.
+ - added status parsing for git submodules (tell if submodule is behind, ahead, or on track)
+ 
 Release 1.3.2 [2008-04-08]
   - Add narrow no-break space to this command so that hitting 'c' with the menu open jumps to commit. (Michael Sheets)
   - Verbose commit messages now have code folding (Thomas Aylott)
