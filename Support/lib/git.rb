@@ -230,6 +230,16 @@ module SCM
       command("rm", *files)
     end
     
+    def auto_add_rm(files)
+      chdir_base
+      add_files = files.select{ |f| File.exists?(f) }
+      remove_files = files.reject{ |f| File.exists?(f) }
+      res = ""
+      res << add(add_files) unless add_files.empty?
+      res << rm(remove_files) unless remove_files.empty?
+      res
+    end
+    
     def merge(merge_from_branch)
       parse_merge(command("merge", merge_from_branch))
     end

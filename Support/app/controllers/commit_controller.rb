@@ -16,7 +16,7 @@ class CommitController < ApplicationController
     statuses = git.status(git.git_base)
     files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
 
-    auto_add_rm(files)
+    git.auto_add_rm(files)
     res = git.commit(message, [])
     
     render "_commit_result", :locals => { :result => res, :files => files, :message => message }
@@ -61,7 +61,7 @@ class CommitController < ApplicationController
       msg, files = show_commit_dialog(files, statuses)
 
       unless files.empty?
-        auto_add_rm(files)
+        git.auto_add_rm(files)
         res = git.commit(msg, files, :amend => (params[:type] == "amend"))
         render "_commit_result", :locals => { :files => files, :message => msg, :result => res}
       end
@@ -86,13 +86,5 @@ class CommitController < ApplicationController
       msg = res[1]
       files = res[2..-1]
       return msg, files
-    end
-    
-    def auto_add_rm(files)
-      git.chdir_base
-      add_files = files.select{ |f| File.exists?(f) }
-      remove_files = files.reject{ |f| File.exists?(f) }
-      res = git.add(add_files) unless add_files.empty?
-      res = git.rm(remove_files) unless remove_files.empty?
     end
 end
