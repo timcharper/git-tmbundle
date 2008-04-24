@@ -1,3 +1,7 @@
+Release 1.4.1 [2008-04-24]
+ - Fixed 'Changing branches with uncommitted changes may result in a merge conflict' warning dialog for Git 1.5.5.
+ - Submodules now auto-update on pull or merge
+
 Release 1.4.0 [2008-04-22]
  - "Visualize History with Gitnub" (Sam Granieri)
  - Config option to set gitnub path
