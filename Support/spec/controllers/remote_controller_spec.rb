@@ -41,6 +41,7 @@ describe RemoteController do
   describe "pulling" do
     before(:each) do
       # query the sources
+      @controller = RemoteController.singleton_new
       Git.command_response["branch"] = "* master\n"
       Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
       @git.config.stub!(:[]).with("remote.origin.fetch").and_return("+refs/heads/*:refs/remotes/origin/*")
@@ -54,16 +55,21 @@ describe RemoteController do
       Git.command_response["log", "-p", "791a587..4bfc230", "."] = fixture_file("log_with_diffs.txt")
       Git.command_response["log", "-p", "dc29d3d..05f9ad9", "."] = fixture_file("log_with_diffs.txt")
       Git.command_response["pull", "origin"] = fixture_file("pull_1_5_4_3_output.txt")
-      
-      @output = capture_output do
-        dispatch :controller => "remote", :action => "pull"
-      end
     end
     
     it "should output log of changes pulled" do
+      @output = capture_output do
+        dispatch :controller => "remote", :action => "pull"
+      end
+      
       @output.should include("Log of changes pulled")
       @output.should include("Branch 'master': 791a587..4bfc230")
       @output.should include("Branch 'asdf': dc29d3d..05f9ad9")
+    end
+    
+    it "should update_submodules_si_hay" do
+      @controller.should_receive(:update_submodules_si_hay)
+      capture_output { dispatch :controller => "remote", :action => "pull" }
     end
   end
   

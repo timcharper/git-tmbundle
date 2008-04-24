@@ -2,6 +2,9 @@ require LIB_ROOT + '/ui.rb'
 
 class BranchController < ApplicationController
   layout "application", :except => [:create, :delete]
+  
+  include SubmoduleHelper::Update
+  
   def switch
     current_name = git.branch.current_name
     items = (git.branch.names(:local) + git.branch.names(:remote)).compact.with_this_at_front(current_name)
@@ -75,6 +78,7 @@ class BranchController < ApplicationController
     flush
     @result = git.merge(@merge_from_branch)
     render "merge"
+    update_submodules_si_hay
     rescan_project
   end
     
@@ -157,13 +161,10 @@ class BranchController < ApplicationController
       else
         puts htmlize(output)
         output_show_html
-        
-        unless git.submodule.all.empty?
-          puts "<br /><br /><h3>Updating submodules</h3>"
-          puts htmlize(git.submodule.init_and_update)
-        end
+        update_submodules_si_hay
         rescan_project
       end
-      
     end
+    
+    
 end

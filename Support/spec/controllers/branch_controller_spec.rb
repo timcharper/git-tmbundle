@@ -129,21 +129,29 @@ EOF
     describe "when merging" do
       before(:each) do
         @git = Git.singleton_new
+        @controller = BranchController.singleton_new
         @git.branch.stub!(:current_name).and_return("master")
         @git.branch.stub!(:list_names).and_return(["master", "release", "old_skool"])
+        
+        TextMate::UI.should_receive(:request_item).with(:title => "Merge", :prompt => "Merge which branch into 'master':", :items => ["release", "old_skool"], :force_pick => true).and_return("release")
+        @git.should_receive(:merge).with("release").and_return({:text => "Success!", :conflicts => [] })
       end
       
       it "should merge a branch" do
-        TextMate::UI.should_receive(:request_item).with(:title => "Merge", :prompt => "Merge which branch into 'master':", :items => ["release", "old_skool"], :force_pick => true).and_return("release")
-        @git.should_receive(:merge).with("release").and_return({:text => "Success!", :conflicts => [] })
         output = capture_output do
           dispatch(:controller => "branch", :action => "merge")
         end
         
         output.should include("Success!")
       end
+      
+      it "should update_submodules_si_hay" do
+        @controller.should_receive(:update_submodules_si_hay)
+        capture_output { dispatch(:controller => "branch", :action => "merge") }
+      end
     end
   end
+  
   describe "when deleting branches" do
     before(:each) do
       @set_branch_to_choose = lambda { |response|

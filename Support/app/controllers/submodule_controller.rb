@@ -22,7 +22,7 @@ class SubmoduleController < ApplicationController
       stream.pipe_to(STDOUT)
     puts "</pre>"
     
-    puts git.submodule.init_and_update
+    puts htmlize(git.submodule.init_and_update)
     
     puts <<-EOF
 <p>Done.</p>

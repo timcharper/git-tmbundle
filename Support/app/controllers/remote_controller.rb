@@ -3,6 +3,8 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 class RemoteController < ApplicationController
   ALL_REMOTES = "...all remotes..."
   
+  include SubmoduleHelper::Update
+  
   before_filter :set_script_at_top
   def set_script_at_top
     @script_at_top = true
@@ -51,6 +53,8 @@ class RemoteController < ApplicationController
       if ! output[:pulls].empty?
         puts("<h2>Log of changes pulled</h2>")
         output_branch_logs(output[:pulls])
+        
+        update_submodules_si_hay
       elsif output[:nothing_to_pull]
         puts "Nothing to pull"
       end
