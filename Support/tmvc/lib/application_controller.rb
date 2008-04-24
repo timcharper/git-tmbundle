@@ -53,6 +53,7 @@ class ApplicationController
   
   def initialize
     @output_buffer = StringIO.new
+    @params = {}
   end
   
   def puts(*args)

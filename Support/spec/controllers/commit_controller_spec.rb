@@ -16,7 +16,8 @@ describe CommitController do
     before(:each) do
       @message = "My commit message"
       @git.should_receive(:merge_message).and_return(nil)
-      @controller.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
+      @worker = PartialCommitWorker::Normal.singleton_new(@git)
+      @worker.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
       
       @git.should_receive(:commit).
         with("My commit message", ["file1.txt", "file2.txt"], :amend => false).
@@ -45,11 +46,12 @@ describe CommitController do
     end
   end
   
-  describe "Ammend commit" do
+  describe "Amend commit" do
     before(:each) do
       @message = "My commit message"
       @git.should_receive(:merge_message).and_return(nil)
-      @controller.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
+      @worker = PartialCommitWorker::Amend.singleton_new(@git)
+      @worker.stub!(:show_commit_dialog).and_return([@message, ["file1.txt", "file2.txt"]])
       
       @git.should_receive(:commit).
         with("My commit message", ["file1.txt", "file2.txt"], :amend => true).
@@ -81,20 +83,6 @@ describe CommitController do
     it "should output the diff" do
       @output.should include("No newline at end of file")
     end
-  end
-  
-  it "should NOT be OK to proceed when not on a branch but performing an initial commit" do
-    @git.branch.should_receive(:current_name).and_return(nil)
-    @git.should_receive(:initial_commit_pending?).and_return(false)
-    
-    @controller.send(:ok_to_proceed_with_partial_commit?).should == false
-  end
-  
-  it "should be OK to proceed when not on a branch but performing an initial commit" do
-    @git.branch.should_receive(:current_name).and_return(nil)
-    @git.should_receive(:initial_commit_pending?).and_return(true)
-    
-    @controller.send(:ok_to_proceed_with_partial_commit?).should == true
   end
   
   describe "when in the middle of a merge" do
