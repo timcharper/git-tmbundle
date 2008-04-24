@@ -71,7 +71,7 @@ describe BranchController do
       
       it "should ask you if you'd like to force when uncommitted files exist" do
         @set_branch_to_choose.call("task")
-        Git.command_response["checkout", "task"] = %{fatal: Entry 'branch_spec.rb' not uptodate. Cannot merge.\n}
+        Git.command_response["checkout", "task"] = %{error: Entry 'branch_spec.rb' not uptodate. Cannot merge.\n}
         TextMate::UI.should_receive(:alert).with(:informational, "Conflicts may happen if you switch", "There are uncommitted changes that might cause conflicts by this switch (branch_spec.rb).\nSwitch anyways?", "No", "Yes").and_return("Yes")
         
         Git.command_response["checkout", "-m", "task"] = <<-EOF
