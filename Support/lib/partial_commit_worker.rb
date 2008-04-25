@@ -1,16 +1,12 @@
+CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
+
 module PartialCommitWorker
   class NotOnBranchException < Exception; end
   class NothingToCommitException < Exception; end
   class CommitCanceledException < Exception; end
   
   def self.factory(_type, *args)
-    klass = case _type
-    when "amend" then
-      PartialCommitWorker::Amend
-    else
-      PartialCommitWorker::Normal
-    end
-    
+    klass = (_type == "amend" ? PartialCommitWorker::Amend : PartialCommitWorker::Normal)
     klass.new(*args)
   end
   
@@ -30,36 +26,48 @@ module PartialCommitWorker
       @target_file_or_dir ||= git.paths.first
     end
     
-    def show_commit_dialog(files, statuses)
-      status_helper_tool = ENV['TM_BUNDLE_SUPPORT'] + '/gateway/commit_dialog_helper.rb'
+    def split_file_statuses
+      [file_candidates.map{ |fc| fc[0] }, file_candidates.map{ |fc| fc[1] }]
+    end
+    
+    def status_helper_tool
+      ENV['TM_BUNDLE_SUPPORT'] + '/gateway/commit_dialog_helper.rb'
+    end
+        
+    def exec_commit_dialog
+      files, statuses = split_file_statuses
       
       res = %x{#{e_sh CW}                 \
         --diff-cmd   '#{git.git},diff'        \
         --action-cmd "M,D:Revert,#{status_helper_tool},revert" \
-        --status #{statuses.join ':'}       \
-        #{files.join ' '} 2>/dev/console
+        --status #{statuses.join(':')}       \
+        #{files.map{ |f| e_sh(f) }.join(' ')} 2>/dev/console
       }
-
-      raise CommitCanceledException if $? != 0
-
+      canceled = ($? != 0)
       res   = Shellwords.shellwords(res)
       msg = res[1]
       files = res[2..-1]
-      return msg, files
+      return canceled, msg, files
+    end
+    
+    def show_commit_dialog
+      canceled, msg, files = exec_commit_dialog
+      raise CommitCanceledException if canceled
+      [msg, files]
+    end
+    
+    def file_candidates
+      @file_candidates ||= 
+        git.status(target_file_or_dir).map do |e|
+          [shorten(e[:path], @base), e[:status][:short]]
+        end
     end
     
     def run
       raise NotOnBranchException unless ok_to_proceed_with_partial_commit?
-      
-      files, statuses = [], []
-      git.status(target_file_or_dir).each do |e|
-        files  << e_sh(shorten(e[:path], @base))
-        statuses << e_sh(e[:status][:short])
-      end
-      
-      raise NothingToCommitException if files.empty?
+      raise NothingToCommitException if nothing_to_commit?
     
-      msg, files = show_commit_dialog(files, statuses)
+      msg, files = show_commit_dialog
 
       git.auto_add_rm(files)
       res = git.commit(msg, files, :amend => amend)
@@ -68,6 +76,10 @@ module PartialCommitWorker
     
     def title
       "#{title_prefix} in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(git.branch.current_name)}’"
+    end
+    
+    def nothing_to_commit?
+      file_candidates.empty?
     end
   end
   
@@ -82,6 +94,8 @@ module PartialCommitWorker
   end
   
   class Amend < Base
+    COMMIT_MESSAGE_FILENAME = "-- update commit message --"
+    
     def title_prefix
       "Amending the commit"
     end
@@ -89,5 +103,25 @@ module PartialCommitWorker
     def amend
       true
     end
+    
+    def show_commit_dialog(*args)
+      msg, files = super(*args)
+      if files.first==COMMIT_MESSAGE_FILENAME
+        files.shift
+      else
+        msg = ""
+      end
+      msg = git.log(:limit => 1).first[:msg] if msg.strip.empty?
+      
+      [msg, files]
+    end
+    
+    def file_candidates
+      return @file_candidates if @file_candidates
+      super
+      @file_candidates.unshift([COMMIT_MESSAGE_FILENAME, "M"])
+      @file_candidates
+    end
   end
 end
+ 

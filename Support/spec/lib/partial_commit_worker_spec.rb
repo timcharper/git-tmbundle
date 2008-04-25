@@ -17,4 +17,17 @@ describe PartialCommitWorker do
     @git.should_receive(:initial_commit_pending?).and_return(true)
     PartialCommitWorker::Base.new(@git).ok_to_proceed_with_partial_commit?.should == true
   end
+  
+  describe "Amend" do
+    before(:each) do
+      @amend = PartialCommitWorker::Amend.new(@git)
+    end
+    
+    it "should use the last log message when 'log message' not checked" do
+      @git.stub!(:log).and_return([{:msg => "My Message"}])
+      @amend.stub!(:exec_commit_dialog).and_return([false, "", ["file.txt"]])
+      @amend.show_commit_dialog.should == ["My Message", ["file.txt"]]
+    end
+  end
+  
 end

@@ -2,13 +2,13 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 
 describe Git do  
   before(:each) do
-    @log = Git.new
+    @git = Git.new
   end
   include SpecHelpers
   
   describe "when parsing a plain log" do
     before(:each) do
-      @entries = @log.parse_log( fixture_file('log.txt'))
+      @entries = @git.parse_log( fixture_file('log.txt'))
     end
     
     it "should parse out all items" do
@@ -26,16 +26,15 @@ made more failproof}
     end
     
     it "should stringify results" do
-      @log.stringify(@entries)
+      @git.stringify(@entries)
       @entries.first.keys.sort.should == ["author", "date", "msg", "rev"]
     end
   end
   
   describe "when parsing a log with diffs" do
     before(:each) do
-      @entries = @log.parse_log( fixture_file("log_with_diffs.txt"))
+      @entries = @git.parse_log( fixture_file("log_with_diffs.txt"))
       @entry = @entries.first
-
     end
     
     it "should extract and parse diffs" do

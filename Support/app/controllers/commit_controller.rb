@@ -1,4 +1,3 @@
-CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
 require LIB_ROOT + '/partial_commit_worker.rb'
 class CommitController < ApplicationController
   def index
