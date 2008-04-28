@@ -48,5 +48,6 @@ git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 * <b>Geoff Cheshire</b> - Textile'd the README to make it look good on GitHub.
 * <b>Martin Kühl</b> - Patch to allow committing into a git repository that's not the project root.
 * <b>Diego Barros</b> - new config options, usability improvements
-* <b>Thomas Aylott</b> - Git commit langauge folding
+* <b>Thomas Aylott</b> - Git commit language folding
 * <b>Michael Sheets</b> - Usability improvements
+* <b>Henrik Nyh</b> - Spelling
