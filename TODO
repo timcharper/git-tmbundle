@@ -7,7 +7,7 @@ Anyone's encouraged to add to this list or take an idea and develop in their own
 - cherry-picking -- 
   - pick a SHA ref and merge the commit associated with it from one branch to another
   - Would be nice to use the html-log view, and include checkmarks next to each entry.  This way, you could browse the log, see the commit message, and check the contents of the commit, making it easier to select which changes you'd like to cherry-pick.
-- amending and signing off on commits
+- signing off on commits
 - setting up the .gitignore file for a standard rails project
 - Rebase command.  Have a permanently dismissible dialog to warn Git-newbies about the potential problems of rebasing on a shared repository.
 - Centralized branch / tag management page.  Have a single, interactive page in textmate where you can switch branches, rebase, merge, diff, log, tag, etc.  This will help make the git-menu considerably shorter
