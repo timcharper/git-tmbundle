@@ -1,3 +1,7 @@
+Release 1.5.0 [2008-04-29]
+ - Added "Amend Last Commit", accessible via ctrl-command-t, 'alc'.  Much refactoring on commit_controller.
+ - Spelling fixes (Henrik N)
+
 Release 1.4.1 [2008-04-24]
  - Fixed 'Changing branches with uncommitted changes may result in a merge conflict' warning dialog for Git 1.5.5.
  - Submodules now auto-update on pull or merge
