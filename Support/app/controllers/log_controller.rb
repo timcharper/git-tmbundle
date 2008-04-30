@@ -15,7 +15,6 @@ class LogController < ApplicationController
   
   def index
     params[:path] ||= git.make_local_path(git.paths.first)
-    params[:limit] ||= git.config["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
     path = params[:path]
     # Get the desired revision number
     if File.directory?(git.git_base + path)
@@ -28,6 +27,7 @@ class LogController < ApplicationController
   end
   
   def log
+    params[:limit] ||= git.config["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
     log_params = params.reject { |key,value| [:controller, :action, :layout].include?(key) }
     @path = params[:path]
     @log_entries = git.log(log_params)

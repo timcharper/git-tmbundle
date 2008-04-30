@@ -7,18 +7,19 @@ describe RemoteController do
   before(:each) do
     Git.reset_mock!
     @git = Git.singleton_new
+    @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
+    @git.config.stub!(:[]).with("git-tmbundle.log.limit").and_return(5)
   end
   
   describe "fetching" do
     before(:each) do
       # query the sources
-      @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
       Git.command_response["branch"] = "* master\n"
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
       
       git = Git.singleton_new
-      git.should_receive(:log).with({:path=>".", :revisions=>["74c0fdf", "d1c6bdd"]}).and_return(parse_log(fixture_file("log_with_diffs.txt")))
+      git.should_receive(:log).with(:path=>".", :revisions=>["74c0fdf", "d1c6bdd"], :limit => 5).and_return(parse_log(fixture_file("log_with_diffs.txt")))
       
       Git.command_response["fetch", "origin"] = fixture_file("fetch_1_5_4_3_output.txt")
       
@@ -45,7 +46,6 @@ describe RemoteController do
       Git.command_response["branch"] = "* master\n"
       Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
       @git.config.stub!(:[]).with("remote.origin.fetch").and_return("+refs/heads/*:refs/remotes/origin/*")
-      @git.config.stub!(:[]).with("branch.master.remote").and_return('origin')
       @git.config.stub!(:[]).with("branch.master.merge").and_return("refs/heads/master")
       Git.command_response["remote"] = %Q{origin}
     
@@ -89,7 +89,7 @@ describe RemoteController do
       end
       
       it "should run all git commands" do
-        Git.commands_ran.should == [["branch"], ["remote"], ["push", "origin", "master"], ["log", "865f920..f9ca10d", "."], ["branch"], ["branch"]]
+        Git.commands_ran.should == [["branch"], ["remote"], ["push", "origin", "master"], ["log", "-n", 5, "865f920..f9ca10d", "."], ["branch"], ["branch"]]
       end
       
       it "should output log with diffs" do
