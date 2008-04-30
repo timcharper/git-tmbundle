@@ -88,11 +88,11 @@ EOF
       end
       
       describe "when you have submodules" do
-        it "should stash, restore, then call submodules.init_and_update" do
+        it "should cache, restore, then call submodules.init_and_update" do
           @set_branch_to_choose.call("task")
           
           git = Git.singleton_new
-          @submodule = stub("submodule", :stash => true, :restore => true)
+          @submodule = stub("submodule", :cache => true, :restore => true)
           git.submodule.should_receive(:all).any_number_of_times.and_return([@submodule])
           git.submodule.should_receive(:init_and_update)
           output = capture_output do
@@ -148,8 +148,8 @@ EOF
         output.should include("Success!")
       end
       
-      it "should run with_submodule_stashing" do
-        @controller.should_receive(:with_submodule_stashing)
+      it "should run with_submodule_cacheing" do
+        @controller.should_receive(:with_submodule_cacheing)
         capture_output { dispatch(:controller => "branch", :action => "merge") }
       end
     end

@@ -50,27 +50,27 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
       path
     end
     
-    def abs_stash_path
-      @abs_stash_path ||= File.join(@base.git_base, ".git/submodule_stash", MD5.hexdigest(path + "\n" + url))
+    def abs_cache_path
+      @abs_cache_path ||= File.join(@base.git_base, ".git/submodule_cache", MD5.hexdigest(path + "\n" + url))
     end
     
     def abs_path
       @abs_path ||= File.join(@base.git_base, @path)
     end
     
-    def stash
+    def cache
       if File.exist?(abs_path)
-        FileUtils.rm_rf(abs_stash_path)
-        FileUtils.mkdir_p(File.dirname(abs_stash_path))
-        FileUtils.mv(abs_path, abs_stash_path, :force => true)
+        FileUtils.rm_rf(abs_cache_path)
+        FileUtils.mkdir_p(File.dirname(abs_cache_path))
+        FileUtils.mv(abs_path, abs_cache_path, :force => true)
         true
       end
     end
     
     def restore
-      if ! File.exist?(abs_path) && File.exist?(abs_stash_path)
+      if ! File.exist?(abs_path) && File.exist?(abs_cache_path)
         FileUtils.mkdir_p(File.dirname(abs_path))
-        FileUtils.mv(abs_stash_path, abs_path, :force => true)
+        FileUtils.mv(abs_cache_path, abs_path, :force => true)
       end
     end
   end

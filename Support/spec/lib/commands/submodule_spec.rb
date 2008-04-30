@@ -57,19 +57,19 @@ EOF
       @submodule.stub!(:url).and_return("git@url.com/path/to/repo.git")
     end
     
-    it "should stash" do
+    it "should cache" do
       File.should_receive(:exist?).with(@submodule.abs_path).and_return(true)
-      FileUtils.should_receive(:mkdir_p).with(File.join(@git.git_base, ".git/submodule_stash"))
-      FileUtils.should_receive(:rm_rf).with(@submodule.abs_stash_path)
-      FileUtils.should_receive(:mv).with(@submodule.abs_path, @submodule.abs_stash_path, :force => true)
-      @submodule.stash
+      FileUtils.should_receive(:mkdir_p).with(File.join(@git.git_base, ".git/submodule_cache"))
+      FileUtils.should_receive(:rm_rf).with(@submodule.abs_cache_path)
+      FileUtils.should_receive(:mv).with(@submodule.abs_path, @submodule.abs_cache_path, :force => true)
+      @submodule.cache
     end
     
     it "should restore when submodule isn't in working copy" do
       File.should_receive(:exist?).with(@submodule.abs_path).and_return(false)
-      File.should_receive(:exist?).with(@submodule.abs_stash_path).and_return(true)
+      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(true)
       FileUtils.should_receive(:mkdir_p).with(File.dirname(@submodule.abs_path))
-      FileUtils.should_receive(:mv).with(@submodule.abs_stash_path, @submodule.abs_path, :force => true)
+      FileUtils.should_receive(:mv).with(@submodule.abs_cache_path, @submodule.abs_path, :force => true)
       @submodule.restore
     end
   end

@@ -1,7 +1,7 @@
 module SubmoduleHelper
   module Update
-    def with_submodule_stashing(&block)
-      git.submodule.all.each { |m| m.stash }
+    def with_submodule_cacheing(&block)
+      git.submodule.all.each { |m| m.cache }
       begin
         yield
       ensure
