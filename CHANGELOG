@@ -1,3 +1,10 @@
+Release 1.5.1 [2008-04-29]
+ - Push / fetch / pull learned to respect log-limit
+ - When fetching / pushing / pulling from all sources - no longer updates the top-most status percentage only.
+ - When switching branches from a branch with a given submodule to a branch without it, the bundle now "caches" the submodule to ~/.git/submodules_cache.  When switching back to the branch with the submodule, the submodule is restored from cache, so you don't have to go out and fetch it again.
+   - Resolves issue when you've converted a folder to a submodule on one branch, but not the other, and thereby couldn't switch branches anymore.
+ 
+ 
 Release 1.5.0 [2008-04-29]
  - Added "Amend Last Commit", accessible via ctrl-command-t, 'alc'.  Much refactoring on commit_controller.
  - Spelling fixes (Henrik N)
