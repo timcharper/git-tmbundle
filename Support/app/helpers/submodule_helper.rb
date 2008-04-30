@@ -1,5 +1,9 @@
 module SubmoduleHelper
   module Update
+    def with_submodule_stashing(&block)
+      git.submodule.all.each
+    end
+    
     def update_submodules_si_hay
       unless git.submodule.all.empty?
         puts "<br /><br /><h3>Updating submodules</h3>"
