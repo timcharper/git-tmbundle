@@ -147,7 +147,7 @@ class RemoteController < ApplicationController
     end
     
     def progress_start(remote, state, count)
-      puts("<div>#{remote}_#{state} #{count} objects.  <span id='#{state}_progress'>0% 0 / #{count}</span></div>")
+      puts("<div>#{state} #{count} objects.  <span id='#{remote}_#{state}_progress'>0% 0 / #{count}</span></div>")
     end
     
     def progress(remote, state, percentage, index, count)
