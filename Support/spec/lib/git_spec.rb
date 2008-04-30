@@ -30,7 +30,7 @@ describe SCM::Git do
       EOF
       Git.command_output << "+refs/heads/*:refs/remotes/satellite/*"
       
-      branches = @git.branch.list(:remote, :remote_name => "satellite")
+      branches = @git.branch.list(:remote, :remote => "satellite")
       branches.map{|r|r[:name]}.should == ["satellite/asdf", "satellite/master", "satellite/mybranch", "satellite/satellite"]
     end
   end

@@ -14,9 +14,9 @@ class RemoteController < ApplicationController
     branch = git.branch.current_branch
     branch_remote = branch && branch_remote
     
-    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.sources, :default => branch.remote) do |source|
-      puts "<h2>Fetching from #{source}</h2>"
-      output = run_fetch(source)
+    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.remotes, :default => branch.remote) do |remote|
+      puts "<h2>Fetching from #{remote}</h2>"
+      output = run_fetch(remote)
       puts htmlize(output[:text])
       
       unless output[:fetches].empty?
@@ -24,8 +24,8 @@ class RemoteController < ApplicationController
         output_branch_logs(output[:fetches])
       end
       
-      puts "<h2>Pruning stale branches from #{source}</h2>"
-      puts git.command('remote', 'prune', source)
+      puts "<h2>Pruning stale branches from #{remote}</h2>"
+      puts git.command('remote', 'prune', remote)
       puts "<p>Done.</p>"
     end
   end
@@ -36,20 +36,20 @@ class RemoteController < ApplicationController
       output_show_html and return
     end
     
-    sources = git.sources.with_this_at_front(branch.remote)
+    remotes = git.remotes.with_this_at_front(branch.remote)
     
-    TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => sources) do |source|
-      # check to see if the branch has a pull source set up.  if not, prompt them for which branch to pull from
-      if (source != branch.remote) || branch.merge.nil?
+    TextMate::UI.request_item(:title => "Push", :prompt => "Pull from where?", :items => remotes) do |remote|
+      # check to see if the branch has a pull remote set up.  if not, prompt them for which branch to pull from
+      if (remote != branch.remote) || branch.merge.nil?
         # select a branch to merge from
-        remote_branch_name = setup_auto_merge(source, branch)
+        remote_branch_name = setup_auto_merge(remote, branch)
         return false unless remote_branch_name
       end
       
-      puts "<p>Pulling from remote source '#{source}'\n</p>"
+      puts "<p>Pulling from remote source '#{remote}'\n</p>"
       
       with_submodule_cacheing do
-        output = run_pull(source, remote_branch_name)
+        output = run_pull(remote, remote_branch_name)
         puts "<pre>#{output[:text]}</pre>"
       
         if ! output[:pulls].empty?
@@ -66,23 +66,23 @@ class RemoteController < ApplicationController
   
   def push
     current_name = git.branch.current.name
-    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.sources) do |source_name|
-      puts "<p>Pushing to remote source '#{source_name}'\n</p>"
-      display_push_output(run_push(source_name, :branch => current_name))
+    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.remotes) do |remote|
+      puts "<p>Pushing to remote source '#{remote}'\n</p>"
+      display_push_output(run_push(remote, :branch => current_name))
     end
   end
   
   def push_tag
     tag = params[:tag] || (raise "select tag not yet implemented")
-    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the tag #{tag} to:", :items => git.sources) do |source_name|
-      puts "<p>Pushing tag #{tag} to '#{source_name}'\n</p>"
-      display_push_output(run_push(source_name, :tag => tag))
+    for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the tag #{tag} to:", :items => git.remotes) do |remote|
+      puts "<p>Pushing tag #{tag} to '#{remote}'\n</p>"
+      display_push_output(run_push(remote, :tag => tag))
     end
   end
   
   protected
-    def setup_auto_merge(source, branch)
-      remote_branches = git.branch.list_names(:remote, :remote_name => source ).with_this_at_front(/(\/|^)#{branch.name}$/)
+    def setup_auto_merge(remote, branch)
+      remote_branches = git.branch.list_names(:remote, :remote => remote ).with_this_at_front(/(\/|^)#{branch.name}$/)
       remote_branch_name = TextMate::UI.request_item(:title => "Branch to merge from?", :prompt => "Merge which branch to '#{branch.name}'?", :items => remote_branches, :force_pick => true)
       if remote_branch_name.nil? || remote_branch_name.empty?
         puts "Aborted"
@@ -90,7 +90,7 @@ class RemoteController < ApplicationController
       end
 
       if TextMate::UI.alert(:warning, "Setup automerge for these branches?", "Would you like me to tell git to always merge:\n #{remote_branch_name} -> #{branch.name}?", 'Yes', 'No')  == "Yes"
-        branch.remote = source
+        branch.remote = remote
         branch.merge = "refs/heads/" + remote_branch_name.split("/").last
       end
       remote_branch_name
@@ -117,53 +117,53 @@ class RemoteController < ApplicationController
       end
     end
     
-    def run_pull(source, remote_branch_name)
+    def run_pull(remote, remote_branch_name)
       flush
-      pulls = git.pull(source, remote_branch_name,
-        :start => lambda { |state, count| progress_start(state, count) }, 
-        :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
-        :end => lambda { |state, count| progress_end(state, count) }
+      pulls = git.pull(remote, remote_branch_name,
+        :start => lambda { |state, count| progress_start(remote, state, count) }, 
+        :progress => lambda { |state, percentage, index, count| progress(remote, state, percentage, index, count)},
+        :end => lambda { |state, count| progress_end(remote, state, count) }
       )
       rescan_project
       pulls
     end
     
-    def run_push(source_name, options = {})
+    def run_push(remote, options = {})
       flush
-      git.push(source_name, options.merge(
-        :start => lambda { |state, count| progress_start(state, count) }, 
-        :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
-        :end => lambda { |state, count| progress_end(state, count) }
+      git.push(remote, options.merge(
+        :start => lambda { |state, count| progress_start(remote, state, count) }, 
+        :progress => lambda { |state, percentage, index, count| progress(remote, state, percentage, index, count)},
+        :end => lambda { |state, count| progress_end(remote, state, count) }
       ))
     end
     
-    def run_fetch(source)
+    def run_fetch(remote)
       flush
-      git.fetch(source,
-        :start => lambda { |state, count| progress_start(state, count) }, 
-        :progress => lambda { |state, percentage, index, count| progress(state, percentage, index, count)},
-        :end => lambda { |state, count| progress_end(state, count) }
+      git.fetch(remote,
+        :start => lambda { |state, count| progress_start(remote, state, count) }, 
+        :progress => lambda { |state, percentage, index, count| progress(remote, state, percentage, index, count)},
+        :end => lambda { |state, count| progress_end(remote, state, count) }
       )
     end
     
-    def progress_start(state, count)
-      puts("<div>#{state} #{count} objects.  <span id='#{state}_progress'>0% 0 / #{count}</span></div>")
+    def progress_start(remote, state, count)
+      puts("<div>#{remote}_#{state} #{count} objects.  <span id='#{state}_progress'>0% 0 / #{count}</span></div>")
     end
     
-    def progress(state, percentage, index, count)
+    def progress(remote, state, percentage, index, count)
       puts <<-EOF
       <script language='JavaScript'>
-        $('#{state}_progress').update('#{percentage}% #{index} / #{count}')
+        $('#{remote}_#{state}_progress').update('#{percentage}% #{index} / #{count}')
       </script>
       EOF
       
       flush 
     end
     
-    def progress_end(state, count)
+    def progress_end(remote, state, count)
       puts <<-EOF
       <script language='JavaScript'>
-        $('#{state}_progress').update('Done')
+        $('#{remote}_#{state}_progress').update('Done')
       </script>
       EOF
       flush
@@ -172,15 +172,15 @@ class RemoteController < ApplicationController
     def for_each_selected_remote(options, &block)
       options = {:title => "Select remote", :prompt => "Select a remote...", :force_pick => true}.merge(options)
       default = options.delete(:default)
-      sources = options[:items]
+      remotes = options[:items]
       if default
-        sources.unshift(default)
-        sources.uniq!
+        remotes.unshift(default)
+        remotes.uniq!
       end
       
-      sources << ALL_REMOTES if sources.length > 1
+      remotes << ALL_REMOTES if remotes.length > 1
       TextMate::UI.request_item(options) do |selections|
-        ((selections == ALL_REMOTES) ? (sources-[ALL_REMOTES]) : [selections]).each do |selection|
+        ((selections == ALL_REMOTES) ? (remotes-[ALL_REMOTES]) : [selections]).each do |selection|
           yield selection
         end
       end

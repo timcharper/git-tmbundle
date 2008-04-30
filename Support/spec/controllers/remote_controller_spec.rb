@@ -13,7 +13,7 @@ describe RemoteController do
   
   describe "fetching" do
     before(:each) do
-      # query the sources
+      # query the remotes
       Git.command_response["branch"] = "* master\n"
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
@@ -29,7 +29,7 @@ describe RemoteController do
     end
     
     it "should use javascript to output the progress" do
-      @output.should include("$('Compressing_progress').update('Done')")
+      @output.should include("$('origin_Compressing_progress').update('Done')")
     end
     
     it "should output a log" do
@@ -41,7 +41,7 @@ describe RemoteController do
   
   describe "pulling" do
     before(:each) do
-      # query the sources
+      # query the remotes
       @controller = RemoteController.singleton_new
       Git.command_response["branch"] = "* master\n"
       Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
@@ -49,7 +49,7 @@ describe RemoteController do
       @git.config.stub!(:[]).with("branch.master.merge").and_return("refs/heads/master")
       Git.command_response["remote"] = %Q{origin}
     
-      # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
+      # query the config - if remote != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
     
       # Git.command_response[] 
       Git.command_response["log", "-p", "791a587..4bfc230", "."] = fixture_file("log_with_diffs.txt")
@@ -106,7 +106,7 @@ describe RemoteController do
   describe "pushing a tag" do
     before(:each) do
       @git = Git.singleton_new
-      @git.should_receive(:sources).and_return(["origin"])
+      @git.should_receive(:remotes).and_return(["origin"])
       @controller = RemoteController.singleton_new
       def @controller.for_each_selected_remote(options = {}, &block)
         yield "origin"

@@ -124,7 +124,7 @@ module SCM
       end
     end
     
-    def sources
+    def remotes
       command("remote").split("\n")
     end
     
@@ -250,9 +250,9 @@ module SCM
       command("show", "#{revision}:#{path}")
     end
     
-    def push(source, options = {})
+    def push(remote, options = {})
       options = options.dup
-      args = ["push", source]
+      args = ["push", remote]
       args << options.delete(:branch) if options[:branch]
       args << options.delete(:tag) if options[:tag]
       
@@ -260,15 +260,15 @@ module SCM
       process_push(p, options)
     end
     
-    def pull(source, remote_merge_branch = nil, callbacks = {})
-      args = ["pull", source]
+    def pull(remote, remote_merge_branch = nil, callbacks = {})
+      args = ["pull", remote]
       args << remote_merge_branch.split('/').last if remote_merge_branch
       p = popen_command(*args)
       process_pull(p, callbacks)
     end
     
-    def fetch(source, callbacks = {})
-      p = popen_command("fetch", source)
+    def fetch(remote, callbacks = {})
+      p = popen_command("fetch", remote)
       process_fetch(p, callbacks)
     end
 

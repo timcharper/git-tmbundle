@@ -49,8 +49,8 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     end
     result = base.command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
     result.delete_if { |r| r[:name] == "(no branch)"}
-    if options[:remote_name]
-      r_prefix = remote_branch_prefix(options[:remote_name])
+    if options[:remote]
+      r_prefix = remote_branch_prefix(options[:remote])
       result.delete_if {|r| ! Regexp.new("^#{Regexp.escape(r_prefix)}\/").match(r[:name]) }
     end
     result
@@ -72,8 +72,8 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   
   alias current_branch current
 
-  def remote_branch_prefix(remote_name)
-    /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote_name}.fetch"])
+  def remote_branch_prefix(remote)
+    /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote}.fetch"])
      $1
   end
   
