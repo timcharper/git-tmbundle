@@ -41,7 +41,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def url
-      @base.command("config", "--file", File.join(@base.git_base, ".gitmodules"), "submodule.#{path}.url")
+      @url ||= @base.command("config", "--file", File.join(@base.git_base, ".gitmodules"), "submodule.#{path}.url").strip
     end
     
     def name
