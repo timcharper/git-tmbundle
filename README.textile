@@ -1,5 +1,5 @@
 The Git Textmate Bundle.
-Version 1.5.1 (released Apr 29, 2008)
+Version 1.5.2 (released Apr 30, 2008)
 
 
 <h2>Installation</h2>
