@@ -68,7 +68,8 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def restore
-      if ! File.exist?(abs_path) && File.exist?(abs_cache_path)
+      if File.exist?(abs_cache_path) && ! Dir.has_a_file?(abs_path)
+        FileUtils.rm_rf(abs_path)
         FileUtils.mkdir_p(File.dirname(abs_path))
         FileUtils.mv(abs_cache_path, abs_path, :force => true)
       end
@@ -76,3 +77,8 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   end
 end
 
+class Dir
+  def self.has_a_file?(abs_path)
+    Dir[abs_path + "/**/*"].any? {|f| File.file?(f) }
+  end
+end

@@ -66,7 +66,7 @@ EOF
     end
     
     it "should restore when submodule isn't in working copy" do
-      File.should_receive(:exist?).with(@submodule.abs_path).and_return(false)
+      Dir.should_receive(:has_a_file?).with(@submodule.abs_path).and_return(false)
       File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(true)
       FileUtils.should_receive(:mkdir_p).with(File.dirname(@submodule.abs_path))
       FileUtils.should_receive(:mv).with(@submodule.abs_cache_path, @submodule.abs_path, :force => true)

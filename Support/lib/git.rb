@@ -341,6 +341,13 @@ module SCM
       end
     end
     
+    def logger
+      @logger ||= 
+        begin
+          require 'logger'
+          Logger.new(ROOT + "/git.log")
+        end
+    end
     
     protected
       def get_range_arg(options, keys = [:revisions, :branches, :tags])

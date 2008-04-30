@@ -1,5 +1,6 @@
 module SubmoduleHelper
   module Update
+    flush
     def with_submodule_cacheing(&block)
       git.submodule.all.each { |m| m.cache }
       begin

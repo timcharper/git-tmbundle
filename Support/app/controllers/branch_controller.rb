@@ -75,14 +75,13 @@ class BranchController < ApplicationController
     end
     
     puts "<h2>Merging #{@merge_from_branch} into #{@c_branch}</h2>"
-    flush
     
     with_submodule_cacheing do
       @result = git.merge(@merge_from_branch)
       render "merge"
-      true
     end
     rescan_project
+    true
   end
     
   protected
