@@ -21,6 +21,8 @@ module SCM
       'X' => {:short => 'X', :long => 'external',     :foreground => '#800080', :background => '#edaef5'},
     }
     
+    DEFAULT_DIFF_LIMIT = 3000
+    
     def short_rev(rev)
       rev.to_s[0..7]
     end
