@@ -47,16 +47,19 @@ class RemoteController < ApplicationController
       end
       
       puts "<p>Pulling from remote source '#{source}'\n</p>"
-      output = run_pull(source, remote_branch_name)
-      puts "<pre>#{output[:text]}</pre>"
       
-      if ! output[:pulls].empty?
-        puts("<h2>Log of changes pulled</h2>")
-        output_branch_logs(output[:pulls])
-        
-        update_submodules_si_hay
-      elsif output[:nothing_to_pull]
-        puts "Nothing to pull"
+      with_submodule_stashing do
+        output = run_pull(source, remote_branch_name)
+        puts "<pre>#{output[:text]}</pre>"
+      
+        if ! output[:pulls].empty?
+          puts("<h2>Log of changes pulled</h2>")
+          output_branch_logs(output[:pulls])
+          true
+        elsif output[:nothing_to_pull]
+          puts "Nothing to pull"
+          false
+        end
       end
     end
   end

@@ -67,8 +67,8 @@ describe RemoteController do
       @output.should include("Branch 'asdf': dc29d3d..05f9ad9")
     end
     
-    it "should update_submodules_si_hay" do
-      @controller.should_receive(:update_submodules_si_hay)
+    it "should with_submodule_stashing" do
+      @controller.should_receive(:with_submodule_stashing)
       capture_output { dispatch :controller => "remote", :action => "pull" }
     end
   end

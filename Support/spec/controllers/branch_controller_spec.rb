@@ -37,6 +37,7 @@ end
 
 describe BranchController do
   before(:each) do
+    @git = Git.singleton_new
     Git.reset_mock!
     Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n  origin/task"
     Git.command_response["branch"] = "* master\n  task"
@@ -87,11 +88,12 @@ EOF
       end
       
       describe "when you have submodules" do
-        it "should call submodules.init_and_update" do
+        it "should stash, restore, then call submodules.init_and_update" do
           @set_branch_to_choose.call("task")
           
           git = Git.singleton_new
-          git.submodule.should_receive(:list).and_return([{:name => "mod"}])
+          @submodule = stub("submodule", :stash => true, :restore => true)
+          git.submodule.should_receive(:all).any_number_of_times.and_return([@submodule])
           git.submodule.should_receive(:init_and_update)
           output = capture_output do
             dispatch(:controller => "branch", :action => "switch")
@@ -110,6 +112,7 @@ EOF
         TextMate::UI.should_receive(:request_string).with(@get_branch_name_params).and_return("release")
         Git.command_response["branch", "--track", "release", "origin/release"] = %{Branch release set up to track remote branch refs/remotes/origin/release.\n}
         Git.command_response["checkout", "release"] = %{Switched to branch "release"\n}
+        @git.submodule.stub!(:all).and_return([])
         output = capture_output do
           dispatch(:controller => "branch", :action => "switch")
         end
@@ -134,10 +137,10 @@ EOF
         @git.branch.stub!(:list_names).and_return(["master", "release", "old_skool"])
         
         TextMate::UI.should_receive(:request_item).with(:title => "Merge", :prompt => "Merge which branch into 'master':", :items => ["release", "old_skool"], :force_pick => true).and_return("release")
-        @git.should_receive(:merge).with("release").and_return({:text => "Success!", :conflicts => [] })
       end
       
       it "should merge a branch" do
+        @git.should_receive(:merge).with("release").and_return({:text => "Success!", :conflicts => [] })
         output = capture_output do
           dispatch(:controller => "branch", :action => "merge")
         end
@@ -145,8 +148,8 @@ EOF
         output.should include("Success!")
       end
       
-      it "should update_submodules_si_hay" do
-        @controller.should_receive(:update_submodules_si_hay)
+      it "should run with_submodule_stashing" do
+        @controller.should_receive(:with_submodule_stashing)
         capture_output { dispatch(:controller => "branch", :action => "merge") }
       end
     end

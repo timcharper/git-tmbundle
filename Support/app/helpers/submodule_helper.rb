@@ -1,7 +1,19 @@
 module SubmoduleHelper
   module Update
     def with_submodule_stashing(&block)
-      git.submodule.all.each
+      modules = git.submodule.all
+      if modules.empty?
+        yield
+      else
+        modules.each { |m| m.stash }
+        begin
+          yield
+        ensure
+          git.submodule.all.each { |m| m.restore }
+        end
+        
+        update_submodules_si_hay
+      end
     end
     
     def update_submodules_si_hay
