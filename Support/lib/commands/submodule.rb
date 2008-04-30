@@ -1,4 +1,6 @@
 require 'md5'
+require 'fileutils'
+
 class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   def init_and_update
     output = @base.command("submodule", "init")
