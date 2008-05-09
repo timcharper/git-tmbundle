@@ -1,6 +1,6 @@
 class SCM::Git::Branch < SCM::Git::CommandProxyBase
   def [](name)
-    SCM::Git::BranchProxy.new(@base, self, name)
+    SCM::Git::Branch::Proxy.new(@base, self, name)
   end
   
   def create_and_switch(name)
@@ -29,13 +29,16 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     result
   end
   
+  def all_for_local_or_remote(side)
+    list(side).map do |branch_params| 
+      BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
+    end
+  end
+  
   def all(which = [:local, :remote])
     branches = []
     [which].flatten.each do |side|
-      branches.concat list(which).map { |branch_params| 
-        next if branch_params[:name] == "(no branch)"
-        SCM::Git::BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
-      }
+      branches.concat all_for_local_or_remote(side)
     end
     
     branches.compact
@@ -114,48 +117,53 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     end
     { :outcome => outcome, :output => output, :remote => remote, :branch => branch }
   end
+  
+  class BranchProxy
+    attr_reader :name
+  
+    def initialize(base, parent, name, options = {})
+      @base = base
+      @parent = parent
+      @name = name
+      @current = options[:current]
+      @local = options[:local]
+    end
+  
+    def local?
+      @local
+    end
+  
+    def current?
+      @current
+    end
+  
+    def remote?
+      ! @local
+    end
+  
+    def default?
+      raise "implement me"
+    end
+  
+    def remote(reload = false)
+      @remote = nil if reload
+      @remote ||= @base.config["branch.#{name}.remote"]
+    end
+  
+    def remote=(value)
+      @remote = nil
+      @base.config["branch.#{name}.remote"] = value
+    end
+  
+    def merge(reload = false)
+      @merge = nil if (reload)
+      @merge ||= @base.config["branch.#{name}.merge"]
+    end
+  
+    def merge=(value)
+      @merge = nil
+      @base.config["branch.#{name}.merge"] = value
+    end
+  end
 end
 
-class SCM::Git::BranchProxy
-  attr_reader :name
-  
-  def initialize(base, parent, name, options = {})
-    @base = base
-    @parent = parent
-    @name = name
-    @current = options[:current]
-    @local = options[:local]
-  end
-  
-  def local?
-    @local
-  end
-  
-  def current?
-    @current
-  end
-  
-  def remote?
-    ! @local
-  end
-  
-  def default?
-    raise "implement me"
-  end
-  
-  def remote
-    @base.config["branch.#{name}.remote"]
-  end
-  
-  def remote=(value)
-    @base.config["branch.#{name}.remote"] = value
-  end
-  
-  def merge
-    @base.config["branch.#{name}.merge"]
-  end
-  
-  def merge=(value)
-    @base.config["branch.#{name}.merge"] = value
-  end
-end
