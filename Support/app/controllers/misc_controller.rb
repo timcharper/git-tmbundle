@@ -46,6 +46,7 @@ class MiscController < ApplicationController
         Thread.new do
           sleep 0.25
           %x{osascript -e 'tell app "#{app_name}" to activate'}
+          exit
         end
         system(cmd)
       end
