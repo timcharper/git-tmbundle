@@ -75,11 +75,13 @@ class BranchController < ApplicationController
     end
     
     puts "<h2>Merging #{@merge_from_branch} into #{@c_branch}</h2>"
-    flush
-    @result = git.merge(@merge_from_branch)
-    render "merge"
-    update_submodules_si_hay
+    
+    with_submodule_cacheing do
+      @result = git.merge(@merge_from_branch)
+      render "merge"
+    end
     rescan_project
+    true
   end
     
   protected
@@ -144,27 +146,26 @@ class BranchController < ApplicationController
     end
     
     def switch_local(target_branch)
-      output = git.branch.switch(target_branch)
-      case output
-      when /fatal: you need to resolve your current index first/
-        TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
-        exit_discard
-      when /(fatal|error): Entry '(.+)' not uptodate\. Cannot merge\./
-        response = TextMate::UI.alert(:informational, "Conflicts may happen if you switch", "There are uncommitted changes that might cause conflicts by this switch (#{$2}).\nSwitch anyways?", "No", "Yes")
-        if response=="Yes"
-          output = git.command("checkout", "-m", target_branch)
-          puts htmlize(output)
-          output_show_html and return
+      with_submodule_cacheing do
+        output = git.branch.switch(target_branch)
+        case output
+        when /fatal: you need to resolve your current index first/
+          TextMate::UI.alert(:warning, "Error - couldn't switch", "Git said:\n#{output}\nYou're probably in the middle of a conflicted merge, and need to commit", "OK")
+          output_discard
+        when /(fatal|error): Entry '(.+)' not uptodate\. Cannot merge\./
+          response = TextMate::UI.alert(:informational, "Conflicts may happen if you switch", "There are uncommitted changes that might cause conflicts by this switch (#{$2}).\nSwitch anyways?", "No", "Yes")
+          if response=="Yes"
+            output = git.command("checkout", "-m", target_branch)
+            puts htmlize(output)
+            output_show_html and return
+          else
+            output_discard and return
+          end
         else
-          output_discard and return
+          puts htmlize(output)
+          output_show_html
+          rescan_project
         end
-      else
-        puts htmlize(output)
-        output_show_html
-        update_submodules_si_hay
-        rescan_project
       end
     end
-    
-    
 end

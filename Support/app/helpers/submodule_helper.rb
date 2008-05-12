@@ -1,5 +1,17 @@
 module SubmoduleHelper
   module Update
+    flush
+    def with_submodule_cacheing(&block)
+      git.submodule.all.each { |m| m.cache }
+      begin
+        yield
+      ensure
+        git.submodule.all.each { |m| m.restore }
+      end
+      
+      update_submodules_si_hay
+    end
+    
     def update_submodules_si_hay
       unless git.submodule.all.empty?
         puts "<br /><br /><h3>Updating submodules</h3>"

@@ -49,4 +49,28 @@ EOF
     submodules = @git.submodule.all
     submodules.should have(1).submodules
   end
+  
+  describe "when working with a submodule" do
+    before(:each) do
+      @path = "vendor/plugins/acts_as_plugin"
+      @submodule = SCM::Git::Submodule::SubmoduleProxy.new(@git, @git.submodule, :revision => "1234", :path => @path, :tag => "release")
+      @submodule.stub!(:url).and_return("git@url.com/path/to/repo.git")
+    end
+    
+    it "should cache" do
+      File.should_receive(:exist?).with(@submodule.abs_path).and_return(true)
+      FileUtils.should_receive(:mkdir_p).with(File.join(@git.git_base, ".git/submodule_cache"))
+      FileUtils.should_receive(:rm_rf).with(@submodule.abs_cache_path)
+      FileUtils.should_receive(:mv).with(@submodule.abs_path, @submodule.abs_cache_path, :force => true)
+      @submodule.cache
+    end
+    
+    it "should restore when submodule isn't in working copy" do
+      Dir.should_receive(:has_a_file?).with(@submodule.abs_path).and_return(false)
+      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(true)
+      FileUtils.should_receive(:mkdir_p).with(File.dirname(@submodule.abs_path))
+      FileUtils.should_receive(:mv).with(@submodule.abs_cache_path, @submodule.abs_path, :force => true)
+      @submodule.restore
+    end
+  end
 end

@@ -32,6 +32,8 @@
   </thead>
   <tbody>
     <% diff_result[:lines].each do |line|
+      next if @diff_line_count >= Git::DEFAULT_DIFF_LIMIT
+      @diff_line_count += 1
       line_num_class, row_class = case line[:type]
         when :deletion then ["", "del"]
         when :insertion then ["", "ins"]

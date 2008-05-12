@@ -7,18 +7,19 @@ describe RemoteController do
   before(:each) do
     Git.reset_mock!
     @git = Git.singleton_new
+    @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
+    @git.config.stub!(:[]).with("git-tmbundle.log.limit").and_return(5)
   end
   
   describe "fetching" do
     before(:each) do
-      # query the sources
-      @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
+      # query the remotes
       Git.command_response["branch"] = "* master\n"
       Git.command_response["config", "branch.master.remote"] = %Q{origin}
       Git.command_response["remote"] = %Q{origin}
       
       git = Git.singleton_new
-      git.should_receive(:log).with({:path=>".", :revisions=>["74c0fdf", "d1c6bdd"]}).and_return(parse_log(fixture_file("log_with_diffs.txt")))
+      git.should_receive(:log).with(:path=>".", :revisions=>["74c0fdf", "d1c6bdd"], :limit => 5).and_return(parse_log(fixture_file("log_with_diffs.txt")))
       
       Git.command_response["fetch", "origin"] = fixture_file("fetch_1_5_4_3_output.txt")
       
@@ -28,7 +29,7 @@ describe RemoteController do
     end
     
     it "should use javascript to output the progress" do
-      @output.should include("$('Compressing_progress').update('Done')")
+      @output.should include("$('origin_Compressing_progress').update('Done')")
     end
     
     it "should output a log" do
@@ -40,16 +41,15 @@ describe RemoteController do
   
   describe "pulling" do
     before(:each) do
-      # query the sources
+      # query the remotes
       @controller = RemoteController.singleton_new
       Git.command_response["branch"] = "* master\n"
       Git.command_response["branch", "-r"] = "  origin/master\n  origin/release\n"
       @git.config.stub!(:[]).with("remote.origin.fetch").and_return("+refs/heads/*:refs/remotes/origin/*")
-      @git.config.stub!(:[]).with("branch.master.remote").and_return('origin')
       @git.config.stub!(:[]).with("branch.master.merge").and_return("refs/heads/master")
       Git.command_response["remote"] = %Q{origin}
     
-      # query the config - if source != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
+      # query the config - if remote != self["remote.#{current_branch}.remote"] || self["remote.#{current_branch}.merge"].nil?
     
       # Git.command_response[] 
       Git.command_response["log", "-p", "791a587..4bfc230", "."] = fixture_file("log_with_diffs.txt")
@@ -67,8 +67,8 @@ describe RemoteController do
       @output.should include("Branch 'asdf': dc29d3d..05f9ad9")
     end
     
-    it "should update_submodules_si_hay" do
-      @controller.should_receive(:update_submodules_si_hay)
+    it "should with_submodule_cacheing" do
+      @controller.should_receive(:with_submodule_cacheing)
       capture_output { dispatch :controller => "remote", :action => "pull" }
     end
   end
@@ -89,7 +89,7 @@ describe RemoteController do
       end
       
       it "should run all git commands" do
-        Git.commands_ran.should == [["branch"], ["remote"], ["push", "origin", "master"], ["log", "865f920..f9ca10d", "."], ["branch"], ["branch"]]
+        Git.commands_ran.should == [["branch"], ["remote"], ["push", "origin", "master"], ["log", "-n", 5, "865f920..f9ca10d", "."], ["branch"], ["branch"]]
       end
       
       it "should output log with diffs" do
@@ -106,7 +106,7 @@ describe RemoteController do
   describe "pushing a tag" do
     before(:each) do
       @git = Git.singleton_new
-      @git.should_receive(:sources).and_return(["origin"])
+      @git.should_receive(:remotes).and_return(["origin"])
       @controller = RemoteController.singleton_new
       def @controller.for_each_selected_remote(options = {}, &block)
         yield "origin"
