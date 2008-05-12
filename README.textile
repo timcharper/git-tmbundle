@@ -17,7 +17,10 @@ git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 
 <h2>Support</h2>
 
+* <a href="http://tmbundles.lighthouseapp.com/projects/10062-git-textmate-bundle/overview">Issue tracker</a> - Do you have issues?  Make them known.  <em>(sponsored by <a href="http://www.lighthouseapp.com/">Lighthouse</a> - beautifully simple issue tracking)</em>
+
 * <a href="http://groups.google.com/group/git-tmbundle">Mailing list</a>.
+
 * Repositories: 
 
   * <a href="http://gitorious.com/projects/git-tmbundle">On Gitorious</a>.
