@@ -1,3 +1,5 @@
+ - Cleaned up grammar for "Egad, you're not on a branch!" (thanks, Henrik Nyh!)
+
 Release 1.5.3 [2008-04-30]
  - Bugfix - merge was not restoring submodules if an empty directory was in the way.
 
