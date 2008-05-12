@@ -14,7 +14,7 @@ class RemoteController < ApplicationController
     branch = git.branch.current_branch
     branch_remote = branch && branch_remote
     
-    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.remotes, :default => branch.remote) do |remote|
+    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.remotes, :default => branch.remote.name) do |remote|
       puts "<h2>Fetching from #{remote}</h2>"
       output = run_fetch(remote)
       puts htmlize(output[:text])
