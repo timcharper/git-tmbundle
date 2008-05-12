@@ -144,14 +144,19 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     def default?
       raise "implement me"
     end
-  
+    
+    def remote_name(reload = false)
+      @remote_name = nil if reload
+      @base.config["branch.#{name}.remote"]
+    end
+    
     def remote(reload = false)
-      @remote = nil if reload
-      @remote ||= @base.config["branch.#{name}.remote"]
+      @remote = nil
+      @remote ||= @base.remote[remote_name(reload)]
     end
   
-    def remote=(value)
-      @remote = nil
+    def remote_name=(value)
+      @remote, @remote_name = nil
       @base.config["branch.#{name}.remote"] = value
     end
   
