@@ -127,7 +127,7 @@ module SCM
     end
     
     def remotes
-      remote.remote_names
+      remote.names
     end
     
     def list_files(dir, options = {})
