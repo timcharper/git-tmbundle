@@ -11,10 +11,13 @@ class RemoteController < ApplicationController
   end
   
   def fetch
-    branch = git.branch.current_branch
-    branch_remote = branch && branch_remote
+    if (branch = git.branch.current_branch)
+      default_remote = branch_remote.name
+    else
+      default_remote = git.remote.names.with_this_at_front("origin").first
+    end
     
-    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.remote.names, :default => branch.remote.name) do |remote_name|
+    for_each_selected_remote(:title => "Fetch", :prompt => "Fetch from which shared repository?", :items => git.remote.names, :default => default_remote) do |remote_name|
       puts "<h2>Fetching from #{remote_name}</h2>"
       output = run_fetch(remote_name)
       puts htmlize(output[:text])
