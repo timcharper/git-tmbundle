@@ -41,11 +41,10 @@ module Parsers
           "M"
         when "unmerged"
           # do a quick check to see if the merge is resolved
-          file_contents = File.exist?(filename) ? File.read(filename) : ""
-          if /^={7}$/.match(file_contents) && /^\<{7} /.match(file_contents) && /^>{7} /.match(file_contents)
-            "C"
-          else
+          if File.directory?(filename) # it's a submodule
             "G"
+          else
+            file_has_conflict_markers(filename) ? "C" : "G"
           end
         else
           "?"
@@ -55,6 +54,11 @@ module Parsers
 
     end
     file_statuses
+  end
+  
+  def file_has_conflict_markers(filename)
+    file_contents = File.exist?(filename) ? File.read(filename) : ""
+    /^={7}$/.match(file_contents) && /^\<{7} /.match(file_contents) && /^>{7} /.match(file_contents)
   end
   
   def parse_commit(commit_output)
