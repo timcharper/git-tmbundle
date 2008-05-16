@@ -65,7 +65,12 @@ class RemoteController < ApplicationController
   end
   
   def push
-    current_name = git.branch.current.name
+    if (branch = git.branch.current_branch).nil?
+      puts "You can't push the current branch while not being on a branch (and you are not on a branch).  Please switch to a branch, and try again."
+      output_show_html and return
+    end
+    
+    current_name = branch.name
     for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.remote.names) do |remote_name|
       puts "<p>Pushing to remote source '#{remote_name}'\n</p>"
       display_push_output(run_push(remote_name, :branch => current_name))
