@@ -106,7 +106,7 @@ describe RemoteController do
   describe "pushing a tag" do
     before(:each) do
       @git = Git.singleton_new
-      @git.should_receive(:remotes).and_return(["origin"])
+      @git.remote.stub!(:names).and_return(["origin"])
       @controller = RemoteController.singleton_new
       def @controller.for_each_selected_remote(options = {}, &block)
         yield "origin"
