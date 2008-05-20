@@ -136,12 +136,13 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   
   class BranchProxy
     include BranchHelperMethods
-  
+    attr_reader :ref
+    
     def initialize(base, parent, options = {})
       @base = base
       @parent = parent
       @name = options[:name]
-      @local = options[:local]
+      @ref = options[:ref]
     end
   
     def name(format = :short)
