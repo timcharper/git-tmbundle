@@ -24,11 +24,6 @@ describe Git do
 
 made more failproof}
     end
-    
-    it "should stringify results" do
-      @git.stringify(@entries)
-      @entries.first.keys.sort.should == ["author", "date", "msg", "rev"]
-    end
   end
   
   describe "when parsing a log with diffs" do
