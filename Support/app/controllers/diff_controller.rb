@@ -5,7 +5,9 @@ class DiffController < ApplicationController
     @rev = params[:rev]
     @title = params[:title] || "Uncomitted changes"
     params[:context_lines] = git.config["git-tmbundle.log.context-lines"] if git.config["git-tmbundle.log.context-lines"]
-    render("_diff_results", :locals => {:diff_results => git.diff(params)})
+    render("_diff_results", :locals => {
+      :diff_results => git.diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since))
+    })
   end
   
   def uncommitted_changes
