@@ -6,11 +6,11 @@ class MiscController < ApplicationController
   end
   
   def gitk
-    run_detached("gitk --all", "Wish Shell")
+    run_detached("PATH=#{File.dirname(git.git)}:$PATH && gitk --all", "Wish Shell")
   end
   
   def gitgui
-    run_detached("git-gui", "Git Gui")
+    run_detached("PATH=#{File.dirname(git.git)}:$PATH && git-gui", "Git Gui")
   end
   
   def gitnub
@@ -44,7 +44,7 @@ class MiscController < ApplicationController
         STDERR.reopen(open('/dev/null'))
         git.chdir_base
         Thread.new do
-          sleep 1
+          sleep 1.5
           %x{osascript -e 'tell app "#{app_name}" to activate'}
           exit
         end
