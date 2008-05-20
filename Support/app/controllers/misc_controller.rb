@@ -42,7 +42,6 @@ class MiscController < ApplicationController
       pid = fork do
         STDOUT.reopen(open('/dev/null'))
         STDERR.reopen(open('/dev/null'))
-        git.chdir_base
         Thread.new do
           sleep 1.5
           %x{osascript -e 'tell app "#{app_name}" to activate'}
