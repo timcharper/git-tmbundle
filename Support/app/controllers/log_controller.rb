@@ -17,7 +17,7 @@ class LogController < ApplicationController
     params[:path] ||= git.make_local_path(git.paths.first)
     path = params[:path]
     # Get the desired revision number
-    if File.directory?(git.git_base + path)
+    if File.directory?(git.path + path)
       title = "View revision of Directory #{path}"
     else
       title = "View revision of file #{File.basename(path)}"
@@ -40,11 +40,10 @@ class LogController < ApplicationController
     revision = params[:revision]
     line = params[:line]
     if revision.blank?
-      tm_open(filepath, :line => line)
+      tm_open(git.with_path(params[:git_path]).path_for(filepath), :line => line)
       abort
     end
-
-    tmp_file = git.show_to_tmp_file(filepath, revision)
+    tmp_file = git.with_path(params[:git_path]).show_to_tmp_file(filepath, revision)
     fork do
       tm_open(tmp_file, :line => line, :wait => true)
       File.delete(tmp_file)

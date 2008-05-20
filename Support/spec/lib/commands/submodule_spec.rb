@@ -18,16 +18,21 @@ EOF
     submodules.should have(3).submodules
     
     submodules[0].revision.should == "03a20cfe2e0e344f87ac3132ddc991899cef2567"
-    submodules[0].name.should == "vendor/plugins/fixture-scenarios"
+    submodules[0].path.should == "vendor/plugins/fixture-scenarios"
     submodules[0].tag.should be_nil
     
     submodules[1].revision.should == "e741e43171fd34c98ef98afa5877fb2d74841b82"
-    submodules[1].name.should == "vendor/plugins/mod"
+    submodules[1].path.should == "vendor/plugins/mod"
     submodules[1].tag.should be_nil
 
     submodules[2].revision.should == "b9276ab1ad9aee7c3688b365072fe0a616b68b71"
-    submodules[2].name.should == "vendor/plugins/railswhere"
+    submodules[2].path.should == "vendor/plugins/railswhere"
     submodules[2].tag.should be_nil
+  end
+  
+  it "should list all submodules in a given path when specified" do
+    @git.should_receive(:command).with("ls-files", "--stage", "path/to/files").and_return("")
+    @git.submodule.all(:path => "path/to/files")
   end
   
   it "should add a repository" do
@@ -47,7 +52,7 @@ EOF
     
     it "should cache" do
       File.should_receive(:exist?).with(@submodule.abs_path).and_return(true)
-      FileUtils.should_receive(:mkdir_p).with(File.join(@git.git_base, ".git/submodule_cache"))
+      FileUtils.should_receive(:mkdir_p).with(File.join(@git.path, ".git/submodule_cache"))
       FileUtils.should_receive(:rm_rf).with(@submodule.abs_cache_path)
       FileUtils.should_receive(:mv).with(@submodule.abs_path, @submodule.abs_cache_path, :force => true)
       @submodule.cache
@@ -62,7 +67,7 @@ EOF
     end
     
     it "should return a Git object for the submodule" do
-      Git.should_receive(:new).with(:path => File.join(@git.git_base, @path)).and_return(
+      @git.should_receive(:with_path).with(File.join(@git.path, @path)).and_return(
         mock("git", :current_revision => "1234")
       )
       @submodule.git

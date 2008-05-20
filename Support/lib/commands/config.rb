@@ -23,7 +23,7 @@ class SCM::Git::Config < SCM::Git::CommandProxyBase
       when "global"
         ["--global"]
       when "local", "file"
-        ["--file", File.join(@base.git_base, ".git/config")]
+        ["--file", File.join(@base.path, ".git/config")]
       when "default"
         []
       else

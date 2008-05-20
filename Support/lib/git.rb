@@ -3,6 +3,7 @@ require LIB_ROOT + "/commands/proxy_command_base.rb"
 require LIB_ROOT + "/commands/config.rb" # we have to specifically require this
 module SCM
   class Git
+    attr_reader :parent
     GIT_SCM_STATUS_MAP = {
       'A' => {:short => 'A', :long => 'added',        :foreground => '#008000', :background => '#bbffb3'},
       '+' => {:short => '+', :long => 'added',        :foreground => '#008000', :background => '#bbffb3'},
@@ -29,6 +30,7 @@ module SCM
     
     def initialize(options = {})
       @path = options[:path] if options[:path]
+      @parent = options[:parent] if options[:parent]
     end
     
     def version
@@ -44,36 +46,61 @@ module SCM
     end
     
     def command_str(*args)
-      %{cd "#{git_base}" && #{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+      %{cd "#{path}" && #{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
     end
 
+    def command_verbose(*args)
+      r = %x{#{command_str(*args)} 2>&1 }
+      puts "<pre>#{command_str(*args)}</pre>"
+      puts "Result: <pre>#{r}</pre>"
+      r
+    end
+    
+    # Run a command a return it's results
     def command(*args)
+      logger.warn(command_str(*args))
       %x{#{command_str(*args)} 2>&1 }
     end
     
+    # Run a command with POPEN
     def popen_command(*args)
       cmd = command_str(*args)
       IO.popen("#{cmd} 2>&1", "r")
     end
     
+    # Return the full working path to "git"
     def git
       git ||= e_sh(ENV['TM_GIT'] || 'git')
     end
-  
-    def git_base
-      path
-    end
     
+    # The absolute path to working copy
     def path
       @path ||= File.expand_path('..', git_dir(paths.first))
     end
-
+    
+    def root
+      @root ||= parent ? parent : self
+    end
+    
+    # an absolute path for a given relative path
+    def path_for(p)
+      File.expand_path(p, path)
+    end
+    
+    def root_relative_path_for(p)
+      root.relative_path_for(path_for(p))
+    end
+    
+    def relative_path_for(p)
+      File.expand_path(p, path).gsub(path, "").gsub(/^\//, "")
+    end
+    
     def dir_part(file_or_dir)
       File.directory?(file_or_dir) ? file_or_dir : File.split(file_or_dir).first
     end
     
     def make_local_path(fullpath)
-      fullpath = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+      fullpath = fullpath.gsub(/#{path}\/{0,1}/, "")
       fullpath = "." if fullpath == ""
       fullpath
     end
@@ -151,7 +178,7 @@ module SCM
       
         
       paths.each do |e|
-        output << command("checkout", "--", shorten(e, git_base))
+        output << command("checkout", "--", shorten(e, path))
       end
       output
     end
@@ -169,8 +196,8 @@ module SCM
     end
     
     def merge_message
-      return unless File.exist?(File.join(git_base, ".git/MERGE_HEAD"))
-      File.read(File.join(git_base, ".git/MERGE_MSG"))
+      return unless File.exist?(File.join(path, ".git/MERGE_HEAD"))
+      File.read(File.join(path, ".git/MERGE_MSG"))
     end
     
     def initial_commit_pending?
@@ -189,7 +216,7 @@ module SCM
           if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
             # promote this status on down and keep it if it's the parent folder of our target file_or_dir
             status[:path] = file_or_dir
-            status[:display] = shorten(file_or_dir, git_base)
+            status[:display] = shorten(file_or_dir, path)
             true
           else
             /^#{Regexp.escape(file_or_dir)}/i.match(status[:path])
@@ -230,8 +257,8 @@ module SCM
     end
     
     def auto_add_rm(files)
-      add_files = files.select{ |f| File.expand_path(f, path) }
-      remove_files = files.reject{ |f| File.expand_path(f, path) }
+      add_files = files.select{ |f| File.exist?(File.expand_path(f, path)) }
+      remove_files = files.reject{ |f| ! File.exist?(File.expand_path(f, path)) }
       res = ""
       res << add(add_files) unless add_files.empty?
       res << rm(remove_files) unless remove_files.empty?
@@ -356,6 +383,12 @@ module SCM
           require 'logger'
           Logger.new(ROOT + "/git.log")
         end
+    end
+    
+    def with_path(path)
+      @gits ||= {}
+      return self if path.blank?
+      @gits[path] = Git.new(:path => path_for(path), :parent => self)
     end
     
     protected

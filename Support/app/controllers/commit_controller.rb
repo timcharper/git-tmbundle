@@ -12,7 +12,7 @@ class CommitController < ApplicationController
   
   def merge_commit
     message = params[:message]
-    statuses = git.status(git.git_base)
+    statuses = git.status(git.path)
     files = statuses.map { |status_options| (status_options[:status][:short] == "G") ? git.make_local_path(status_options[:path]) : nil }.compact
 
     git.auto_add_rm(files)

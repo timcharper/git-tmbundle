@@ -12,7 +12,7 @@
   <% @submodules.each do |submodule| %>
     <tr>
       <td><%= submodule.modified? ? "M" : "" %></td>
-      <td><%= link_to_mate submodule.name, File.join(git.git_base, submodule.name) %></td>
+      <td><%= link_to_mate submodule.name, File.join(git.path, submodule.name) %></td>
       <td><%= git.short_rev(submodule.current_revision) %></td>
       <td><%= submodule.current_revision_description %></td>
     </tr>

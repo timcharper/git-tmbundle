@@ -18,9 +18,9 @@ index c65fcef..98bef86 100644
  
 -git = SCM::Git.new
 +git = SCM::Git::Diff.new
- git_base = File.expand_path('..', git.git_dir(git.paths.first))
+ path = File.expand_path('..', git.git_dir(git.paths.first))
  
- branches   = git.branches(git_base)
+ branches   = git.branches(path)
 @@ -22,12 +21,14 @@ res   = open('|"$DIALOG" -w' + token)               { |io| OSX::PropertyList.loa
          open('|"$DIALOG" -x' + token)               { |io| }
  
@@ -29,7 +29,7 @@ index c65fcef..98bef86 100644
 +  parent = res['returnArgument'].first['name']
    current = res['currentBranch'].first['name']
 -  puts "&lt;h1&gt;Compare ‘#{parrent}’ With ‘#{current}’&lt;/h1&gt;\n&lt;pre&gt;"
--  Dir.chdir(git_base)
+-  Dir.chdir(path)
 -  puts htmlize(%x{#{e_sh git.git} diff #{e_sh parrent} #{e_sh current}})
 -  puts "&lt;/pre&gt;"
 +
@@ -65,7 +65,7 @@ index e613549..fb31ef2 100644
 -  def diff(file, base = nil)
 +  
 +  def diff_branches(branch_left, branch_right)
-+    Dir.chdir(git_base)
++    Dir.chdir(path)
 +    parse_diff(command("diff", branch_left, branch_right))
 +  end
 +  

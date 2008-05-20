@@ -17,7 +17,7 @@ describe SubmoduleController do
   # ).and_return(@module_repo_path)
   
   # TextMate::UI.should_receive(:request_directory).with(
-  #   "Select the parent folder for the submodule:", :initial_directory => @git.git_base
+  #   "Select the parent folder for the submodule:", :initial_directory => @git.path
   # ).and_return("/base/")
   
   it "should extract an intelligent default" do
@@ -29,7 +29,7 @@ describe SubmoduleController do
   
   it "should add a repository and output the results of the add / initialize" do
     @controller.should_receive(:prompt_repository_path).and_return(@module_repo_path)
-    @controller.should_receive(:prompt_parent_folder).and_return(@git.git_base)
+    @controller.should_receive(:prompt_parent_folder).and_return(@git.path)
     @controller.should_receive(:prompt_module_name).and_return(@module_name)
     
     @git.submodule.should_receive(:add).with(@module_repo_path, File.join("/base/", @module_name)).and_return(StringIO.new("Added!"))

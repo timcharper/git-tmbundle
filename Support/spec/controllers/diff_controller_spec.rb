@@ -11,10 +11,12 @@ describe DiffController do
   describe "uncommitted changes" do
     before(:each) do
       @git.should_receive(:diff).
-        with(:path => @git.git_base, :since => "HEAD" ).
+        with(:path => @git.path, :since => "HEAD" ).
         and_return(
           parse_diff(fixture_file("changed_files.diff"))
         )
+      
+      @git.submodule.stub!(:all).and_return []
       
       @output = capture_output do 
         dispatch(:controller => "diff", :action => "uncommitted_changes")

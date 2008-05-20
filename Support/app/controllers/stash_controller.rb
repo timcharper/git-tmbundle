@@ -62,7 +62,7 @@ class StashController < ApplicationController
   end
   
   def save
-    untracked_files = git.list_files(git.git_base, :type => "o")
+    untracked_files = git.list_files(git.path, :type => "o")
     if untracked_files.length >= 1
       response = TextMate::UI.alert(:warning, "Untracked files in working copy", "Would you like to include the following untracked files in your stash?:\n#{untracked_files * "\n"}\n", "Add them", "Leave them out", "Cancel")
       case response

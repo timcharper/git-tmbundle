@@ -19,8 +19,8 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     @base.command(*args)
   end
   
-  def all
-    list.map do |sm|
+  def all(options = {})
+    list(options).map do |sm|
       SubmoduleProxy.new(@base, self, sm)
     end
   end
@@ -31,8 +31,10 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   end
   
   protected
-    def list
-      @base.command("ls-files", "--stage").split("\n").grep(/^160000 /).map do |line|
+    def list(options = {})
+      args = ["ls-files", "--stage"]
+      args << options[:path] if options[:path]
+      @base.command(*args).split("\n").grep(/^160000 /).map do |line|
         next unless line.match(/^160000\s*([a-f0-9]+)\s*([0-9]+)\s*(.+)/)
         {
           :revision => $1,
@@ -52,7 +54,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def url
-      @url ||= @base.command("config", "--file", File.join(@base.git_base, ".gitmodules"), "submodule.#{path}.url").strip
+      @url ||= @base.command("config", "--file", File.join(@base.path, ".gitmodules"), "submodule.#{path}.url").strip
     end
     
     def name
@@ -60,11 +62,11 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def abs_cache_path
-      @abs_cache_path ||= File.join(@base.git_base, ".git/submodule_cache", MD5.hexdigest(path + "\n" + url))
+      @abs_cache_path ||= File.join(@base.path, ".git/submodule_cache", MD5.hexdigest(path + "\n" + url))
     end
     
     def abs_path
-      @abs_path ||= File.join(@base.git_base, @path)
+      @abs_path ||= File.join(@base.path, @path)
     end
     
     def cache
@@ -85,7 +87,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def git
-      @git ||= Git.new(:path => abs_path)
+      @git ||= @base.with_path(abs_path)
     end
     
     def current_revision(reload = false)

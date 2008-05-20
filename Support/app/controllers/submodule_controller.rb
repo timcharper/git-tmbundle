@@ -39,7 +39,7 @@ EOF
     end
     
     def prompt_parent_folder
-      TextMate::UI.request_directory("Select the parent folder for the submodule:", :initial_directory => git.git_base)
+      TextMate::UI.request_directory("Select the parent folder for the submodule:", :initial_directory => git.path)
     end
     
     def prompt_module_name(repository_path = "")

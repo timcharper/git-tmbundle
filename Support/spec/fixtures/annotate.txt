@@ -31,7 +31,7 @@ bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	28)      end
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	31)        git ||= e_sh(ENV['TM_GIT'] || 'git')
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	32)      end
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	33)    
-85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	34)      def git_base
+85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	34)      def path
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	35)         File.expand_path('..', git_dir(paths.first))
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	36)      end
 4c47a64b	(      duff	2007-06-10 15:41:03 +0000	37)
@@ -40,7 +40,7 @@ bd481e45	(Tim Harper	2008-02-04 07:31:18 -0700	28)      end
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	40)      end
 85b581ee	(Tim Harper	2008-02-01 09:57:39 -0700	41)      
 4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	42)      def make_local_path(fullpath)
-4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	43)        fullpath = fullpath.gsub(/#{git_base}\/{0,1}/, "")
+4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	43)        fullpath = fullpath.gsub(/#{path}\/{0,1}/, "")
 4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	44)        fullpath = "." if fullpath == ""
 66c83a3a	(Tim Harper	2008-02-04 13:54:29 -0700	45)        fullpath
 4fe304b9	(Tim Harper	2008-02-04 12:30:08 -0700	46)      end

@@ -5,8 +5,9 @@ class DiffController < ApplicationController
     @rev = params[:rev]
     @title = params[:title] || "Uncomitted changes"
     params[:context_lines] = git.config["git-tmbundle.log.context-lines"] if git.config["git-tmbundle.log.context-lines"]
+    
     render("_diff_results", :locals => {
-      :diff_results => git.diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since))
+      :diff_results => git.with_path(params[:git_path]).diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since))
     })
   end
   
@@ -17,12 +18,19 @@ class DiffController < ApplicationController
       else
         git.paths(:fallback => :current_file, :unique => true)
       end
-    base = git.git_base
-    puts "<h2>Uncommitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’</h2>"
+    base = git.path
     open_in_tm_link
+    puts "<h2>Uncommitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’</h2>"
     
     paths.each do |path|
       render("_diff_results", :locals => {:diff_results => git.diff(:path => path, :since => "HEAD") })
+      
+      git.submodule.all(:path => path).each do |submodule|
+        diff_results = submodule.git.diff(:since => "HEAD")
+        next if diff_results.blank?
+        puts "<h3>... in submodule ‘#{link_to_mate(submodule.path, submodule.git.path)}’</h3>"
+        render("_diff_results", :locals => {:git => submodule.git, :diff_results => diff_results})
+      end
     end
   end
   
@@ -48,7 +56,7 @@ class DiffController < ApplicationController
 protected
   def open_in_tm_link
     puts <<-EOF
-      <a href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open diff in TextMate</a>
+      <a style='float:right' href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open diff in TextMate</a>
     EOF
   end
   

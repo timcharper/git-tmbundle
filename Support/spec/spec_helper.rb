@@ -34,6 +34,13 @@ class ArrayKeyedHash < Hash
 end
 
 class Git
+  alias :initialize_without_autopath :initialize
+  def initialize(options = {})
+    options = options.dup
+    options[:path] ||= "/base"
+    initialize_without_autopath(options)
+  end
+  
   class << self
     def reset_mock!
       command_response.clear
@@ -80,16 +87,12 @@ class Git
     "/base/"
   end
   
-  def path
-    "/base/"
-  end
-  
   def paths(*args)
-    [git_base]
+    [path]
   end
   
   def nca(*args)
-    git_base
+    path
   end
   
   attr_writer :version

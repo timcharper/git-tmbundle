@@ -11,7 +11,7 @@ require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/osx/plist'
 
 git = Git.new
-git_base = File.expand_path('..', git.git_dir(git.paths.first))
+path = File.expand_path('..', git.git_dir(git.paths.first))
 
 branches   = git.branch.list(:all)
 parameters = { "branches" =&gt; branches.map { |e| { "name" =&gt; e[:name] } } }

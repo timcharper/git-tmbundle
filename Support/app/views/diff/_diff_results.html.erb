@@ -3,7 +3,7 @@
 <code>
   <% diff_results.each do |diff_result| %>
     <% next if @diff_line_count >= Git::DEFAULT_DIFF_LIMIT %>
-    <% render "diff/_diff_result", :locals => {:diff_result => diff_result, :revision => revision } %>
+    <% render "diff/_diff_result", :locals => {:git => git, :diff_result => diff_result, :revision => revision } %>
     <% flush %>
   <% end %>
 </code>

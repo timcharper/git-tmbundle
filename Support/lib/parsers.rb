@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + "/stream_progress_methods.rb"
 
 module Parsers
   def parse_status(input)
-    base_dir = git_base
+    base_dir = path
     file_statuses = {}
 
     parse_status_hash(input).each do |file, status|

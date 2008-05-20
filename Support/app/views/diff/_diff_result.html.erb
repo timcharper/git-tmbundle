@@ -15,9 +15,9 @@
       when revision
         lr == :left ? "#{revision}^" : revision
     end
-    open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :filepath => filepath, :revision => side_revision, :line => diff_result[lr][:ln_start] })
+    open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :filepath => filepath, :revision => side_revision, :line => diff_result[lr][:ln_start], :git_path => git.path })
     
-    filepath_right ? link_to_textmate(filepath, File.join(git.git_base, filepath_right), start_line_right) : filepath
+    filepath_right ? link_to_textmate(git.root_relative_path_for(filepath), git.path_for(filepath_right), start_line_right) : git.root_relative_path_for(filepath)
   end
 %>
 

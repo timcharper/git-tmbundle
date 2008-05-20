@@ -45,5 +45,20 @@ describe SCM::Git do
     Git.command_response["rev-parse", "HEAD"] = "1234\n"
     @git.current_revision.should == "1234"
   end
+  
+  describe "using submodule git relative paths" do
+    before(:each) do
+      @sub_git = Git.new(:parent => @git, :path => File.join(@git.path, "subproject"));
+    end
+    
+    it "should return absolute paths" do
+      @sub_git.path_for("file.txt").should == File.join(@git.path, "subproject/file.txt")
+    end
+    
+    it "should return a relative path from the root git" do
+      @sub_git.root_relative_path_for("file.txt").should == "subproject/file.txt"
+    end
+  end
+  it
 
 end

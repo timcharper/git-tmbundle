@@ -15,7 +15,7 @@ module PartialCommitWorker
     
     def initialize(git)
       @git = git
-      @base = git.git_base
+      @base = git.path
     end
   
     def ok_to_proceed_with_partial_commit?
@@ -68,7 +68,7 @@ module PartialCommitWorker
       raise NothingToCommitException if nothing_to_commit?
     
       msg, files = show_commit_dialog
-
+      
       git.auto_add_rm(files)
       res = git.commit(msg, files, :amend => amend)
       { :files => files, :message => msg, :result => res}
