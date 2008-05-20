@@ -40,6 +40,7 @@ module PartialCommitWorker
       res = %x{cd "#{git.path}" && #{e_sh CW}                 \
         --diff-cmd   '#{git.git},diff'        \
         --action-cmd "M,D:Revert,#{status_helper_tool},revert" \
+        --action-cmd "?:Delete,#{status_helper_tool},delete" \
         --status #{statuses.join(':')}       \
         #{files.map{ |f| e_sh(f) }.join(' ')} 2>/dev/console
       }
