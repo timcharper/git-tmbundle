@@ -359,7 +359,7 @@ module SCM
     end
     
     protected
-      def get_range_arg(options, keys = [:revisions, :branches, :tags])
+      def get_range_arg(options = {})
         return options[:since] if options[:since]
         lr = [:revisions, :revision, :branches, :tags].map{ |k| options[k] }.compact.first
         case lr
