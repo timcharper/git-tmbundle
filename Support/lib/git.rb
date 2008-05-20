@@ -58,7 +58,6 @@ module SCM
     
     # Run a command a return it's results
     def command(*args)
-      logger.warn(command_str(*args))
       %x{#{command_str(*args)} 2>&1 }
     end
     
