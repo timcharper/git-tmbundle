@@ -23,7 +23,6 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   end
   
   def switch(name)
-    base.chdir_base
     result = base.command("checkout", name)
     rescan_project
     result

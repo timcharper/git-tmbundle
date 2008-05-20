@@ -34,4 +34,15 @@ describe SCM::Git do
       branches.map{|r|r[:name]}.should == ["satellite/asdf", "satellite/master", "satellite/mybranch", "satellite/satellite"]
     end
   end
+  
+  it "should describe a revision, defaulting to use all refs" do
+    Git.command_response["describe", "--all", "1234"] = "tag-1234\n"
+    @git.describe("1234").should == "tag-1234"
+  end
+  
+  it "should return the current revision" do
+    Git.command_response["rev-parse", "HEAD"] = "1234\n"
+    @git.current_revision.should == "1234"
+  end
+
 end

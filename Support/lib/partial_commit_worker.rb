@@ -37,7 +37,7 @@ module PartialCommitWorker
     def exec_commit_dialog
       files, statuses = split_file_statuses
       
-      res = %x{#{e_sh CW}                 \
+      res = %x{cd "#{git.path}" && #{e_sh CW}                 \
         --diff-cmd   '#{git.git},diff'        \
         --action-cmd "M,D:Revert,#{status_helper_tool},revert" \
         --status #{statuses.join(':')}       \

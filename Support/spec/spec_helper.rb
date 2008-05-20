@@ -76,15 +76,11 @@ class Git
     StringIO.new(command(*args))
   end
   
-  def chdir_base(*args)
-    true
-  end
-  
   def git_dir(file_or_dir)
     "/base/"
   end
   
-  def git_base
+  def path
     "/base/"
   end
   

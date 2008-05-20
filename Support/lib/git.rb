@@ -27,8 +27,8 @@ module SCM
       rev.to_s[0..7]
     end
     
-    def initialize
-      chdir_base
+    def initialize(options = {})
+      @path = options[:path] if options[:path]
     end
     
     def version
@@ -44,7 +44,7 @@ module SCM
     end
     
     def command_str(*args)
-      %{#{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+      %{cd "#{git_base}" && #{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
     end
 
     def command(*args)
@@ -59,13 +59,13 @@ module SCM
     def git
       git ||= e_sh(ENV['TM_GIT'] || 'git')
     end
-    
-    def chdir_base
-      Dir.chdir(git_base)
-    end
   
     def git_base
-      File.expand_path('..', git_dir(paths.first))
+      path
+    end
+    
+    def path
+      @path ||= File.expand_path('..', git_dir(paths.first))
     end
 
     def dir_part(file_or_dir)
@@ -142,7 +142,6 @@ module SCM
     end
     
     def create_tag(name)
-      chdir_base
       %x{#{command_str("tag", name)}}
       true
     end
@@ -150,7 +149,6 @@ module SCM
     def revert(paths = [])
       output = ""
       
-      chdir_base
         
       paths.each do |e|
         output << command("checkout", "--", shorten(e, git_base))
@@ -182,7 +180,6 @@ module SCM
     def status(file_or_dir = nil, options = {})
       file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
       file_or_dir = file_or_dir.dup if file_or_dir
-      chdir_base
       
       results = parse_status(command("status"))
       
@@ -233,7 +230,6 @@ module SCM
     end
     
     def auto_add_rm(files)
-      chdir_base
       add_files = files.select{ |f| File.exists?(f) }
       remove_files = files.reject{ |f| File.exists?(f) }
       res = ""
@@ -299,7 +295,6 @@ module SCM
       file = make_local_path(filepath)
       args = [file]
       args << revision unless revision.nil? || revision.empty?
-      chdir_base
       output = command("annotate", *args)
       if output.match(/^fatal:/)
         puts output 
@@ -307,7 +302,21 @@ module SCM
       end
       parse_annotation(output)
     end
-
+    
+    def describe(revision, options = {})
+      args = ["describe"]
+      case options[:use]
+      when nil, :all then args << "--all"
+      end
+      args << revision
+      description = command(*args).strip
+      $?.exitstatus == 0 ? description : short_rev(revision)
+    end
+    
+    def current_revision
+      command("rev-parse", "HEAD").strip
+    end
+    
     def diff(options = {})
       options = {:file => options} unless options.is_a?(Hash)
       params = ["diff"]
