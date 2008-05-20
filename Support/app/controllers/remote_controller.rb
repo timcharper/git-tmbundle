@@ -51,7 +51,7 @@ class RemoteController < ApplicationController
       
       puts "<p>Pulling from remote source '#{remote_name}'\n</p>"
       
-      with_submodule_cacheing do
+      with_submodule_updating do
         output = run_pull(remote_name, remote_branch_name)
         puts "<pre>#{output[:text]}</pre>"
       

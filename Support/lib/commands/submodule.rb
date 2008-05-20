@@ -3,9 +3,20 @@ require 'fileutils'
 
 class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   def init_and_update
-    output = @base.command("submodule", "init")
+    output = initialize_all
     output << @base.command("submodule", "update")
     output
+  end
+  
+  def initialize_all
+    @base.command("submodule", "init")
+  end
+  
+  def update(which = nil)
+    which = which.path if which.is_a?(SubmoduleProxy)
+    args = ["submodule", "update"]
+    args << which if which
+    @base.command(*args)
   end
   
   def all
@@ -21,13 +32,11 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   
   protected
     def list
-      @base.command("submodule").split("\n").map do |line|
-        next unless line.match(/^([ \-\+])*([a-f0-9]+) ([^ ]+)( \((.+)\)){0,1}/)
+      @base.command("ls-files", "--stage").split("\n").grep(/^160000 /).map do |line|
+        next unless line.match(/^160000\s*([a-f0-9]+)\s*([0-9]+)\s*(.+)/)
         {
-          :state => {" " => 0, "-" => -1, "+" => 1}[$1],
-          :revision => $2,
-          :path => $3,
-          :tag => ($5 == "undefined" ? nil : $5)
+          :revision => $1,
+          :path => $3
         }
       end.compact
     end
@@ -73,6 +82,31 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
         FileUtils.mkdir_p(File.dirname(abs_path))
         FileUtils.mv(abs_cache_path, abs_path, :force => true)
       end
+    end
+    
+    def git
+      @git ||= Git.new(:path => abs_path)
+    end
+    
+    def current_revision(reload = false)
+      @current_revision = nil if reload
+      @current_revision ||= git.current_revision
+    end
+    
+    def current_revision_description
+      @current_revision_description ||= git.describe(current_revision)
+    end
+    
+    def revision_description
+      @revision_description ||= git.describe(revision)
+    end
+    
+    def modified?
+      current_revision != revision
+    end
+    
+    def update
+      @base.submodule.update(self)
     end
   end
 end

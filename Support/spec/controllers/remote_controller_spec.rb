@@ -67,8 +67,8 @@ describe RemoteController do
       @output.should include("Branch 'asdf': dc29d3d..05f9ad9")
     end
     
-    it "should with_submodule_cacheing" do
-      @controller.should_receive(:with_submodule_cacheing)
+    it "should with_submodule_updating" do
+      @controller.should_receive(:with_submodule_updating)
       capture_output { dispatch :controller => "remote", :action => "pull" }
     end
   end

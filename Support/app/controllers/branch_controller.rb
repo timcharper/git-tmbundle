@@ -76,7 +76,7 @@ class BranchController < ApplicationController
     
     puts "<h2>Merging #{@merge_from_branch} into #{@c_branch}</h2>"
     
-    with_submodule_cacheing do
+    with_submodule_updating do
       @result = git.merge(@merge_from_branch)
       render "merge"
     end
@@ -146,7 +146,7 @@ class BranchController < ApplicationController
     end
     
     def switch_local(target_branch)
-      with_submodule_cacheing do
+      with_submodule_updating do
         output = git.branch.switch(target_branch)
         case output
         when /fatal: you need to resolve your current index first/
