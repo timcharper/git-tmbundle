@@ -26,4 +26,18 @@ describe SCM::Git::Remote do
     @git.config.should_receive(:[]).with("remote.origin.fetch").and_return("+refs/heads/*:refs/remotes/origin/*")
     @git.remote["origin"].fetch_refspec.should == refspec
   end
+  
+  it "should find the local name for a refspec" do
+    remote = @git.remote["origin"]
+    remote.stub!(:fetch_refspec).and_return("+refs/heads/*:refs/remotes/origin/*")
+    remote.remote_branch_name_for("refs/heads/master").should == "origin/master"
+    remote.remote_branch_name_for("master").should == "origin/master"
+    remote.remote_branch_name_for("refs/heads/master", :full).should == "refs/remotes/origin/master"
+  end
+  
+  it "should find the remote refspec prefix" do
+    remote = @git.remote["origin"]
+    remote.stub!(:fetch_refspec).and_return("+refs/heads/*:refs/remotes/origin/*")
+    remote.remote_branch_prefix.should == "refs/remotes/origin/"
+  end
 end

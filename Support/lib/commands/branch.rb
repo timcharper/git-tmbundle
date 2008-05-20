@@ -1,4 +1,12 @@
 class SCM::Git::Branch < SCM::Git::CommandProxyBase
+  module BranchHelperMethods
+    def shorten(name)
+      name && name.gsub(/refs\/(heads|remotes)\//, "")
+    end
+  end
+  
+  include BranchHelperMethods
+  
   def [](name)
     SCM::Git::Branch::Proxy.new(@base, self, name)
   end
@@ -28,16 +36,17 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     result
   end
   
-  def all_for_local_or_remote(side)
-    list(side).map do |branch_params| 
-      BranchProxy.new(@base, self, branch_params[:name], :current => branch_params[:default], :local => (side==:local))
+  def all_for_local_or_remote(which, options = {})
+    list(which, options).map do |branch_params| 
+      BranchProxy.new(@base, self, branch_params)
     end
   end
   
-  def all(which = [:local, :remote])
+  def all(which = :both, options = {})
     branches = []
+    which = [:local, :remote] if which == :both
     [which].flatten.each do |side|
-      branches.concat all_for_local_or_remote(side)
+      branches.concat all_for_local_or_remote(side, options)
     end
     
     branches.compact
@@ -46,39 +55,47 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   def list(which = :local, options= {})
     params = []
     case which
-    when :all then params << "-a"
-    when :remote then params << "-r"
+    when :local then params << "refs/heads"
+    when :remote then params << "refs/remotes"
     end
-    result = base.command("branch", *params).split("\n").map { |e| { :name => e[2..-1], :default => e[0..1] == '* ' } }
-    result.delete_if { |r| r[:name] == "(no branch)"}
+    result = base.command("for-each-ref", *params).split("\n").map do |e|
+      next unless /^([a-f0-9]{40})\s*commit\s*(.+)$/.match(e)
+      {:ref => $1, :name => $2}
+    end.compact
+    
     if options[:remote]
-      r_prefix = remote_branch_prefix(options[:remote])
-      result.delete_if {|r| ! Regexp.new("^#{Regexp.escape(r_prefix)}\/").match(r[:name]) }
+      r_prefix = @base.remote[options[:remote]].remote_branch_prefix
+      result.delete_if { |r| r[:name][0..(r_prefix.length-1)] != r_prefix }
     end
     result
   end
   
-  def list_names(*args)
-    list(*args).map{|b| b[:name]}
+  def list_names(which = :local, options = {})
+    list(*args).map do |b|
+      options[:format] == :short ? shorten(b[:name]) : b[:name]
+    end
   end
   
   alias names list_names
   
   def current
-    all(:local).find { |b| b.current? }
+    _current_name = current_name(:long)
+    list(:local).each do |branch_params|
+      return BranchProxy.new(@base, self, branch_params) if branch_params[:name] == _current_name
+    end
+    
+    nil
   end
   
-  def current_name
-    current && current.name
+  def current_name(format = :short)
+    return unless /^ref: (.+)$/.match(File.read(@base.path_for(".git/HEAD")))
+    name = $1
+    name = shorten($1) if format == :short
+    name
   end
   
   alias current_branch current
 
-  def remote_branch_prefix(remote)
-    /\*:refs\/remotes\/(.+)\/\*/.match(base.config["remote.#{remote}.fetch"])
-     $1
-  end
-  
   def delete(name, options = {})
     branch_type = options[:branch_type] || (name.include?("/") ? :remote : :local)
     case branch_type.to_sym
@@ -118,22 +135,25 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   end
   
   class BranchProxy
-    attr_reader :name
+    include BranchHelperMethods
   
-    def initialize(base, parent, name, options = {})
+    def initialize(base, parent, options = {})
       @base = base
       @parent = parent
-      @name = name
-      @current = options[:current]
+      @name = options[:name]
       @local = options[:local]
     end
   
+    def name(format = :short)
+      format = :short ? shorten(@name) : @name
+    end
+    
     def local?
-      @local
+      @local ||= (@name[0..10] == "refs/heads/")
     end
   
     def current?
-      @current
+      @parent.current_name(:long) == name(:long)
     end
   
     def remote?
