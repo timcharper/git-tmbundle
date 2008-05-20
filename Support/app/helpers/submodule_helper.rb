@@ -39,4 +39,8 @@ module SubmoduleHelper
       flush
     end
   end
+  
+  def render_submodule_header(submodule)
+    puts "<h3>... in submodule ‘#{link_to_mate(submodule.path, submodule.git.path)}’</h3>"
+  end
 end

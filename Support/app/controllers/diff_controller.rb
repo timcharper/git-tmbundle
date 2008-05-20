@@ -1,4 +1,5 @@
 class DiffController < ApplicationController
+  include SubmoduleHelper
   
   def diff
     show_diff_title unless params[:layout].to_s=="false"
@@ -26,9 +27,8 @@ class DiffController < ApplicationController
       render("_diff_results", :locals => {:diff_results => git.diff(:path => path, :since => "HEAD") })
       
       git.submodule.all(:path => path).each do |submodule|
-        diff_results = submodule.git.diff(:since => "HEAD")
-        next if diff_results.blank?
-        puts "<h3>... in submodule ‘#{link_to_mate(submodule.path, submodule.git.path)}’</h3>"
+        next if (diff_results = submodule.git.diff(:since => "HEAD")).blank?
+        render_submodule_header(submodule)
         render("_diff_results", :locals => {:git => submodule.git, :diff_results => diff_results})
       end
     end
