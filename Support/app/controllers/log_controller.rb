@@ -157,14 +157,3 @@ class LogController < ApplicationController
       results.each{|r| r.stringify_keys! }
     end
 end
-
-class Hash
-  def stringify_keys!
-    keys.each{|k|
-      if k.is_a?(Symbol)
-        value = delete(k)
-        self[k.to_s] = value
-      end
-    }
-  end
-end
