@@ -37,6 +37,7 @@ describe SCM::Git do
   
   it "should describe a revision, defaulting to use all refs" do
     Git.command_response["describe", "--all", "1234"] = "tag-1234\n"
+    `ls` # set the exit status code to 0
     @git.describe("1234").should == "tag-1234"
   end
   
