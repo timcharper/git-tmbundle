@@ -5,7 +5,7 @@ require 'rubygems'
 require 'stringio'
 require 'hpricot'
 require SPEC_ROOT + "/../tmvc/spec/spec_helpers.rb"
-
+require LIB_ROOT + "/ui.rb"
 SpecHelpers::PUTS_CAPTURE_CLASSES << ::Git
 
 describe "Formatter with layout", :shared => true do
@@ -110,5 +110,12 @@ class Object
     new_obj = new(*args)
     self.stub!(:new).and_return(new_obj)
     new_obj
+  end
+end
+
+module TextMate::UI
+  def self.request_item(options = {}, &block)
+    yield options[:items].first if block_given?
+    options[:items].first
   end
 end
