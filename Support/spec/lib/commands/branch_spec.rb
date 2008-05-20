@@ -24,6 +24,34 @@ describe SCM::Git::Branch do
     @git.branch.current_name(:long).should == "refs/heads/master"
   end
   
+  it "should return :ahead when the left branch is ahead of the right" do
+    Git.command_response["rev-list", "--left-right", "master...origin/master"] = <<EOF
+<59514d9864d25aa8250aea90f316638529b97801
+<09f6c024b03f2143718bc9cf23862963b260378a
+EOF
+    
+    @git.branch.compare_status("master", "origin/master").should == :ahead
+  end
+  
+  it "should return :behind when the left branch is behind the right" do
+    Git.command_response["rev-list", "--left-right", "origin/master...master"] = <<EOF
+>59514d9864d25aa8250aea90f316638529b97801
+>09f6c024b03f2143718bc9cf23862963b260378a
+EOF
+    
+    @git.branch.compare_status("origin/master", "master").should == :behind
+  end
+  
+  it "should return :diverged when the left and the right branch have commits the other doesn't" do
+    Git.command_response["rev-list", "--left-right", "master...origin/master"] = <<EOF
+<59514d9864d25aa8250aea90f316638529b97801
+>09f6c024b03f2143718bc9cf23862963b260378a
+EOF
+    
+    @git.branch.compare_status("master", "origin/master").should == :diverged
+  end
+  
+  
   describe "listing branches" do
     before(:each) do
       Git.command_response["for-each-ref", "refs/heads"] = <<EOF
@@ -78,6 +106,35 @@ EOF
     it "should return the the current branch" do
       File.stub!(:read).with(@HEAD_file_path).and_return("ref: refs/heads/master")
       @git.branch.current.name.should == "master"
+    end
+  end
+  
+  describe "quering a branch" do
+    before(:each) do
+      @branch = Git::Branch::BranchProxy.new(@git, @git.branch, :name => "refs/heads/master", :ref => "59514d9864d25aa8250aea90f316638529b97801")
+    end
+    
+    it "should get the remote name for a branch" do
+      @git.config.should_receive(:[]).with("branch.master.remote").and_return("origin")
+      @branch.remote.name.should == "origin"
+    end
+    
+    it "should get the tracking branch" do
+      @git.config.stub!(:[]).with("branch.master.remote").and_return("origin")
+      @git.config.stub!(:[]).with("branch.master.merge").and_return("refs/heads/master")
+      @git.remote["origin"].should_receive(:remote_branch_name_for).with("refs/heads/master", :long).and_return("refs/remotes/origin/master")
+      @branch.tracking_branch_name.should == "origin/master"
+    end
+    
+    it "should report the tracking status as nil when no tracking set up" do
+      @git.config.stub!(:[]).with("branch.master.remote").and_return(nil)
+      @branch.tracking_status.should be_nil
+    end
+    
+    it "should report the tracking status" do
+      @branch.stub!(:tracking_branch_name).with(:long).and_return("refs/remotes/origin/master")
+      @git.branch.should_receive(:compare_status).with("refs/heads/master", "refs/remotes/origin/master").and_return(:ahead)
+      @branch.tracking_status.should == :ahead
     end
   end
 end

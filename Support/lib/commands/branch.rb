@@ -3,6 +3,10 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     def shorten(name)
       name && name.gsub(/refs\/(heads|remotes)\//, "")
     end
+    
+    def format_name(name, format = :short)
+      (format == :short) ? shorten(name) : name
+    end
   end
   
   include BranchHelperMethods
@@ -72,7 +76,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   
   def list_names(which = :local, options = {})
     list(*args).map do |b|
-      options[:format] == :short ? shorten(b[:name]) : b[:name]
+      format_name(b[:name], :options[:format])
     end
   end
   
@@ -90,8 +94,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   def current_name(format = :short)
     return unless /^ref: (.+)$/.match(File.read(@base.path_for(".git/HEAD")))
     name = $1
-    name = shorten($1) if format == :short
-    name
+    format_name(name, format)
   end
   
   alias current_branch current
@@ -134,6 +137,29 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     { :outcome => outcome, :output => output, :remote => remote, :branch => branch }
   end
   
+  def compare_status(left, right)
+    new_commits = Hash.new(0)
+    result = @base.command("rev-list", "--left-right", "#{left}...#{right}").split("\n").each do |line|
+      case line[0..0]
+      when "<"
+        new_commits[:left] += 1
+      when ">"
+        new_commits[:right] += 1
+      end
+    end
+    
+    case
+    when new_commits[:left] == 0 && new_commits[:right] == 0
+      :same
+    when new_commits[:left] == 0 && new_commits[:right] >= 0
+      :behind
+    when new_commits[:left] >= 0 && new_commits[:right] == 0
+      :ahead
+    else
+      :diverged
+    end
+  end
+  
   class BranchProxy
     include BranchHelperMethods
     attr_reader :ref
@@ -146,7 +172,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     end
   
     def name(format = :short)
-      format = :short ? shorten(@name) : @name
+      format_name(@name, format)
     end
     
     def local?
@@ -165,18 +191,17 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
       raise "implement me"
     end
     
-    def remote_name(reload = false)
-      @remote_name = nil if reload
-      @base.config["branch.#{name}.remote"]
+    def remote(reload = false)
+      remote_name(reload) && @base.remote[remote_name]
     end
     
-    def remote(reload = false)
-      @remote = nil
-      @remote ||= @base.remote[remote_name(reload)]
+    def remote_name(reload = false)
+      @remote_name = nil if reload
+      @remote_name ||= @base.config["branch.#{name}.remote"]
     end
   
     def remote_name=(value)
-      @remote, @remote_name = nil
+      @remote_name, @tracking_branch_name = nil
       @base.config["branch.#{name}.remote"] = value
     end
   
@@ -186,8 +211,19 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     end
   
     def merge=(value)
-      @merge = nil
+      @merge, @tracking_branch_name = nil
       @base.config["branch.#{name}.merge"] = value
+    end
+    
+    def tracking_branch_name(format = :short)
+      @tracking_branch_name ||= (remote && merge && remote.remote_branch_name_for(merge, :long))
+      format_name(@tracking_branch_name, format)
+    end
+    
+    # tell if a branch 
+    def tracking_status
+      return unless tracking_branch_name(:long)
+      @parent.compare_status(name(:long), tracking_branch_name(:long))
     end
   end
 end
