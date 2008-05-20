@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.dirname(__FILE__) + "/spec_helper.rb"
 describe String do
   it "should classify a string with a /" do
     "controllers/application_controller".classify.should == "Controllers::ApplicationController"
