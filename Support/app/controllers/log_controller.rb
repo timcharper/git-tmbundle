@@ -36,14 +36,14 @@ class LogController < ApplicationController
   end
   
   def open_revision
-    filepath = params[:filepath]
+    file_path = params[:file_path]
     revision = params[:revision]
     line = params[:line]
     if revision.blank?
-      tm_open(git.with_path(params[:git_path]).path_for(filepath), :line => line)
+      tm_open(git.with_path(params[:git_path]).path_for(file_path), :line => line)
       abort
     end
-    tmp_file = git.with_path(params[:git_path]).show_to_tmp_file(filepath, revision)
+    tmp_file = git.with_path(params[:git_path]).show_to_tmp_file(file_path, revision)
     fork do
       tm_open(tmp_file, :line => line, :wait => true)
       File.delete(tmp_file)

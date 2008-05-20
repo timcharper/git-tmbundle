@@ -9,8 +9,8 @@ module Parsers
       file_statuses[expand_path_preserving_trailing_slash(file, base_dir)] = status
     end
 
-    sorted_results = file_statuses.sort.map do |filepath, display_status|
-      {:path => filepath, :display => shorten(filepath, base_dir), :status => Git::GIT_SCM_STATUS_MAP[display_status]}
+    sorted_results = file_statuses.sort.map do |file_path, display_status|
+      {:path => file_path, :display => shorten(file_path, base_dir), :status => Git::GIT_SCM_STATUS_MAP[display_status]}
     end
   end
   
@@ -160,9 +160,9 @@ module Parsers
         current[:index_end] = $2
         current[:index_mode] = $3
       when /^\-\-\- ([ab]\/){0,1}(.+?)(\t*)$/
-        current[:left][:filepath] = $2 unless $2 == "/dev/null"
+        current[:left][:file_path] = $2 unless $2 == "/dev/null"
       when /^\+\+\+ ([ab]\/){0,1}(.+?)(\t*)$/
-        current[:right][:filepath] = $2 unless $2 == "/dev/null"
+        current[:right][:file_path] = $2 unless $2 == "/dev/null"
       when /^@@ \-(\d+)(,(\d+)){0,1} \+(\d+)(,(\d+)){0,1} @@ {0,1}(.*)$/  # @@ -5,6 +5,25 @@ class SCM::Git::Diff
         ln_left = $1.to_i
         ln_left_count = $3.to_i

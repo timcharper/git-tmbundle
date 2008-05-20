@@ -35,8 +35,8 @@ made more failproof}
     it "should extract and parse diffs" do
       @entry[:diff].should_not be_nil
       @entry_diff = @entry[:diff].first
-      @entry_diff[:left][:filepath].should == "Commands/Browse Annotated File (blame).tmCommand"
-      @entry_diff[:right][:filepath].should == "Commands/Browse Annotated File (blame).tmCommand"
+      @entry_diff[:left][:file_path].should == "Commands/Browse Annotated File (blame).tmCommand"
+      @entry_diff[:right][:file_path].should == "Commands/Browse Annotated File (blame).tmCommand"
       @entry_diff[:lines].length.should == 19
     end
   end

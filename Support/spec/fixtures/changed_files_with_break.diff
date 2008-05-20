@@ -87,10 +87,10 @@ index e613549..fb31ef2 100644
          current[:index_mode] = $3
 -      when /^\-\-\- [ab]{0,1}(.+)/
 +      when /^\-\-\- [ab]{0,1}(.+?)(\t*)$/
-         current[:left][:filepath] = $1
+         current[:left][:file_path] = $1
 -      when /^\+\+\+ [ab]{0,1}(.+)/
 +      when /^\+\+\+ [ab]{0,1}(.+?)(\t*)$/
-         current[:right][:filepath] = $1
+         current[:right][:file_path] = $1
 -      when /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@ (.*)$/  # @@ -5,6 +5,25 @@ class SCM::Git::Diff
 +      when /@@ \-(\d+),(\d+) \+(\d+),(\d+) @@ {0,1}(.*)$/  # @@ -5,6 +5,25 @@ class SCM::Git::Diff
          ln_left = $1.to_i
@@ -127,11 +127,11 @@ index 3653db3..e60a4cd 100644
    def content(diff_results)
      puts '<code>'
      diff_results.each do |diff_result|
--      files = [:left, :right].map{|lr| diff_result[lr][:filepath] || " - none - "}
+-      files = [:left, :right].map{|lr| diff_result[lr][:file_path] || " - none - "}
 +      files = [:left, :right].map do |lr|
-+        filepath = diff_result[lr][:filepath]
++        file_path = diff_result[lr][:file_path]
 +        start_line_right = diff_result[:right][:ln_start]
-+        filepath ? "<a href='txmt://open?url=file://#{e_url File.join(@base, filepath)}&line=#{start_line_right}'>#{htmlize filepath}</a>" : " - none - "
++        file_path ? "<a href='txmt://open?url=file://#{e_url File.join(@base, file_path)}&line=#{start_line_right}'>#{htmlize file_path}</a>" : " - none - "
 +      end
        puts <<-EOF
        <h4>#{files.uniq * ' / '}</h4>

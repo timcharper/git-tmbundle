@@ -11,7 +11,7 @@ describe AnnotateController do
       Git.command_response["annotate", "file.rb"] = fixture_file("annotate.txt")
       Git.command_response["log", "file.rb"] = fixture_file("log_with_diffs.txt")
       @output = capture_output do 
-        dispatch(:controller => "annotate", :filepath => "file.rb")
+        dispatch(:controller => "annotate", :file_path => "file.rb")
       end
       @h = Hpricot(@output)
       @log_options = (@h / "select[@name='rev'] / option")

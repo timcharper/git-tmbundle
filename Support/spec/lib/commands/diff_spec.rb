@@ -13,8 +13,8 @@ describe Git do
     
     it "should create an entry for each file" do
       @results.should have(2).results
-      @results.map{|r| r[:left][:filepath]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
-      @results.map{|r| r[:right][:filepath]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
+      @results.map{|r| r[:left][:file_path]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
+      @results.map{|r| r[:right][:file_path]}.should == ["Support/lib/commands/diff.rb", "Support/lib/formatters/diff.rb"]
     end
     
     it "should parse the line_numbers for the files" do

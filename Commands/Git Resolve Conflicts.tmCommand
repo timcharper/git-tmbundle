@@ -18,8 +18,8 @@ require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'
 
 state = :both
 
-input_filepath = ENV['TM_FILEPATH']
-input_filename = File.basename(input_filepath)
+input_file_path = ENV['TM_FILEPATH']
+input_filename = File.basename(input_file_path)
 
 input = $&lt;.read
 
@@ -42,7 +42,7 @@ input.each { |line|
 }
 
 if left==right
-  puts "No conflicts to resolve in #{input_filepath}."
+  puts "No conflicts to resolve in #{input_file_path}."
   exit
 end
 
@@ -57,7 +57,7 @@ right_file = "#{tmp_path}right-#{input_filename}.rb"
 File.open(left_file, "w") { |f| f.puts left }
 File.open(right_file, "w") { |f| f.puts right }
 
-%x{#{FM} -left #{e_sh left_file} -right #{e_sh right_file} -merge #{e_sh input_filepath} &amp;&gt;/dev/null &amp; }
+%x{#{FM} -left #{e_sh left_file} -right #{e_sh right_file} -merge #{e_sh input_file_path} &amp;&gt;/dev/null &amp; }
 </string>
 	<key>input</key>
 	<string>document</string>

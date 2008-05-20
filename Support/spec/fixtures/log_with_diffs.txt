@@ -9,16 +9,16 @@ index ec2b697..1b788d4 100644
 --- a/Commands/Browse Annotated File (blame).tmCommand	
 +++ b/Commands/Browse Annotated File (blame).tmCommand	
 @@ -22,14 +22,12 @@ end
- log_entries = log.log(filepath)
+ log_entries = log.log(file_path)
  
  f = Formatters::Annotate.new(:log_entries =&gt; log_entries)
 -output = f.layout do
--  p = f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
+-  p = f.header("Annotations for ‘#{htmlize(shorten(file_path))}’")
 -  p &lt;&lt; f.navigate_box
 -  p &lt;&lt; f.content(annotations)
 -  p
 +f.layout do
-+  f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
++  f.header("Annotations for ‘#{htmlize(shorten(file_path))}’")
 +  f.navigate_box
 +  f.content(annotations)
  end
@@ -50,11 +50,11 @@ index 892f971..ba6ae96 100644
  
  f = Formatters::Annotate.new(:selected_revision => revision, :as_partial => true)
 -
--output = f.header("Annotations for ‘#{htmlize(shorten(filepath))}’")
+-output = f.header("Annotations for ‘#{htmlize(shorten(file_path))}’")
 -output = f.content(annotations)
 -
 -puts output
-+f.header "Annotations for ‘#{htmlize(shorten(filepath))}’"
++f.header "Annotations for ‘#{htmlize(shorten(file_path))}’"
 +f.content annotations
 diff --git a/Support/lib/commands/commit.rb b/Support/lib/commands/commit.rb
 index 74943a0..4555fea 100644

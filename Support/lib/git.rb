@@ -227,8 +227,8 @@ module SCM
       end
     end
 
-    def is_a_path?(filepath)
-      /\/$/.match(filepath)
+    def is_a_path?(file_path)
+      /\/$/.match(file_path)
     end
 
     def expand_path_preserving_trailing_slash(file, base_dir)
@@ -318,8 +318,8 @@ module SCM
       EOF
     end
     
-    def annotate(filepath, revision = nil)
-      file = make_local_path(filepath)
+    def annotate(file_path, revision = nil)
+      file = make_local_path(file_path)
       args = [file]
       args << revision unless revision.nil? || revision.empty?
       output = command("annotate", *args)

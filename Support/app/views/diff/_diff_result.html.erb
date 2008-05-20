@@ -1,11 +1,11 @@
 <%    
-  filepath_right = diff_result[:right][:filepath]
+  file_path_right = diff_result[:right][:file_path]
   start_line_right = diff_result[:right][:ln_start]
   
   open_links = {}
   files = [:left, :right].map do |lr|
-    filepath = diff_result[lr][:filepath]
-    next "(none)" unless filepath
+    file_path = diff_result[lr][:file_path]
+    next "(none)" unless file_path
     
     side_revision = case
       when revision.blank? && lr == :right
@@ -15,9 +15,9 @@
       when revision
         lr == :left ? "#{revision}^" : revision
     end
-    open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :filepath => filepath, :revision => side_revision, :line => diff_result[lr][:ln_start], :git_path => git.path })
+    open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :file_path => file_path, :revision => side_revision, :line => diff_result[lr][:ln_start], :git_path => git.path })
     
-    filepath_right ? link_to_textmate(git.root_relative_path_for(filepath), git.path_for(filepath_right), start_line_right) : git.root_relative_path_for(filepath)
+    file_path_right ? link_to_textmate(git.root_relative_path_for(file_path), git.path_for(file_path_right), start_line_right) : git.root_relative_path_for(file_path)
   end
 %>
 

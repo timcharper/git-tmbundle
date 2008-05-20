@@ -35,15 +35,15 @@ class DiffController < ApplicationController
   end
   
   def compare_revisions
-    filepaths = git.paths.first
-    if filepaths.length > 1
-      base = git.nca(filepaths)
+    file_paths = git.paths.first
+    if file_paths.length > 1
+      base = git.nca(file_paths)
     else 
-      base = filepaths.first
+      base = file_paths.first
     end
     
     log = LogController.new
-    revisions = log.choose_revision(base, "Choose revisions for #{filepaths.map{|f| git.make_local_path(f)}.join(',')}", :multiple, :sort => true)
+    revisions = log.choose_revision(base, "Choose revisions for #{file_paths.map{|f| git.make_local_path(f)}.join(',')}", :multiple, :sort => true)
 
     if revisions.nil?
       puts "Canceled"
