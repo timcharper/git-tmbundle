@@ -5,7 +5,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     end
     
     def format_name(name, format = :short)
-      (format == :short) ? shorten(name) : name
+      (format == :short || format == nil) ? shorten(name) : name
     end
   end
   
@@ -75,8 +75,8 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   end
   
   def list_names(which = :local, options = {})
-    list(*args).map do |b|
-      format_name(b[:name], :options[:format])
+    list(which, options).map do |b|
+      format_name(b[:name], options[:format])
     end
   end
   
