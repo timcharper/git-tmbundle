@@ -10,4 +10,8 @@ describe Hash do
   it "should filter the keys" do
     {:a => 1, :b => 2}.filter(:a).should == {:a => 1}
   end
+  
+  it "should reject specified keys" do
+    {:a => 1, :b => 2}.reject(:b).should == {:a => 1}
+  end
 end
