@@ -2,7 +2,7 @@
 <% status_data.each do |e| %>
   <tr>
     <td style='padding:0px 10px;'>
-      <span title="<%= htmlize(e[:status][:long]) %>" style="display:block; padding: 5px; background-color: <%= e[:status][:background] %>; color: <%= e[:status][:foreground] %>">
+      <span title="<%= htmlize(e[:status][:long]) %>" style="display:block; padding: 2px; margin: 1px; background-color: <%= e[:status][:background] %>; color: <%= e[:status][:foreground] %>">
         <%= htmlize(e[:status][:short]) %>
       </span>
     </td>
