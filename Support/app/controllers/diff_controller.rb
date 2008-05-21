@@ -8,7 +8,8 @@ class DiffController < ApplicationController
     params[:context_lines] = git.config["git-tmbundle.log.context-lines"] if git.config["git-tmbundle.log.context-lines"]
     
     render("_diff_results", :locals => {
-      :diff_results => git.with_path(params[:git_path]).diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since))
+      :diff_results => git.with_path(params[:git_path]).diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)),
+      :git => git.with_path(params[:git_path])
     })
   end
   
