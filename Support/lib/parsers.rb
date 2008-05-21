@@ -241,8 +241,6 @@ module Parsers
   
   def process_fetch(stream, callbacks = {})
     output = {:fetches => {}, :text => ""}
-    branch = nil
-    branch = self.branch.current_name
     process_with_progress(stream, :callbacks => callbacks, :start_regexp => /(?-:remote: )?(Compressing) ([0-9]+) objects/) do |line|
       case line
       when /^\* ([^:]+):/
