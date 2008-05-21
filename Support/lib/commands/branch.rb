@@ -93,12 +93,9 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   
   def current_name(format = :short)
     return unless /^ref: (.+)$/.match(File.read(@base.path_for(".git/HEAD")))
-    name = $1
-    format_name(name, format)
+    format_name($1, format)
   end
   
-  alias current_branch current
-
   def delete(name, options = {})
     branch_type = options[:branch_type] || (name.include?("/") ? :remote : :local)
     case branch_type.to_sym
