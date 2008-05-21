@@ -161,9 +161,10 @@ class LogController < ApplicationController
   
   protected
     def render_outgoing_for_branches(git, branches)
+      puts "<h1>Outgoing</h1>"
       branches.each do |branch|
         next unless [:ahead, :diverged].include?(branch.tracking_status)
-        puts "<h3>#{branch.name} is #{branch.tracking_status}</h3>"
+        puts "<h2>'#{branch.name}' branch - <small> #{branch.tracking_status}</small></h2>"
         render_component(:action => "log", :git_path => git.path, :branches => "#{branch.tracking_branch_name(:long)}..#{branch.name(:long)}")
       end
     end
