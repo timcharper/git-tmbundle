@@ -64,6 +64,10 @@ module TMVC
     def dispatch(params = {})
       $dispatched = true
       params = parse_dispatch_args(ARGV) if params.is_a?(Array)
+      if debug_mode
+        require 'logger'
+        Logger.new(ROOT + "/log/dispatch.log").warn(params.inspect)
+      end
       if params[:streaming]
         dispatch_streaming(params) 
       else
@@ -85,4 +89,8 @@ module TMVC
   self.catch_exceptions = true
 end
 
+def debug_mode
+  return $debug_mode unless $debug_mode.nil?
+  $debug_mode = File.exist?(File.join(ROOT, "/DEBUG"))
+end
 def dispatch(params = {}); TMVC.dispatch(params); end
