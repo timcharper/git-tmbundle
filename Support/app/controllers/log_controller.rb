@@ -8,9 +8,10 @@ ListNib = File.dirname(__FILE__) + "/../../nibs/RevisionSelector.nib"
 
 
 class LogController < ApplicationController
-  layout "application", :only => "index"
+  layout "application", :only => ["index", "outgoing"]
   
   include DateHelpers
+  include SubmoduleHelper
   
   def index
     params[:path] ||= git.make_local_path(git.paths.first)
@@ -33,6 +34,14 @@ class LogController < ApplicationController
     @branch ||= Git.new.branch.current
     @branch_name = @branch && @branch.name
     render "log_entries", :locals => {:git => git.with_path(params[:git_path])}
+  end
+  
+  def outgoing
+    render_outgoing_for_branches(git, git.branch.all)
+    git.submodule.all.each do |submodule|
+      next unless submodule.git.branch.all.any? { |b| [:ahead, :diverged].include?(b.tracking_status) }
+      render_outgoing_for_branches(submodule.git, submodule.git.branch.all)
+    end
   end
   
   def open_revision
@@ -90,69 +99,72 @@ class LogController < ApplicationController
     end  
   end
   
-    # on failure: returns nil
-    def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1, options = {})
-      path = git.make_local_path(path)
-      # Validate file
-      # puts command("status", path)
-      if /error: pathspec .+ did not match any file.+ known to git./.match(git.command("status", path))
-        TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
-        return nil
-      end
+  def choose_revision(path, prompt = "Choose a revision", number_of_revisions = 1, options = {})
+    path = git.make_local_path(path)
+    # Validate file
+    # puts command("status", path)
+    if /error: pathspec .+ did not match any file.+ known to git./.match(git.command("status", path))
+      TextMate::UI.alert(:warning, "File “#{File.basename(path)}” is not in the repository.", "Please add the file to the repository before using this command.")
+      return nil
+    end
 
-      # # Get the server name   
-      # info = YAML::load(svn_cmd("info #{escaped_path}"))
-      # repository = info['Repository Root']
-      # uri = URI::parse(repository)
+    # # Get the server name   
+    # info = YAML::load(svn_cmd("info #{escaped_path}"))
+    # repository = info['Repository Root']
+    # uri = URI::parse(repository)
 
-      # the above will fail for users that run a localized system
-      # instead we should do ‘svn info --xml’, though since the
-      # code is not used, I just commented it. --Allan 2007-02-20
+    # the above will fail for users that run a localized system
+    # instead we should do ‘svn info --xml’, though since the
+    # code is not used, I just commented it. --Allan 2007-02-20
 
-      # Display progress dialog
-      # Show the log
-      revision = 0
-      log_data = nil
-    
-      TextMate::UI.dialog(:nib => ListNib,
-                              :center => true,
-                              :parameters => {'title' => prompt,'entries' => [], 'hideProgressIndicator' => false}) do |dialog|
+    # Display progress dialog
+    # Show the log
+    revision = 0
+    log_data = nil
+  
+    TextMate::UI.dialog(:nib => ListNib,
+                            :center => true,
+                            :parameters => {'title' => prompt,'entries' => [], 'hideProgressIndicator' => false}) do |dialog|
 
-        # Parse the log
-        log_data = stringify(git.log(:path => path, :limit => 200))
-        dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
+      # Parse the log
+      log_data = git.log(:path => path, :limit => 200).each { |log_entry| log_entry.stringify_keys! }
+      dialog.parameters = {'entries' => log_data, 'hideProgressIndicator' => true}
 
-        dialog.wait_for_input do |params|
-          revision = params['returnArgument']
-          button_clicked = params['returnButton']
+      dialog.wait_for_input do |params|
+        revision = params['returnArgument']
+        button_clicked = params['returnButton']
 
-          if (button_clicked != nil) and (button_clicked == 'Cancel')
-            false # exit
+        if (button_clicked != nil) and (button_clicked == 'Cancel')
+          false # exit
+        else
+          unless (number_of_revisions == :multiple) or (revision.length == number_of_revisions) then
+            TextMate::UI.alert(:warning, "Please select #{number_of_revisions} revision#{number_of_revisions == 1 ? '' : 's'}.", "So far, you have selected #{revision.length} revision#{revision.length == 1 ? '' : 's'}.")
+            true # continue
           else
-            unless (number_of_revisions == :multiple) or (revision.length == number_of_revisions) then
-              TextMate::UI.alert(:warning, "Please select #{number_of_revisions} revision#{number_of_revisions == 1 ? '' : 's'}.", "So far, you have selected #{revision.length} revision#{revision.length == 1 ? '' : 's'}.")
-              true # continue
-            else
-              false # exit
-            end
+            false # exit
           end
         end
       end
-
-      # Return the revision number or nil
-      revision = nil if revision == 0
-      if options[:sort] && revision
-        time_revision_pairs = []
-        selected_entries = log_data.select{ |l| revision.include?(l["rev"]) }
-        selected_entries.sort!{ |a,b| a["date"] <=> b["date"] } # sorts them descending (latest on the bottom)
-        selected_entries.reverse! if options[:sort] == :asc
-        revision = selected_entries.map{|se| se["rev"]}
-      end
-      revision
     end
+
+    # Return the revision number or nil
+    revision = nil if revision == 0
+    if options[:sort] && revision
+      time_revision_pairs = []
+      selected_entries = log_data.select{ |l| revision.include?(l["rev"]) }
+      selected_entries.sort!{ |a,b| a["date"] <=> b["date"] } # sorts them descending (latest on the bottom)
+      selected_entries.reverse! if options[:sort] == :asc
+      revision = selected_entries.map{|se| se["rev"]}
+    end
+    revision
+  end
   
   protected
-    def stringify(results)
-      results.each{|r| r.stringify_keys! }
+    def render_outgoing_for_branches(git, branches)
+      branches.each do |branch|
+        next unless [:ahead, :diverged].include?(branch.tracking_status)
+        puts "<h3>#{branch.name} is #{branch.tracking_status}</h3>"
+        render_component(:action => "log", :git_path => git.path, :branches => "#{branch.tracking_branch_name(:long)}..#{branch.name(:long)}")
+      end
     end
 end
