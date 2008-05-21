@@ -128,8 +128,10 @@ class ApplicationController
     __erb__.run(binding)
   end
   
-  def render_component(params = {})
-    dispatch(params.merge(:layout => false, :__output_buffer__  => @output_buffer))
+  def render_component(_params = {})
+    flush
+    _params[:controller] ||= params[:controller]
+    dispatch(_params.merge(:layout => false, :__output_buffer__  => @output_buffer))
   end
   
   def self.template_root
