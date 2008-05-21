@@ -30,9 +30,10 @@ class LogController < ApplicationController
     params[:limit] ||= git.config["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
     log_params = params.reject { |key,value| [:controller, :action, :layout].include?(key) }
     @path = params[:path]
-    @log_entries = git.log(log_params)
-    @branch ||= Git.new.branch.current_name
-    render "log_entries"
+    @log_entries = git.with_path(params[:git_path]).log(log_params)
+    @branch ||= Git.new.branch.current
+    @branch_name = @branch && @branch.name
+    render "log_entries", :locals => {:git => git.with_path(params[:git_path])}
   end
   
   def open_revision

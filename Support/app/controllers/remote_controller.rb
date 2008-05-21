@@ -4,6 +4,8 @@ class RemoteController < ApplicationController
   ALL_REMOTES = "...all remotes..."
   
   include SubmoduleHelper::Update
+  include SubmoduleHelper
+  
   
   before_filter :set_script_at_top
   def set_script_at_top
@@ -11,7 +13,7 @@ class RemoteController < ApplicationController
   end
   
   def fetch
-    if (branch = git.branch.current_branch)
+    if (branch = git.branch.current)
       default_remote = branch.remote.name
     else
       default_remote = git.remote.names.with_this_at_front("origin").first
@@ -24,7 +26,7 @@ class RemoteController < ApplicationController
       
       unless output[:fetches].empty?
         puts("<h2>Log of changes fetched</h2>")
-        output_branch_logs(output[:fetches])
+        output_branch_logs(git, output[:fetches])
       end
       
       puts "<h2>Pruning stale branches from #{remote_name}</h2>"
@@ -34,7 +36,7 @@ class RemoteController < ApplicationController
   end
   
   def pull
-    if (branch = git.branch.current_branch).nil?
+    if (branch = git.branch.current).nil?
       puts "You can't pull while not being on a branch (and you are not on a branch).  Please switch to a branch, and try again."
       output_show_html and return
     end
@@ -47,6 +49,8 @@ class RemoteController < ApplicationController
         # select a branch to merge from
         remote_branch_name = setup_auto_merge(remote_name, branch)
         return false unless remote_branch_name
+      else
+        remote_branch_name = branch.merge
       end
       
       puts "<p>Pulling from remote source '#{remote_name}'\n</p>"
@@ -57,7 +61,7 @@ class RemoteController < ApplicationController
       
         if ! output[:pulls].empty?
           puts("<h2>Log of changes pulled</h2>")
-          output_branch_logs(output[:pulls])
+          output_branch_logs(git, output[:pulls])
           true
         elsif output[:nothing_to_pull]
           puts "Nothing to pull"
@@ -68,7 +72,7 @@ class RemoteController < ApplicationController
   end
   
   def push
-    if (branch = git.branch.current_branch).nil?
+    if (branch = git.branch.current).nil?
       puts "You can't push the current branch while not being on a branch (and you are not on a branch).  Please switch to a branch, and try again."
       output_show_html and return
     end
@@ -76,7 +80,18 @@ class RemoteController < ApplicationController
     current_name = branch.name
     for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.remote.names) do |remote_name|
       puts "<p>Pushing to remote source '#{remote_name}'\n</p>"
-      display_push_output(run_push(remote_name, :branch => current_name))
+      display_push_output(git, run_push(git, remote_name, :branch => current_name))
+      
+      git.submodule.all.each do |submodule|
+        next unless (current_branch = submodule.git.branch.current) && (current_branch.tracking_branch_name)
+        case current_branch.tracking_status
+        when :ahead
+          render_submodule_header(submodule)
+          display_push_output(submodule.git, run_push(submodule.git, current_branch.remote_name, :branch => current_branch.name))
+        when :diverged
+          puts "<p>Can't push submodule '#{submodule.name}' - you need to pull first</p>"
+        end
+      end
     end
   end
   
@@ -84,7 +99,7 @@ class RemoteController < ApplicationController
     tag = params[:tag] || (raise "select tag not yet implemented")
     for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the tag #{tag} to:", :items => git.remote.names) do |remote_name|
       puts "<p>Pushing tag #{tag} to '#{remote_name}'\n</p>"
-      display_push_output(run_push(remote_name, :tag => tag))
+      display_push_output(run_push(git, remote_name, :tag => tag))
     end
   end
   
@@ -104,11 +119,11 @@ class RemoteController < ApplicationController
       remote_branch_name
     end
     
-    def display_push_output(output)
+    def display_push_output(git, output)
       flush
       if ! output[:pushes].empty?
         puts "<pre>#{output[:text]}</pre>"
-        output_branch_logs(output[:pushes])
+        output_branch_logs(git, output[:pushes])
       elsif output[:nothing_to_push]
         puts "There's nothing to push!"
         puts output[:text]
@@ -118,10 +133,10 @@ class RemoteController < ApplicationController
       end
     end
     
-    def output_branch_logs(branch_revisions_hash = {})
+    def output_branch_logs(git, branch_revisions_hash = {})
       branch_revisions_hash.each do |branch_name, revisions|
         puts "<h2>Branch '#{branch_name}': #{short_rev(revisions.first)}..#{short_rev(revisions.last)}</h2>"
-        render_component(:controller => "log", :action => "log", :path => ".", :revisions => [revisions.first, revisions.last])
+        render_component(:controller => "log", :action => "log", :path => ".", :git_path => git.path, :revisions => [revisions.first, revisions.last])
       end
     end
     
@@ -136,7 +151,7 @@ class RemoteController < ApplicationController
       pulls
     end
     
-    def run_push(remote_name, options = {})
+    def run_push(git, remote_name, options = {})
       flush
       git.push(remote_name, options.merge(
         :start => lambda { |state, count| progress_start(remote_name, state, count) }, 
