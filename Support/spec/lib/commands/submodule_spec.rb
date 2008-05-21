@@ -52,8 +52,8 @@ EOF
     
     it "should cache" do
       File.should_receive(:exist?).with(@submodule.abs_path).and_return(true)
+      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(false)
       FileUtils.should_receive(:mkdir_p).with(File.join(@git.path, ".git/submodule_cache"))
-      FileUtils.should_receive(:rm_rf).with(@submodule.abs_cache_path)
       FileUtils.should_receive(:mv).with(@submodule.abs_path, @submodule.abs_cache_path, :force => true)
       @submodule.cache
     end
@@ -105,21 +105,19 @@ EOF
       @submodule.should_not be_modified
     end
     
-    it "should not be cloned if the .git directory and abs_cache_path doesn't exist" do
+    it "should not be cloned if the .git directory doesn't exist" do
       File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(false)
-      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(false)
       @submodule.should_not be_cloned
     end
     
-    it "should not be cloned if the .git directory exists" do
+    it "should be cloned if the .git directory exists" do
       File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(true)
       @submodule.should be_cloned
     end
     
-    it "should not be cloned if the abs_cache_path directory exists" do
-      File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(false)
+    it "should should be cached if abs_cache_path exists" do
       File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(true)
-      @submodule.should be_cloned
+      @submodule.should be_cached
     end
     
     it "should call update on the submodule" do

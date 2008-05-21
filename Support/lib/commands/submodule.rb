@@ -43,7 +43,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def url
-      @url ||= @base.command("config", "--file", File.join(@base.path, ".gitmodules"), "submodule.#{path}.url").strip
+      @url ||= @base.config[:local, "submodule.#{path}.url"]
     end
     
     def name
@@ -51,7 +51,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def abs_cache_path
-      @abs_cache_path ||= File.join(@base.path, ".git/submodule_cache", MD5.hexdigest(path + "\n" + url))
+      @abs_cache_path ||= File.join(@base.path, ".git/submodule_cache", MD5.hexdigest("#{path}\n#{url}"))
     end
     
     def abs_path
@@ -59,8 +59,12 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def cache
-      if File.exist?(abs_path)
-        FileUtils.rm_rf(abs_cache_path)
+      if cloned?
+        if File.exist?(abs_cache_path)
+          puts "<h2>Cowardly refusing to overwrite cached submodule in #{abs_cache_path} (please look at the contents of that folder, move it out of the way, then try again)<h2>" 
+          abort
+        end
+        
         FileUtils.mkdir_p(File.dirname(abs_cache_path))
         FileUtils.mv(abs_path, abs_cache_path, :force => true)
         true
@@ -68,11 +72,13 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def restore
-      if File.exist?(abs_cache_path) && ! Dir.has_a_file?(abs_path)
-        FileUtils.rm_rf(abs_path)
+      return false if Dir.has_a_file?(abs_path)
+      if cached?
+        FileUtils.rm_rf(abs_path) 
         FileUtils.mkdir_p(File.dirname(abs_path))
         FileUtils.mv(abs_cache_path, abs_path, :force => true)
       end
+      true
     end
     
     def git
@@ -98,7 +104,11 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def cloned?
-      File.exist?(File.join(abs_path, ".git")) || File.exist?(abs_cache_path)
+      File.exist?(File.join(abs_path, ".git")) || cached?
+    end
+    
+    def cached?
+      File.exist?(abs_cache_path)
     end
     
     def update

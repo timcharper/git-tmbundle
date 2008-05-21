@@ -13,8 +13,8 @@ class RemoteController < ApplicationController
   end
   
   def fetch
-    if (branch = git.branch.current)
-      default_remote = branch.remote.name
+    if (branch = git.branch.current) && (remote = branch.remote)
+      default_remote = remote.name
     else
       default_remote = git.remote.names.with_this_at_front("origin").first
     end
