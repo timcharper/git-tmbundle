@@ -3,20 +3,9 @@ require 'fileutils'
 
 class SCM::Git::Submodule < SCM::Git::CommandProxyBase
   def init_and_update
-    output = initialize_all
+    output = @base.command("submodule", "init")
     output << @base.command("submodule", "update")
     output
-  end
-  
-  def initialize_all
-    @base.command("submodule", "init")
-  end
-  
-  def update(which = nil)
-    which = which.path if which.is_a?(SubmoduleProxy)
-    args = ["submodule", "update"]
-    args << which if which
-    @base.command(*args)
   end
   
   def all(options = {})
@@ -104,11 +93,20 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def modified?
+      return false unless cloned?
       current_revision != revision
     end
     
+    def cloned?
+      File.exist?(File.join(abs_path, ".git")) || File.exist?(abs_cache_path)
+    end
+    
     def update
-      @base.submodule.update(self)
+      @base.command("submodule", "update", path)
+    end
+    
+    def init
+      @base.command("submodule", "init", path)
     end
   end
 end

@@ -89,12 +89,37 @@ EOF
     end
     
     it "should be modified when current_revision and revision differ" do
+      @submodule.stub!(:cloned?).and_return(true)
       @submodule.should be_modified
     end
     
     it "should be not modified when current_revision and revision are the same" do
+      @submodule.stub!(:cloned?).and_return(true)
       @submodule.should_receive(:current_revision).and_return @submodule.revision
       @submodule.should_not be_modified
+    end
+    
+    it "should not be modified if not yet checked out" do
+      @submodule.stub!(:cloned?).and_return(false)
+      @submodule.should_not_receive(:current_revision)
+      @submodule.should_not be_modified
+    end
+    
+    it "should not be cloned if the .git directory and abs_cache_path doesn't exist" do
+      File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(false)
+      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(false)
+      @submodule.should_not be_cloned
+    end
+    
+    it "should not be cloned if the .git directory exists" do
+      File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(true)
+      @submodule.should be_cloned
+    end
+    
+    it "should not be cloned if the abs_cache_path directory exists" do
+      File.should_receive(:exist?).with(File.join(@submodule.abs_path, ".git")).and_return(false)
+      File.should_receive(:exist?).with(@submodule.abs_cache_path).and_return(true)
+      @submodule.should be_cloned
     end
     
     it "should call update on the submodule" do

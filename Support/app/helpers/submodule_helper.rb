@@ -9,22 +9,26 @@ module SubmoduleHelper
         
         submodule_paths = (new_modules.keys + old_modules.keys).sort.uniq
         return if submodule_paths.empty?
-        puts "<br /><br /><h2>Updating submodules</h2>"
         submodule_paths.each do |path|
           old_module, new_module = old_modules[path], new_modules[path]
           case
+          when old_module && old_module.modified?
+            puts "<h3>Not updating submodule #{new_module.path.inspect}, because it's revision pointer change isn't committed."
+          when ! new_module.cloned?
+            puts "<h3>Cloning new submodule #{new_module.path.inspect}</h3>"
+            puts "<pre>#{h new_module.init}\n#{h new_module.update}</pre>"
           when old_module && ! new_module
-            puts "<h3>Cacheing submodule #{old_module.path.inspect} because it doesn't exist in this branch</h3>"
+            puts "<h3>Cacheing submodule #{old_module.path.inspect}, because it doesn't exist in this branch</h3>"
             old_module.cache
           when new_module && ! old_module
             puts "<h3>Restoring submodule #{new_module.path.inspect} from cache.</h3>"
             new_module.restore
             update_submodule(new_module) if new_module.modified?
           when ! old_module.modified? && new_module.modified?
+            puts "<h3>Updating submodule #{submodule.path.inspect}</h3>"
             update_submodule(new_module)
-          when new_module.modified? && old_module.modified?
-            puts "<h3>Not updating submodule #{new_module.path.inspect}, because it's revision pointer change isn't committed."
           end
+          flush
         end
       end
     end
@@ -34,9 +38,7 @@ module SubmoduleHelper
     end
     
     def update_submodule(submodule)
-      puts "<h3>Updating submodule #{submodule.path}</h3>"
-      puts "<pre>#{h submodule.update}</pre>"
-      flush
+      puts "<pre>#{h new_module.update}</pre>"
     end
   end
   
