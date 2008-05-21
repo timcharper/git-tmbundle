@@ -33,10 +33,11 @@ module SpecHelpers
   
   
   def branch_stub(options = {})
-    branch = stub("branch")
-    if options[:name]
-      branch.stub!(:name).with(:long).and_return(options[:name])
-      branch.stub!(:name).with().and_return(options[:name].gsub(/refs\/(heads|remotes)\//, ""))
+    branch = stub("branch", options)
+    [:name, :tracking_branch_name].each do |key|
+      next unless options[key]
+      branch.stub!(key).with(:long).and_return(options[key])
+      branch.stub!(key).with().and_return(options[key].gsub(/refs\/(heads|remotes)\//, ""))
     end
     if options.has_key?(:remote)
       branch.stub!(:remote).and_return(stub("remote", :name => options[:remote]))
