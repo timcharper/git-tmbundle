@@ -32,7 +32,7 @@ function set_log_visibility(branch, rev, state) {
 function toggle_log(branch, rev) {
   e = detail_div_for(branch, rev);
   if (! e.readAttribute("loaded")) {
-    e.update(dispatch({controller: 'diff', action: 'diff', branch: branch, revision: rev, git_path: e.readAttribute("git_path"), path: e.readAttribute("path"), layout: false}))
+    e.update(dispatch({controller: 'diff', action: 'diff', branch: branch, revision: rev, git_path: e.readAttribute("git_path"), path: (e.readAttribute("path") || ""), layout: false}))
     e.setAttribute("loaded");
   }
   
