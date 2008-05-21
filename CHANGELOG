@@ -1,4 +1,20 @@
+Release 1.6.0 [2008-05-21]
+ - Added "outgoing" command - see unpushed changes for all branches with tracking branches, in project and submodules
+ - Fixed a few bugs with the automatic submodule updating.  Put in safe guard to prevent a cached repository from being deleted (in the case you manually ran git submodule update after the submodule was cached away)
+ - Submodule learned how to know if he's been cloned yet.  Updated checkout / pull / merge logic to initialize and clone uncloned submodules.
+ - Bugfix - push output was being garbled in some cases.  Cleaned up in hope to fix.
+ - Pushing a branch now will pushes submodules when their current branch is ahead of the tracking branch.  log command and log expander/collapser became aware of different git_path's.
+ - "Status" command got pretty colors, finally.
+ - "Show Status" will show status for files in applicable submodules as well.
+ - Ability to delete untracked files from the commit dialog
+ - Show uncommitted changes now shows uncommitted changes in applicable submodules, as well.
+ - Fixed some weird things happening with the spec suite.  Improved spec coverage.
+ - Bugfix - expand_path with git.path so commit dialog can properly find all files
+ - Automatically add path to git in the PATH (just in case TM_GIT is set, but not PATH itself), so system can find gitk and git-gui
+ - Improved submodule support - no longer cache / restore every submodule everytime.  Don't update submodule versions that have uncommitted revision pointer modifications.  Much faster way to list submodules - lazy describe revision numbers.  Interface more closely with the "plumbing" and less with the "porcelain".
+ - Bugfix - couldn't fetch while not on a branch
  - Cleaned up grammar for "Egad, you're not on a branch!" (thanks, Henrik Nyh!)
+ - LOTS (and I mean LOTS) of internal refactoring / cleanup / improvement.
 
 Release 1.5.3 [2008-04-30]
  - Bugfix - merge was not restoring submodules if an empty directory was in the way.
