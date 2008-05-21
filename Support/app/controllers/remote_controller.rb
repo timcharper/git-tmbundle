@@ -121,15 +121,19 @@ class RemoteController < ApplicationController
     
     def display_push_output(git, output)
       flush
+      sleep(0.2) # this small delay prevents TextMate from garbling the HTML
       if ! output[:pushes].empty?
         puts "<pre>#{output[:text]}</pre>"
         output_branch_logs(git, output[:pushes])
+        flush
       elsif output[:nothing_to_push]
-        puts "There's nothing to push!"
-        puts output[:text]
+        puts "Nothing to push."
+        puts "<pre>#{output[:text]}</pre><br/>"
+        flush
       else
         puts "<h3>Output:</h3>"
         puts "<pre>#{output[:text]}</pre>"
+        flush
       end
     end
     
