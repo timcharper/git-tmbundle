@@ -10,7 +10,6 @@ ListNib = File.dirname(__FILE__) + "/../../nibs/RevisionSelector.nib"
 class LogController < ApplicationController
   layout "application", :only => "index"
   
-  DEFAULT_LOG_LIMIT = 100
   include DateHelpers
   
   def index
@@ -27,8 +26,8 @@ class LogController < ApplicationController
   end
   
   def log
-    params[:limit] ||= git.config["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
-    log_params = params.reject { |key,value| [:controller, :action, :layout].include?(key) }
+    params[:limit] ||= git.config.log_limit
+    log_params = params.reject(:controller, :action, :layout)
     @path = params[:path]
     @log_entries = git.with_path(params[:git_path]).log(log_params)
     @branch ||= Git.new.branch.current
