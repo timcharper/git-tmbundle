@@ -17,7 +17,7 @@ module SCM
       'C' => {:short => 'C', :long => 'conflict',     :foreground => '#008080', :background => '#A3CED0'},
       '!' => {:short => '!', :long => 'missing',      :foreground => '#008080', :background => '#A3CED0'},
       '"' => {:short => '"', :long => 'typeconflict', :foreground => '#008080', :background => '#A3CED0'},
-      '?' => {:short => '?', :long => 'unknown',      :foreground => '#800080', :background => '#edaef5'},
+      '?' => {:short => '?', :long => 'unknown',      :foreground => '#008080', :background => '#A3CED0'},
       'I' => {:short => 'I', :long => 'ignored',      :foreground => '#800080', :background => '#edaef5'},
       'X' => {:short => 'X', :long => 'external',     :foreground => '#800080', :background => '#edaef5'},
     }
