@@ -1,6 +1,6 @@
 <div>
   <div class="infobox">
-    <a href="javascript:toggle_log('<%= branch_name %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>" class="expand_link">+</a>
+    <a href="javascript:toggle_diff('<%= branch_name %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>" class="expand_link">+</a>
     <span style='float:left'>
       <strong><%= short_rev(log_entry[:rev]) %></strong>
       committed by 
