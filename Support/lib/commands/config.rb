@@ -1,6 +1,5 @@
 class SCM::Git::Config < SCM::Git::CommandProxyBase
   DEFAULT_LOG_LIMIT = 100
-  
   def [](*params)
     scope, key = process_keys(params)
     r = base.command(*(["config"] + config_args(scope) + [key]))
@@ -21,6 +20,10 @@ class SCM::Git::Config < SCM::Git::CommandProxyBase
   
   def log_limit
     self["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
+  end
+  
+  def context_lines
+    self["git-tmbundle.log.context-lines"]
   end
   
   protected
