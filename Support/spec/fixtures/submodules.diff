@@ -1,0 +1,21 @@
+diff --git a/vendor/plugins/module1 b/vendor/plugins/module1
+new file mode 160000
+index 0000000..db01d91
+--- /dev/null
++++ b/vendor/plugins/module1
+@@ -0,0 +1 @@
++Subproject commit db01d91c2039ca271c7df9bcc4cacf7e949d74c2
+diff --git a/vendor/plugins/railswhere b/vendor/plugins/railswhere
+deleted file mode 160000
+index b9276ab..0000000
+--- a/vendor/plugins/railswhere
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit b9276ab1ad9aee7c3688b365072fe0a616b68b71
+diff --git a/vendor/plugins/manage_fixtures b/vendor/plugins/manage_fixtures
+index 8379713..30f3d85 160000
+--- a/vendor/plugins/manage_fixtures
++++ b/vendor/plugins/manage_fixtures
+@@ -1 +1 @@
+-Subproject commit 837971332a4e914a1ae3e5defd0f1d00883232df
++Subproject commit 30f3d850901500b52fa70ba1aa31a8f9b9a3d3f6

@@ -23,6 +23,7 @@ module SCM
     }
     
     DEFAULT_DIFF_LIMIT = 3000
+    SUBMODULE_MODE = "160000"
     
     def short_rev(rev)
       rev.to_s[0..7]

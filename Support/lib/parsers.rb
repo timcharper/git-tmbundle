@@ -149,11 +149,15 @@ module Parsers
     diff_content.split("\n").each do |line|
       case line
       when /^diff \-\-git/
-      when /^index (([a-f0-9]+)..([a-f0-9]+)){0,1}/i
         current = {:left => {}, :right => {}, :lines => []}
+      when /^(deleted|new) file mode (\d{6})$/
+        current[:status] = $1.to_sym
+        current[:mode] = $2
+      when /^index (([a-f0-9]+)..([a-f0-9]+)){0,1}( (\d{6}))?/i
         current[:left][:index] = $2
         current[:right][:index] = $3
-        
+        current[:mode] ||= $5
+        current[:status] ||= :modified
         output << current
         /([0-9a-f]+)\.\.([0-9a-f]+) ([0-9]+)/i.match($1)
         current[:index_start] = $1

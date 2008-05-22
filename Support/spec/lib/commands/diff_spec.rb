@@ -38,6 +38,10 @@ describe Git do
       @lines.last[:ln_right].should == "EOF"
       @lines.last[:ln_left].should == "EOF"
     end
+    
+    it "should parse the file mode" do
+      @results.first[:mode].should == "100644"
+    end
   end
   
   describe "when parse a diff with line breaks" do
@@ -72,6 +76,28 @@ describe Git do
     it "should start with line-number-zero" do
       @lines.map{|l| l[:ln_left]}.should  == [1, "EOF", nil, nil, nil, nil]
       @lines.map{|l| l[:ln_right]}.should == [nil, nil, 1,   2,   3,   "EOF"]
+    end
+  end
+  
+  describe "parsing new and deleted files" do
+    before(:each) do
+      @results = @diff.parse_diff(fixture_file("submodules.diff"))
+    end
+    
+    it "should be status :new for new files" do
+      @results[0][:status].should == :new
+    end
+    
+    it "should pick up the mode from the 'new file mode 160000' line" do
+      @results[0][:mode].should == "160000"
+    end
+    
+    it "should be status :deleted for deleted files" do
+      @results[1][:status].should == :deleted
+    end
+    
+    it "should pick up the mode from the 'deleted file mode 160000' line" do
+      @results[1][:mode].should == "160000"
     end
   end
 end
