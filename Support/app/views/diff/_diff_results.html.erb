@@ -3,7 +3,11 @@
 <code>
   <% diff_results.each do |diff_result| %>
     <% next if @diff_line_count >= Git::DEFAULT_DIFF_LIMIT %>
-    <% render "diff/_diff_result", :locals => {:git => git, :diff_result => diff_result, :revision => revision } %>
+    <% if diff_result[:mode] == Git::SUBMODULE_MODE %>
+      <% render "diff/_submodule_diff_result", :locals => {:git => git, :diff_result => diff_result, :revision => revision } %>
+    <% else %>
+      <% render "diff/_diff_result", :locals => {:git => git, :diff_result => diff_result, :revision => revision } %>
+    <% end %>
     <% flush %>
   <% end %>
 </code>

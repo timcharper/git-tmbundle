@@ -7,11 +7,10 @@
       </span>
     </td>
     <td>
-      <% display_path = git.root_relative_path_for(e[:display]) %>
       <% if e[:path][-1..-1]=="/" %>
-        <%= htmlize(display_path) %>
+        <%= htmlize(git.root_relative_path_for(e[:display])) %>
       <% else %>
-        <%= link_to_textmate display_path, e[:path] %>
+        <%= link_to_relative_file(git, e[:path]) %>
       <% end %>
     </td>
   </tr>

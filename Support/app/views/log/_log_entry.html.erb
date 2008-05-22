@@ -1,6 +1,7 @@
 <div>
   <div class="infobox">
-    <a href="javascript:toggle_diff('<%= branch_name %>', '<%= log_entry[:rev] %>');" id="toggle_link_<%= log_entry[:rev] %>" class="expand_link">+</a>
+    <% expanded_detail_dom_id = "detail_#{branch_name}_#{log_entry[:rev]}" %>
+    <a href="javascript:toggle_diff('<%= expanded_detail_dom_id %>');" id="toggle_link_<%= expanded_detail_dom_id %>" class="expand_link">+</a>
     <span style='float:left'>
       <strong><%= short_rev(log_entry[:rev]) %></strong>
       committed by 
@@ -19,6 +20,6 @@
       <%= htmlize(log_entry[:msg])%>
     </div>
     <br clear="both"/>
-    <%= content_tag :div, :class => "diff", :style => "display: none;", :rev => log_entry[:rev], :branch => branch_name, :path => path, :git_path => git.path, :id => "detail_#{branch_name}_#{log_entry[:rev]}" %>
+    <%= content_tag :div, :class => "diff", :style => "display: none;", :rev => log_entry[:rev], :path => path, :git_path => git.path, :id => expanded_detail_dom_id %>
   </div>  
 </div>

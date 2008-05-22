@@ -3,7 +3,7 @@ class SCM::Git::Config < SCM::Git::CommandProxyBase
   def [](*params)
     scope, key = process_keys(params)
     r = base.command(*(["config"] + config_args(scope) + [key]))
-    r.empty? ? nil : r.gsub(/\n$/, '')
+    r.blank? ? nil : r.gsub(/\n$/, '')
   end
 
   def []=(*params)

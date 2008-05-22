@@ -1,0 +1,28 @@
+<% 
+case diff_result[:status]
+when :new
+  %>
+    <h4>Submodule added: <%= link_to_relative_file(git, diff_result[:right][:file_path]) %></h4>
+  <%
+when :deleted
+  %>
+  <h4>Submodule deleted: <%= link_to_relative_file(git, diff_result[:left][:file_path]) %></h4>
+  <%
+when :modified
+  file_path = diff_result[:left][:file_path]
+  revision_left, revision_right = extract_submodule_revisions(diff_result)
+  
+  revision_right = diff_result[:lines][1][:text].gsub("Subproject commit ", "")
+  %>
+  <h4>Submodule modified: <%= link_to_relative_file(git, diff_result[:left][:file_path]) %></h4>
+  <% 
+    revisions = [git.short_rev(revision_left), git.short_rev(revision_right)] * ".."
+    expanded_detail_dom_id = "log_" + revisions.gsub(".", "_") 
+  %>
+  <a href="javascript:toggle_log('<%= expanded_detail_dom_id %>');" id="toggle_link_<%= expanded_detail_dom_id %>" class="expand_link">+</a>
+  <p><%= revisions  %></p>
+  <%= content_tag :div, :class => "log", :style => "display: none;", :revisions => revisions, :git_path => git.path_for(file_path), :id => expanded_detail_dom_id %>
+  
+  <%
+end
+%>

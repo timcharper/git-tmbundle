@@ -37,4 +37,28 @@ describe DiffController do
       @output.should include("prototype.js")
     end
   end
+  
+  describe "diffing submodules" do
+    before(:each) do
+      @git.should_receive(:diff).
+        and_return(
+          parse_diff(fixture_file("submodules.diff"))
+        )
+      @output = capture_output do 
+        dispatch(:controller => "diff", :action => "diff")
+      end
+    end
+    
+    it "should report the added submodule" do
+      @output.should include("Submodule added")
+    end
+    
+    it "should report the deleted submodule" do
+      @output.should include("Submodule deleted")
+    end
+    
+    it "should report the modified submodule" do
+      @output.should include("Submodule modified")
+    end
+  end
 end

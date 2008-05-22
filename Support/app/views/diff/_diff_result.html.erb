@@ -17,7 +17,7 @@
     end
     open_links[lr] = link_to_remote(lr, :params => { :controller => "log", :action => "open_revision", :file_path => file_path, :revision => side_revision, :line => diff_result[lr][:ln_start], :git_path => git.path })
     
-    file_path_right ? link_to_textmate(git.root_relative_path_for(file_path), git.path_for(file_path_right), start_line_right) : git.root_relative_path_for(file_path)
+    file_path_right ? link_to_relative_file(git, file_path_right, start_line_right) : git.root_relative_path_for(file_path)
   end
 %>
 

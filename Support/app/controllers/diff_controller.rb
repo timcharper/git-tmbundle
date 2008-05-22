@@ -1,10 +1,10 @@
 class DiffController < ApplicationController
   include SubmoduleHelper
-  
+  include DiffHelper
   def diff
     show_diff_title unless params[:layout].to_s=="false"
     @rev = params[:rev]
-    @title = params[:title] || "Uncomitted changes"
+    @title = params[:title] || "Diff result"
     params[:context_lines] = git.config.context_lines if git.config.context_lines
     
     render("_diff_results", :locals => {
