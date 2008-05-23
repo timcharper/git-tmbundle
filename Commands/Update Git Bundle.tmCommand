@@ -26,7 +26,7 @@ puts "&lt;h2&gt;Updating git bundle&lt;/h2&gt;"
 flush
 
 puts "  &lt;pre&gt;"
-puts g.command("pull")
+puts g.with_path(ENV['TM_BUNDLE_PATH']).command("pull")
 puts &lt;&lt;-EOF
   &lt;/pre&gt;
 &lt;/body&gt;
