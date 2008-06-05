@@ -1,3 +1,6 @@
+Release 1.6.2 [2008-06-05]
+ - "Apply Stash" was changed to "Pop Stash"
+ 
 Release 1.6.1 [2008-05-22]
  - Diff learned how to recognize submodule pointer changes, and now allows you to drill down and see what changed in the submodule.
 
