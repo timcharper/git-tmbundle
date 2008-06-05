@@ -18,17 +18,19 @@ class StashController < ApplicationController
     render("diff/_diff_results", :locals => {:diff_results => (git.stash.diff(stash_item[:name]))})
   end
   
-  def apply
-    stash_item = select_stash(:prompt => "Select a stash to apply")
+  def pop
+    stash_item = select_stash(:prompt => "Select a stash to pop")
     if stash_item.nil?
       puts "Cancelled"
       return
     end
-    puts "<h2>Applying stash '#{stash_item[:description]}'</h2>"
+    puts "<h2>Popping stash '#{stash_item[:description]}'</h2>"
     flush
-
+    
+    stash_diff = git.stash.diff(stash_item[:name])
+    
     stash_it = lambda {
-      git.stash.apply(stash_item[:name])
+      git.stash.pop(stash_item[:name])
     }
 
     result = stash_it.call
@@ -56,7 +58,7 @@ class StashController < ApplicationController
     render "status/_status", :locals => {:status_data => status_data}
     
     puts "<h2>Diff of stash applied:</h2>"
-    render("/diff/_diff_results", :locals => {:diff_results => git.stash.diff(stash_item[:name])})
+    render("/diff/_diff_results", :locals => {:diff_results => stash_diff})
     
     rescan_project
   end

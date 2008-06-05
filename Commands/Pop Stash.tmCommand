@@ -8,13 +8,13 @@
 	<string>#!/usr/bin/env ruby
 
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
-dispatch :controller =&gt; "stash", :action =&gt; "apply"</string>
+dispatch :controller =&gt; "stash", :action =&gt; "pop"</string>
 	<key>input</key>
 	<string>none</string>
 	<key>keyEquivalent</key>
 	<string>^G</string>
 	<key>name</key>
-	<string>Apply Stash</string>
+	<string>Pop Stash (Apply then drop)</string>
 	<key>output</key>
 	<string>showAsHTML</string>
 	<key>uuid</key>
