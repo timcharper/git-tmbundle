@@ -25,6 +25,10 @@ class SCM::Git::Stash < SCM::Git::CommandProxyBase
     base.command("stash", "apply", "--index", name)
   end
   
+  def pop(name)
+    base.command("stash", "pop", "--index", name)
+  end
+  
   def clear
     base.command("stash", "clear")
   end

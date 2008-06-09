@@ -162,8 +162,8 @@ module SCM
       options[:type] ||= nil
       params = []
       params << "-#{options[:type]}" if options[:type]
-      params << "--exclude-per-directory=.gitignore"
-      params << "--exclude-from=#{e_sh options[:exclude_file]}" if options[:exclude_file]
+      # params << "--exclude-per-directory=.gitignore"
+      # params << "--exclude-from=#{e_sh options[:exclude_file]}" if options[:exclude_file]
       
       command("ls-files", *params).split("\n")
     end
