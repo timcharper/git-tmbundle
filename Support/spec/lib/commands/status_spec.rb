@@ -69,6 +69,15 @@ EOF
     @result[:display].should == "dir/subfolder/"
   end
   
+  it "should auto-expand the path when filtering to a relative path" do
+    File.should_receive(:directory?).with("/base/dir/subfolder").and_return(true)
+    @results = @git.status("dir/subfolder")
+    @results.should have(1).result
+    @result = @results.first
+    @result[:path].should == "/base/dir/subfolder/"
+    @result[:display].should == "dir/subfolder/"
+  end
+  
   it "should parse a status document correctly" do
     result = @git.parse_status_hash(fixture_file("status_output.txt"))
     result.should == {"dir/"=>"?",
