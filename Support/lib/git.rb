@@ -47,7 +47,9 @@ module SCM
     end
     
     def command_str(*args)
-      %{cd "#{path}" && #{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+      str = %{cd "#{path}" && #{e_sh git} #{args.map{ |arg| e_sh(arg) } * ' '}}
+      logger.error(str) if debug_mode
+      str
     end
 
     def command_verbose(*args)
@@ -381,7 +383,7 @@ module SCM
       @logger ||= 
         begin
           require 'logger'
-          Logger.new(ROOT + "/git.log")
+          Logger.new(ROOT + "/log/git.log")
         end
     end
     
