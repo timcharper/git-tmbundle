@@ -12,7 +12,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   include BranchHelperMethods
   
   def [](name)
-    SCM::Git::Branch::Proxy.new(@base, self, name)
+    SCM::Git::Branch::BranchProxy.new(@base, self, name)
   end
   
   def create_and_switch(name)
