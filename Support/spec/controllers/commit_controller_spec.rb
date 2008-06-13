@@ -104,5 +104,18 @@ describe CommitController do
       end
       output.should include(@merge_message)
     end
+    
+    it "should resolve auto add/rm merged files" do
+      @merge_message = "Merged"
+      @git.should_receive(:status).and_return([
+         {:path => "/base/file.yml",          :status => {:short => "M", :long => "modified", :foreground =>"#eb6400", :background=>"#f7e1ad"}, :display=> "file.yml"},
+         {:path => "/base/deleted_file.yml",  :status => {:short => "G", :long => "merged",   :foreground =>"#eb6400", :background=>"#f7e1ad"}, :display=> "deleted_file.yml"}
+       ])
+       @git.should_receive(:auto_add_rm).with(["deleted_file.yml"])
+       output = capture_output do
+         dispatch(:controller => "commit", :action => "merge_commit", :message => @merge_message)
+       end
+       output.should include(@merge_message)
+    end
   end
 end
