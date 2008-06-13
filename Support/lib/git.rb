@@ -260,7 +260,7 @@ module SCM
     
     def auto_add_rm(files)
       add_files = files.select{ |f| File.exist?(File.expand_path(f, path)) }
-      remove_files = files.reject{ |f| ! File.exist?(File.expand_path(f, path)) }
+      remove_files = files.reject{ |f| File.exist?(File.expand_path(f, path)) }
       res = ""
       res << add(add_files) unless add_files.empty?
       res << rm(remove_files) unless remove_files.empty?

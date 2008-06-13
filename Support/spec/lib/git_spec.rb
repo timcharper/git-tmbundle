@@ -46,6 +46,14 @@ describe SCM::Git do
     @git.current_revision.should == "1234"
   end
   
+  it "should auto_add_rm files depending on their existence" do
+    File.stub!(:exist?).with("/base/existing_file.txt").and_return(true)
+    File.stub!(:exist?).with("/base/deleted_file.txt").and_return(false)
+    @git.should_receive(:add).with(["existing_file.txt"]).and_return("")
+    @git.should_receive(:rm).with(["deleted_file.txt"]).and_return("")
+    @git.auto_add_rm(["existing_file.txt", "deleted_file.txt"])
+  end
+  
   describe "using submodule git relative paths" do
     before(:each) do
       @sub_git = Git.new(:parent => @git, :path => File.join(@git.path, "subproject"));
