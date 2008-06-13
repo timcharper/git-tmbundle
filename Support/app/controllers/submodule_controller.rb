@@ -30,6 +30,12 @@ EOF
     rescan_project
   end
   
+  def update
+    puts "<pre>"
+    puts git.submodule.init_and_update
+    puts "</pre>"
+  end
+  
   #
   ##
   ###

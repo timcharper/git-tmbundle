@@ -8,4 +8,9 @@
   :update_streaming => "iframe_output") 
 %>
 
+<%= button_to_remote("Force Update", :params => {:controller => "submodule", :action => "update" }, 
+  :on_complete => remote_function(:params => {:controller => "submodule", :action => "list"}, :update => "submodules"), 
+  :update_streaming => "iframe_output") 
+%>
+
 <iframe id='iframe_output' class="output"></iframe>
