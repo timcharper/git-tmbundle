@@ -1,0 +1,31 @@
+<table class='codediff inline'>
+  <thead>
+    <tr>
+			<td/>
+      <td><%= link_to_relative_file(git, diff_result[:file_path], diff_result[:file_line]) %></td>
+    </tr>
+  </thead>
+  <tbody>
+    <% diff_result[:lines].each do |line|
+      next if @diff_line_count >= Git::DEFAULT_DIFF_LIMIT
+      @diff_line_count += 1
+      line_num_class, row_class = case line[:type]
+        when :deletion then ["", "del"]
+        when :insertion then ["", "ins"]
+        when :eof then ["line-num-eof", "eof"]
+        when :cut then ["line-num-cut", "cut-line"]
+        else
+          ["", "unchanged"]
+      end
+      %>
+        <tr>
+          <td class="line-numbers del"></td>
+          <td class="code del"><%= htmlize(diff_result[:warning]) %></td>
+        </tr>
+        <tr>
+          <td class="line-numbers <%= line_num_class %>"><%= diff_result[:file_line] %></td>
+          <td class="code <%= row_class %>"><%= htmlize(line[:text]) %></td>
+        </tr>
+    <% end %>
+  </tbody>
+</table>

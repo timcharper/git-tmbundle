@@ -140,7 +140,29 @@ module Parsers
     end
     output
   end
-  
+
+  def parse_diff_check(diff_content)
+    output = []
+    current = nil
+    # puts "<pre>#{htmlize(diff_content)}</pre>"
+    diff_content.split("\n").each do |line|
+      case line
+      when /^([\w\/\.]+):(\d+):\s*(.+)$/
+        current = {}
+        current[:file_path] = $1
+        current[:file_line] = $2
+        current[:warning] = $3
+        current[:lines] = []
+        output << current
+      when /^\+(.*)$/ # insertion
+        current[:lines] << {:type => :insertion, :text => $1 }
+      when /^\-(.*)$/ # deletion
+        current[:lines] << {:type => :deletion, :text => $1 }
+      end
+    end
+    output
+  end
+
   def parse_diff(diff_content)
     output = []
     current = nil

@@ -1,6 +1,12 @@
 <% @diff_line_count = 0 %>
 <% revision ||= nil %>
 <code>
+  <% if not diff_check_results.empty? %>
+    <% diff_check_results.each do |diff_result| %>
+      <% render "diff/_diff_check_result", :locals => {:git => git, :diff_result => diff_result } %>
+      <% flush %>
+    <% end %>
+  <% end %>
   <% diff_results.each do |diff_result| %>
     <% next if @diff_line_count >= Git::DEFAULT_DIFF_LIMIT %>
     <% if diff_result[:mode] == Git::SUBMODULE_MODE %>

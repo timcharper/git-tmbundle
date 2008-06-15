@@ -346,6 +346,23 @@ module SCM
       command("rev-parse", "HEAD").strip
     end
     
+    def diff_check_output(options = {})
+      options = {:file => options} unless options.is_a?(Hash)
+      params = ["diff"]
+      params << ["--check"]
+
+      lr = get_range_arg(options)
+      params << lr if lr
+      params << make_local_path(options[:path]) if options[:path]
+
+      output = command(*params)
+    end
+
+    def diff_check(options = {})
+      output = diff_check_output(options)
+      parse_diff_check(output)
+    end
+
     def diff(options = {})
       options = {:file => options} unless options.is_a?(Hash)
       params = ["diff"]
@@ -355,8 +372,13 @@ module SCM
       params << lr if lr
       params << make_local_path(options[:path]) if options[:path]
       
+      check = diff_check_output(options)
+      if not check.empty?
+        check += "\n\n\n"
+      end
+
       output = command(*params)
-      File.open("/tmp/output.diff", "w") {|f| f.puts output }
+      File.open("/tmp/output.diff", "w") {|f| f.puts check + output }
       parse_diff(output)
     end
     
