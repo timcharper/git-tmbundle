@@ -1,3 +1,12 @@
+Release 1.6.4 [2008-07-15]
+ - Fix: Bundle was crashing when trying to get the branch name of a submodule that hadn't been checked out yet
+
+Release 1.6.3 [2008-06-13]
+ - Some fixes to ruby-git internals
+ - Logging enabled to show executed git commands in debug mode - touch the file Support/DEBUG to turn on logging.
+ - Fixed regression with Git#auto_add_rm - was causing merge conflicts to not properly work when dealing with delete/modify conflicts.
+ - Fixed regression in stash changes command to properly ignore files again.
+ 
 Release 1.6.2 [2008-06-05]
  - "Apply Stash" was changed to "Pop Stash"
  

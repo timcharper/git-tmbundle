@@ -94,6 +94,8 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
   def current_name(format = :short)
     return unless /^ref: (.+)$/.match(File.read(@base.path_for(".git/HEAD")))
     format_name($1, format)
+  rescue
+    nil
   end
   
   def delete(name, options = {})
