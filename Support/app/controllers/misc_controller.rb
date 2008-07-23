@@ -16,7 +16,7 @@ class MiscController < ApplicationController
   def gitnub
     cmd = first_which(git.config["git-tmbundle.gitnub-path"], "nub", "/Applications/GitNub.app/Contents/MacOS/GitNub")
     if cmd
-      run_detached(cmd, "Gitnub")
+      run_detached(cmd + " #{ENV['TM_PROJECT_DIRECTORY']}", "Gitnub")
     else
       puts "Unable to find Gitnub.  Use the config dialog to set the Gitnub path to where you've installed it."
       output_show_tool_tip
