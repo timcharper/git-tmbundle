@@ -22,11 +22,17 @@ class SCM::Git::Stash < SCM::Git::CommandProxyBase
   end
   
   def apply(name)
-    base.command("stash", "apply", "--index", name)
+    args = ["stash", "apply"]
+    args << "--index" if options[:index]
+    args << name
+    base.command(*args)
   end
   
-  def pop(name)
-    base.command("stash", "pop", "--index", name)
+  def pop(name, options = {})
+    args = ["stash", "pop"]
+    args << "--index" if options[:index]
+    args << name
+    base.command(*args)
   end
   
   def clear
