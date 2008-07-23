@@ -32,10 +32,10 @@ EOF
     before(:each) do
       @stash_controller.stub!(:select_stash).and_return({:description=>" On master: boogy", :name=>"stash@{0}", :id=>0})
       Git.command_response["stash", "list"] = fixture_file("stash_list_response_many_stashes.txt")
-      Git.command_response["stash", "apply", "--index", "stash@{0}"] = fixture_file("status_output.txt")
+      Git.command_response["stash", "pop", "stash@{0}"] = fixture_file("status_output.txt")
       Git.command_response["stash", "show", "-p", "stash@{0}"] = fixture_file("changed_files.diff")
       @output = capture_output do
-        dispatch(:controller => "stash", :action => "apply")
+        dispatch(:controller => "stash", :action => "pop")
       end
     
       @h = Hpricot(@output)
