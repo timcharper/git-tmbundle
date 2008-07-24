@@ -1,5 +1,15 @@
+Release 1.6.5 [2008-07-24]
+
+ - updated specs
+ - don't apply stash with --index by default, as this seems to cause more
+	 problems than it solves currently (in the future, would be nice to auto
+	 detect which strategy to use)
+ - Always pass path with gitnub as first argument to improve compatibility
+	 with gitnub 0.9 (Thanks, Seth Barber)
+
 Release 1.6.4 [2008-07-15]
- - Fix: Bundle was crashing when trying to get the branch name of a submodule that hadn't been checked out yet
+ - Fix: Bundle was crashing when trying to get the branch name of a submodule
+	 that hadn't been checked out yet
 
 Release 1.6.3 [2008-06-13]
  - Some fixes to ruby-git internals
