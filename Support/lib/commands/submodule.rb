@@ -51,7 +51,7 @@ class SCM::Git::Submodule < SCM::Git::CommandProxyBase
     end
     
     def abs_cache_path
-      @abs_cache_path ||= File.join(@base.path, ".git/submodule_cache", MD5.hexdigest("#{path}\n#{url}"))
+      @abs_cache_path ||= File.join(@base.path, ".git/submodule_cache", MD5.hexdigest("#{path} #{url}"))
     end
     
     def abs_path
