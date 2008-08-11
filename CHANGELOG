@@ -1,3 +1,5 @@
+ - Fix git gui invocation (Thanks, Pedro Melo)
+
 Release 1.6.5 [2008-07-24]
 
  - updated specs
