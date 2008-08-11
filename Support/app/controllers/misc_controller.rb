@@ -10,7 +10,7 @@ class MiscController < ApplicationController
   end
   
   def gitgui
-    run_detached("PATH=#{File.dirname(git.git)}:$PATH && git-gui", "Git Gui")
+    run_detached("PATH=#{File.dirname(git.git)}:$PATH && git gui", "Git Gui")
   end
   
   def gitnub
