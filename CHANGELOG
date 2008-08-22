@@ -1,3 +1,4 @@
+ - Local config settings for Log Limit and Log Context Lines were always saved to global and not saving to local.
  - Fix git gui invocation (Thanks, Pedro Melo)
 
 Release 1.6.5 [2008-07-24]
