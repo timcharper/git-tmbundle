@@ -8,6 +8,7 @@ class DiffController < ApplicationController
     params[:context_lines] = git.config.context_lines if git.config.context_lines
     
     render("_diff_results", :locals => {
+      :diff_check_results => git.with_path(params[:git_path]).diff_check(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)),
       :diff_results => git.with_path(params[:git_path]).diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)),
       :git => git.with_path(params[:git_path])
     })
@@ -25,7 +26,10 @@ class DiffController < ApplicationController
     puts "<h2>Uncommitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’</h2>"
     
     paths.each do |path|
-      render("_diff_results", :locals => {:diff_results => git.diff(:path => path, :since => "HEAD") })
+      render("_diff_results", :locals => {
+        :diff_check_results => git.diff_check(:path => path, :since => "HEAD"),
+        :diff_results => git.diff(:path => path, :since => "HEAD")
+      })
       
       git.submodule.all(:path => path).each do |submodule|
         next if (diff_results = submodule.git.diff(:since => "HEAD")).blank?
