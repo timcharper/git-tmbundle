@@ -22,6 +22,10 @@ class SCM::Git::Config < SCM::Git::CommandProxyBase
     self["git-tmbundle.log.limit"] || DEFAULT_LOG_LIMIT 
   end
   
+  def show_diff_check?
+    %w[yes 1 auto].include?(self["git-tmbundle.show-diff-check"].to_s.downcase.strip)
+  end
+  
   def context_lines
     self["git-tmbundle.log.context-lines"]
   end

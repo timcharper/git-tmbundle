@@ -8,7 +8,7 @@ class DiffController < ApplicationController
     params[:context_lines] = git.config.context_lines if git.config.context_lines
     
     render("_diff_results", :locals => {
-      :diff_check_results => git.with_path(params[:git_path]).diff_check(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)),
+      :diff_check_results => git.config.show_diff_check? ? git.with_path(params[:git_path]).diff_check(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)) : [],
       :diff_results => git.with_path(params[:git_path]).diff(params.filter(:path, :revision, :context_lines, :revisions, :branches, :tags, :since)),
       :git => git.with_path(params[:git_path])
     })
@@ -27,7 +27,7 @@ class DiffController < ApplicationController
     
     paths.each do |path|
       render("_diff_results", :locals => {
-        :diff_check_results => git.diff_check(:path => path, :since => "HEAD"),
+        :diff_check_results => git.config.show_diff_check? ? git.diff_check(:path => path, :since => "HEAD") : [],
         :diff_results => git.diff(:path => path, :since => "HEAD")
       })
       
