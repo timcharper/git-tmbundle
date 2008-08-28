@@ -53,7 +53,7 @@ class RemoteController < ApplicationController
         remote_branch_name = branch.merge
       end
       
-      puts "<p>Pulling from remote source '#{remote_name}'\n</p>"
+      puts "<p>Pulling from remote source ‘#{remote_name}’ on branch ‘#{branch.name}’</p>"
       
       with_submodule_updating do
         output = run_pull(remote_name, remote_branch_name)
@@ -79,7 +79,7 @@ class RemoteController < ApplicationController
     
     current_name = branch.name
     for_each_selected_remote(:title => "Push", :prompt => "Select a remote source to push the branch #{current_name} to:", :items => git.remote.names) do |remote_name|
-      puts "<p>Pushing to remote source '#{remote_name}'\n</p>"
+      puts "<p>Pushing to remote source '#{remote_name}' for branch '#{current_name}'</p>"
       display_push_output(git, run_push(git, remote_name, :branch => current_name))
       
       git.submodule.all.each do |submodule|

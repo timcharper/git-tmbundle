@@ -22,7 +22,7 @@ class DiffController < ApplicationController
       end
     base = git.path
     open_in_tm_link
-    puts "<h2>Uncommitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’</h2>"
+    puts "<h2>Uncommitted Changes for ‘#{htmlize(paths.map{|path| shorten(path, base)} * ', ')}’ on branch ‘#{git.branch && git.branch.current.name}’</h2>"
     
     paths.each do |path|
       render("_diff_results", :locals => {:diff_results => git.diff(:path => path, :since => "HEAD") })

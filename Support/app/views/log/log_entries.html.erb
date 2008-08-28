@@ -1,3 +1,5 @@
+<h2>Log entries</h2>
+
 <% @log_entries.each do |log_entry| %>
   <% render("_log_entry", :locals => {:git => git, :log_entry => log_entry, :branch_name => @branch_name, :path => @path }) %>
   <% flush %>
