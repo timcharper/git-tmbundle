@@ -1,5 +1,6 @@
 <h1>Eegad!  You're not on a branch</h1>
-<h2>You could lose everything!</h2>
 <p>
   To make this commit, first checkout the branch you'd like to commit to, then make the commit.
 </p>
+<h2>Suggested branches:</h2>
+<pre><%= git.command("branch", "--contains", "HEAD", "-a").gsub(/^.+no branch.*$/, "") %></pre>
