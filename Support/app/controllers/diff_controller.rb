@@ -34,7 +34,7 @@ class DiffController < ApplicationController
       git.submodule.all(:path => path).each do |submodule|
         next if (diff_results = submodule.git.diff(:since => "HEAD")).blank?
         render_submodule_header(submodule)
-        render("_diff_results", :locals => {:git => submodule.git, :diff_results => diff_results})
+        render("_diff_results", :locals => {:git => submodule.git, :diff_results => diff_results, :diff_check_results => git.config.show_diff_check? ? git.diff_check(:path => path, :since => "HEAD") : []})
       end
     end
   end
