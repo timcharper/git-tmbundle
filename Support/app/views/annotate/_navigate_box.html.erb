@@ -3,7 +3,7 @@
   <div style='float:right; margin-right: 15px;'>
     <b>Commands</b>: <%= %w[next previous open branch tag].map { |word| "<strong>(#{word[0..0]})</strong>#{word[1..-1]}" } * ' / ' %>
   </div>
-  Annotations for ‘<%= htmlize(shorten(@file_path)) %>’
+  Annotations for ‘<%= htmlize(shorten(@file_path)) %>’ on branch ‘<%= git.branch && git.branch.current.name %>’
   <br clear='both'/>
   <div style='margin-right: 15px'>
     <%= 
