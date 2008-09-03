@@ -1,4 +1,4 @@
-<%= content_tag :h1, "Submodules on branch ‘#{git.branch && git.branch.current.name}’"%>
+<%= content_tag :h1, "Submodules on branch ‘#{git.branch.current_name}’"%>
 
 <div id='submodules'>
   <% render_component(:controller => "submodule", :action => "list", :layout => false) %>
