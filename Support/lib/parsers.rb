@@ -58,7 +58,11 @@ module Parsers
   
   def file_has_conflict_markers(filename)
     file_contents = File.exist?(filename) ? File.read(filename) : ""
-    /^={7}$/.match(file_contents) && /^\<{7} /.match(file_contents) && /^>{7} /.match(file_contents)
+    if /^={7}$/.match(file_contents) && /^\<{7} /.match(file_contents) && /^>{7} /.match(file_contents)
+      true
+    else
+      false
+    end
   end
   
   def parse_commit(commit_output)

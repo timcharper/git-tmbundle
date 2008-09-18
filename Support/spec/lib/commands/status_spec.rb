@@ -89,4 +89,9 @@ EOF
      
     }
   end
+  
+  it "should recognize conflict markers" do
+    @git.file_has_conflict_markers("#{FIXTURES_DIR}/conflict.txt").should == true
+    @git.file_has_conflict_markers("#{FIXTURES_DIR}/log.txt").should == false
+  end
 end

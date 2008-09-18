@@ -1,0 +1,13 @@
+class Coso
+  include Something
+  
+<<<<<<< HEAD:app/models/conflicted.rb
+  def self.method
+    @value ||= "boogy"
+  end
+  
+=======
+  cattr_accessor :method
+>>>>>>> master:app/models/conflicted.rb
+
+end
