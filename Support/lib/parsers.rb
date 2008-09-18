@@ -41,10 +41,10 @@ module Parsers
           "M"
         when "unmerged"
           # do a quick check to see if the merge is resolved
-          if File.directory?(filename) # it's a submodule
+          if File.directory?(path_for(filename)) # it's a submodule
             "G"
           else
-            file_has_conflict_markers(filename) ? "C" : "G"
+            file_has_conflict_markers(path_for(filename)) ? "C" : "G"
           end
         else
           "?"
