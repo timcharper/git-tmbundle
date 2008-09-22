@@ -77,7 +77,7 @@ module TMVC
 
     def parse_dispatch_args(args = [])
       params = args.inject({}) do |hash, arg|
-        parts = arg.scan(/(.+?)=(.+)/).flatten
+        parts = arg.scan(/(.+?)=(.+)/m).flatten
         next hash if parts.empty?
         key = parts.first.to_sym
         value = parts.last
