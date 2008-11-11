@@ -163,20 +163,3 @@ class ApplicationController
     $exit_status = EXIT_SHOW_TOOL_TIP
   end
 end
-
-class Mutex
-  def pass_lock
-    Thread.pass
-    lock
-  end
-  
-  def unlock_pass
-    Thread.pass
-    unlock
-  end
-  
-  def wait_for_lock
-    pass_lock
-    unlock_pass
-  end
-end
