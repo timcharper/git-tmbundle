@@ -7,6 +7,7 @@ Version 1.6.5 (released July 24, 2008)
 * Run this:
  
 <pre>
+mkdir -p ~/Library/Application\ Support/TextMate/Bundles
 cd ~/Library/Application\ Support/TextMate/Bundles
 git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
 </pre>
