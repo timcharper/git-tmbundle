@@ -7,7 +7,16 @@
   <br clear='both'/>
   <div style='margin-right: 15px'>
     <%= 
-    formatted_options = [["current", ""]] + @log_entries.map{|le| ["#{short_rev(le[:rev])} - #{relative_date(le[:date])} - #{le[:author]} - #{le[:msg].split("\n").first}", short_rev(le[:rev])] }
+    formatted_options = [["current", ""]] + @log_entries.map do |le|    
+      unless le[:msg].nil?
+        msg = le[:msg].split("\n").first
+      else
+        msg = ''
+      end
+      
+      le_str = [short_rev(le[:rev]), relative_date(le[:date]), le[:author], msg].compact.join(' - ')
+      [le_str, short_rev(le[:rev])]
+    end
     
     select_box( "rev",
       options_for_select(formatted_options, revision),
