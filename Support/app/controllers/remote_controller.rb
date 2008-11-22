@@ -179,7 +179,7 @@ class RemoteController < ApplicationController
     
     def progress(remote_name, state, percentage, index, count)
       puts <<-EOF
-      <script language='JavaScript'>
+      <script type='text/javascript'>
         $('#{remote_name}_#{state}_progress').update('#{percentage}% #{index} / #{count}')
       </script>
       EOF
@@ -189,7 +189,7 @@ class RemoteController < ApplicationController
     
     def progress_end(remote_name, state, count)
       puts <<-EOF
-      <script language='JavaScript'>
+      <script type='text/javascript'>
         $('#{remote_name}_#{state}_progress').update('Done')
       </script>
       EOF

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch(:controller =&gt; "misc", :action =&gt; "gitx")
+</string>
+	<key>input</key>
+	<string>none</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
+	<key>name</key>
+	<string>Visualize History with GitX</string>
+	<key>output</key>
+	<string>discard</string>
+	<key>uuid</key>
+	<string>1C12DE42-78A9-4DCA-BB55-2B8E6328C72D</string>
+</dict>
+</plist>
