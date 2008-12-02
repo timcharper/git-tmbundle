@@ -22,8 +22,8 @@ module PartialCommitWorker
       (! git.branch.current_name.nil?) || git.initial_commit_pending?
     end
     
-    def target_file_or_dir
-      @target_file_or_dir ||= git.paths.first
+    def target_paths
+      @target_paths ||= git.paths
     end
     
     def split_file_statuses
@@ -59,7 +59,7 @@ module PartialCommitWorker
     
     def file_candidates
       @file_candidates ||= 
-        git.status(target_file_or_dir).map do |e|
+        git.status(target_paths).map do |e|
           [shorten(e[:path], @base), e[:status][:short]]
         end
     end
@@ -76,7 +76,7 @@ module PartialCommitWorker
     end
     
     def title
-      "#{title_prefix} in ‘#{htmlize(shorten(target_file_or_dir, ENV['TM_PROJECT_DIRECTORY'] || @base))}’ on branch ‘#{htmlize(git.branch.current_name)}’"
+      "#{title_prefix} in #{target_paths.map { |e| htmlize("‘" + shorten(e, ENV['TM_PROJECT_DIRECTORY'] || @base) + "’") } * ', '} on branch ‘#{htmlize(git.branch.current_name)}’"
     end
     
     def nothing_to_commit?
