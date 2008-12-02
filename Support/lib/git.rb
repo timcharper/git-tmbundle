@@ -397,7 +397,7 @@ module SCM
     
     def init(directory)
       Dir.chdir(directory) do
-        command("init")
+        %x{git init}
       end
     end
     
