@@ -1,6 +1,16 @@
- - Visualize History with GitX (Matthias Granberry)
- - Local config settings for Log Limit and Log Context Lines were always saved to global and not saving to local.
- - Fix git gui invocation (Thanks, Pedro Melo)
+Release 1.7.0 [2008-12-01]
+
+ - Added Git config language (thanks, Allan Odgaard)
+ - Visualize History with GitX (thanks, Matthias Granberry)
+ - Fix git gui invocation (thanks, Pedro Melo)
+ - Added setting to allow showing whitespace warnings in show uncommitted changes (thanks, Michail Pishchagin)
+ - Local config settings for Log Limit and Log Context Lines were always saved to global and not saving to local. (thanks, Diego Barros)
+ - added "for branch 'BRANCH NAME'" to most of the dialogs (thanks, Joe Tanner)
+ - Fixed git init (was initializing in the previous directory)
+ - fixed a regression that broke diffing of submodule directories
+ - cleaned up "not on a branch" message.  added a simple, but helpful branch suggestion section
+ - regression fix - dialogs were blowing up when no branch was selected
+ - fixed bug where merge commit message was being truncated to one line
 
 Release 1.6.5 [2008-07-24]
 
