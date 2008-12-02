@@ -207,25 +207,10 @@ module SCM
     end
     
     def status(file_or_dir = nil, options = {})
-      file_or_dir = file_or_dir.flatten.first if file_or_dir.is_a?(Array)
-      
       results = parse_status(command("status"))
-      
-      if file_or_dir
-        file_or_dir = path_for(file_or_dir).dup
-        file_or_dir << "/" if File.directory?(file_or_dir) && file_or_dir[-1..-1] != "/"
-        results.select do |status|
-          if is_a_path?(status[:path]) && /^#{Regexp.escape(status[:path])}/i.match(file_or_dir)
-            # promote this status on down and keep it if it's the parent folder of our target file_or_dir
-            status[:path] = file_or_dir
-            status[:display] = shorten(file_or_dir, path)
-            true
-          else
-            /^#{Regexp.escape(file_or_dir)}/i.match(status[:path])
-          end
-        end
-      else
-        results
+      return results if file_or_dir.nil?
+      results.select do |status|
+        Array(file_or_dir).find { |e| status[:path] =~ /^#{Regexp.escape(e)}(\/|$)/ }
       end
     end
 
