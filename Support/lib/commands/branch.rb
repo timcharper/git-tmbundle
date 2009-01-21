@@ -112,7 +112,7 @@ class SCM::Git::Branch < SCM::Git::CommandProxyBase
     
     output = base.command("branch", options[:force] ? "-D" : "-d", name).strip
     outcome = case output
-      when "Deleted branch #{name}."
+      when /^Deleted branch #{name}/
         :success
       when /error.+(not a strict subset|not an ancestor of your current HEAD)/
         :unmerged
