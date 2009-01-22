@@ -19,7 +19,7 @@ class DiffController < ApplicationController
       when params[:path] 
         [params[:path]]
       else
-        git.paths(:fallback => :current_file, :unique => true)
+        git.paths
       end
     base = git.path
     open_in_tm_link
