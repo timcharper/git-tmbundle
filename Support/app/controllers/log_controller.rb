@@ -1,3 +1,4 @@
+# encoding: utf-8
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/osx/plist"
 require "#{ENV["TM_SUPPORT_PATH"]}/lib/progress"

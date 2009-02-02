@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 CW = ENV['TM_SUPPORT_PATH'] + '/bin/CommitWindow.app/Contents/MacOS/CommitWindow'
 
 module PartialCommitWorker

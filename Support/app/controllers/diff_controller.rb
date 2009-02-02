@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class DiffController < ApplicationController
   include SubmoduleHelper
   include DiffHelper

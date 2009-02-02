@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class StatusController < ApplicationController
   include SubmoduleHelper
   def index

@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 class AnnotateController < ApplicationController
   include DateHelpers
   layout "application", :except => "update"
