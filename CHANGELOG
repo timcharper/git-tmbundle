@@ -1,3 +1,5 @@
+ - FIX: properly recognize the new output of "git branch -d" in git 1.6.1
+
 Release 1.7.0 [2008-12-01]
 
  - Added Git config language (thanks, Allan Odgaard)
