@@ -121,7 +121,7 @@ class ApplicationController
     __binding__ = binding
     if __options__[:locals]
       __v__ = __options__[:locals].values
-      __binding__.eval(__options__[:locals].keys * ", " + ", = *__v__")
+      __binding__.send(:eval, __options__[:locals].keys * ", " + ", = *__v__")
     end
     
     __erb__ = ERBStdout.new(___template___, nil, "-", "@output_buffer")
