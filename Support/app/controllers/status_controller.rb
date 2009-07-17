@@ -19,7 +19,7 @@ class StatusController < ApplicationController
   end
 
   def edit_conflicted_file
-    file_or_path = git.paths.first
+    file_or_path = git.path
     conflicts = git.status(file_or_path).select { |file_status| file_status[:status][:short] == "C" }
     if conflicts.empty?
       puts "No conflicted files"
