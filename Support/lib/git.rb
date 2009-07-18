@@ -363,7 +363,7 @@ module SCM
       end
 
       output = command(*params)
-      File.open("/tmp/output.diff", "w") {|f| f.puts check + output }
+      File.open("/tmp/output.diff", "a") {|f| f.puts check + output }
       parse_diff(output)
     end
     
