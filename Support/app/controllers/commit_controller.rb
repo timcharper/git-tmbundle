@@ -1,5 +1,7 @@
 require LIB_ROOT + '/partial_commit_worker.rb'
 class CommitController < ApplicationController
+  layout "application", :except => [:add]
+  
   def index
     if git.merge_message
       @status = git.status
@@ -19,6 +21,12 @@ class CommitController < ApplicationController
     res = git.commit(message, [])
     
     render "_commit_result", :locals => { :result => res, :files => files, :message => message }
+  end
+  
+  def add
+    git.add(git.paths)
+    puts "Added to the index:\n - " + git.paths.map {|p| git.relative_path_for(p)} * "\n - "
+    exit_show_tool_tip
   end
   
   protected
