@@ -21,7 +21,7 @@ class DiffController < ApplicationController
       when params[:path] 
         [params[:path]]
       else
-        git.paths(:fallback => :current_file, :unique => true)
+        git.paths
       end
     base = git.path
     open_in_tm_link
@@ -62,6 +62,7 @@ class DiffController < ApplicationController
   
 protected
   def open_in_tm_link
+    File.unlink('/tmp/output.diff') if File.exist? '/tmp/output.diff'
     puts <<-EOF
       <a style='float:right' href='txmt://open?url=file://#{e_url '/tmp/output.diff'}'>Open diff in TextMate</a>
     EOF

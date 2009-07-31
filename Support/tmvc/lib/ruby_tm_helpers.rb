@@ -67,7 +67,7 @@ end
 def rescan_project
   %x{osascript &>/dev/null \
      -e 'tell app "SystemUIServer" to activate' \
-     -e 'tell app "TextMate" to activate' &
+     -e 'tell app "#{File.basename(ENV['TM_APP_PATH'], '.app')}" to activate' &
      }
 end
 
