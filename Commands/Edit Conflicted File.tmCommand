@@ -16,7 +16,7 @@ dispatch :controller =&gt; "status", :action =&gt; "edit_conflicted_file"</strin
 	<key>name</key>
 	<string>Edit Conflicted File…</string>
 	<key>output</key>
-	<string>replaceSelectedText</string>
+	<string>showAsTooltip</string>
 	<key>uuid</key>
 	<string>0DBC221A-B726-4367-A5E1-04AB999F8CC2</string>
 </dict>
