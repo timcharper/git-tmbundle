@@ -1,4 +1,18 @@
- - FIX: properly recognize the new output of "git branch -d" in git 1.6.1
+Release 1.8.0 [2009-07-31]
+  
+  Features:
+    - 'Edit conflicted file' command.  Invoke to get a menu listing all files in a conflicted, and press the number to go it. Files disappear from the list when they are resolved.
+    - Ruby 1.9 compatibility enhancements (Loren Segal)
+
+  Fixes:
+    - properly recognize the new output of "git branch -d" in git 1.6.1
+    - the status display in the merge commit dialog was confusing. Axed.
+    - git status is case sensitive (Allan Odgaard)
+    - Use all (potentially) selected paths when committing. Previously only first selected item would be used for the commit. (Allan Odgaard)
+    - Uncommitted Changes are shown for the entire project rather than current file, when there is no selection in the project drawer.
+    - Rescanning the project directory works with non-standard TextMate installations. (Allan Odgaard)
+      ^ Tim's note: I smell a change motivated by TextMate 2.0 development :)
+    - Open diff in TextMate only included last submodule diffed, instead of the whole project. (Allan Odgaard)
 
 Release 1.7.0 [2008-12-01]
 
