@@ -11,6 +11,8 @@ require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 dispatch :controller =&gt; "status", :action =&gt; "edit_conflicted_file"</string>
 	<key>input</key>
 	<string>selection</string>
+	<key>keyEquivalent</key>
+	<string>^G</string>
 	<key>name</key>
 	<string>Edit Conflicted File…</string>
 	<key>output</key>
