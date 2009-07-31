@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module SubmoduleHelper
   module Update
     def with_submodule_updating(&block)

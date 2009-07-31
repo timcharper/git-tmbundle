@@ -1,3 +1,4 @@
+# encoding: utf-8
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 
 class StashController < ApplicationController

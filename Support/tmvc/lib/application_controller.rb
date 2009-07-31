@@ -118,14 +118,15 @@ class ApplicationController
     __template_path__ = File.join( VIEWS_ROOT, __sub_dir__, __name__)
     ___template___ = File.read( __template_path__)
     
+    __binding__ = binding
     if __options__[:locals]
       __v__ = __options__[:locals].values
-      eval(__options__[:locals].keys * ", " + " = __v__.length == 1 ? __v__[0] : __v__") 
+      __binding__.send(:eval, __options__[:locals].keys * ", " + ", = *__v__")
     end
     
     __erb__ = ERBStdout.new(___template___, nil, "-", "@output_buffer")
     __erb__.filename = __template_path__
-    __erb__.run(binding)
+    __erb__.run(__binding__)
   end
   
   def render_component(_params = {})

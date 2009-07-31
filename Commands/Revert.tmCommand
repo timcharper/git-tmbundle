@@ -6,6 +6,7 @@
 	<string>nop</string>
 	<key>command</key>
 	<string>#!/usr/bin/env ruby
+# encoding: utf-8
 require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/ui.rb'
 require ENV['TM_SUPPORT_PATH'] + '/lib/escape.rb'

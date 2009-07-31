@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>beforeRunningCommand</key>
+	<string>nop</string>
+	<key>command</key>
+	<string>#!/usr/bin/env ruby
+
+require ENV['TM_BUNDLE_SUPPORT'] + '/environment.rb'
+dispatch :controller =&gt; "status", :action =&gt; "edit_conflicted_file"</string>
+	<key>input</key>
+	<string>selection</string>
+	<key>name</key>
+	<string>Edit Conflicted File…</string>
+	<key>output</key>
+	<string>replaceSelectedText</string>
+	<key>uuid</key>
+	<string>0DBC221A-B726-4367-A5E1-04AB999F8CC2</string>
+</dict>
+</plist>

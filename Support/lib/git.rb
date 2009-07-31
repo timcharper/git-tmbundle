@@ -193,8 +193,6 @@ module SCM
       file = File.dirname(__FILE__) + "/commands/#{name.to_s.downcase}.rb"
       require file
       klass = const_get(name)
-    rescue LoadError
-      raise "Class not found: #{name}"
     end
     
     def merge_message

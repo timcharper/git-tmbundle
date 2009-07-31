@@ -13,6 +13,3 @@
     <input type="button" name="commit" value="Commit" onclick="$('commit_output').update(dispatch({controller: 'commit', action: 'merge_commit', message: $F('commit_message')}));"/>
   </div>
 <% end %>
-
-<% render_component(:controller => "status", :action => "index", :layout => false, :path => git.path) %>
-<!-- # puts statuses(path).inspect -->

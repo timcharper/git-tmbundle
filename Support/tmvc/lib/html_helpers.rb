@@ -50,7 +50,7 @@ protected
     params = params.map {|p| p.include?(".js") ? p : "#{p}.js"}
     params.map do |p|
       content_tag :script, "", :type => "text/javascript", :src => resource_url(p)
-    end
+    end * ""
   end
   
   def options_for_javascript(options = {})
