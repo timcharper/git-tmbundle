@@ -9,7 +9,7 @@ Release 1.8.0 [2009-07-31]
 <pre>
 mkdir -p ~/Library/Application\ Support/TextMate/Bundles
 cd ~/Library/Application\ Support/TextMate/Bundles
-git clone git://gitorious.org/git-tmbundle/mainline.git Git.tmbundle
+git clone git://github.com/timcharper/git-tmbundle.git Git.tmbundle
 </pre>
 
 * In the TextMate preferences, advanced tab, shell variables, set the TM_GIT variable to point to your installation of git (ie <code>/usr/local/bin/git</code>)
