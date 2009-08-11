@@ -380,7 +380,7 @@ module SCM
     
     def init(directory)
       Dir.chdir(directory) do
-        %x{git init}
+        %x{"${TM_GIT:-git}" init}
       end
     end
     
