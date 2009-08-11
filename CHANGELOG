@@ -1,3 +1,10 @@
+Release 1.8.1 [2009-07-31]
+
+  Features:
+  	- Command: "Add File to the Index"
+  Fixes:
+	  - Respect TM_GIT for git init command (Allan Odgaard)
+
 Release 1.8.0 [2009-07-31]
   
   Features:
