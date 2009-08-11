@@ -12,7 +12,7 @@ dispatch :controller =&gt; "commit", :action =&gt; "add"</string>
 	<key>input</key>
 	<string>selection</string>
 	<key>name</key>
-	<string>Add files to the index</string>
+	<string>Add file to the index</string>
 	<key>output</key>
 	<string>showAsTooltip</string>
 	<key>uuid</key>

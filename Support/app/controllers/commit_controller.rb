@@ -24,8 +24,9 @@ class CommitController < ApplicationController
   end
   
   def add
-    git.add(git.paths)
-    puts "Added to the index:\n - " + git.paths.map {|p| git.relative_path_for(p)} * "\n - "
+    file = ENV['TM_FILEPATH']
+    git.add(file)
+    puts "Added '#{git.relative_path_for(file)}' to the index"
     exit_show_tool_tip
   end
   
