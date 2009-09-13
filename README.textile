@@ -18,15 +18,11 @@ git clone git://github.com/timcharper/git-tmbundle.git Git.tmbundle
 
 <h2>Support</h2>
 
-* <a href="http://github.com/timcharper/git-tmbundle/issues">Issue tracker</a>
-
-* <a href="http://groups.google.com/group/git-tmbundle">Mailing list</a>.
-
+* "Issue tracker":http://github.com/timcharper/git-tmbundle/issues
+* "Mailing list":http://groups.google.com/group/git-tmbundle
 * Repositories: 
-
-  * <a href="http://gitorious.com/projects/git-tmbundle">On Gitorious</a>.
-  
-  * <a href="http://github.com/timcharper/git-tmbundle/">On GitHub</a>.
+** "On Gitorious":http://gitorious.com/projects/git-tmbundle
+** "On GitHub":http://github.com/timcharper/git-tmbundle/
 
 <hr />
 
