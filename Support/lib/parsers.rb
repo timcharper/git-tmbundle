@@ -74,7 +74,11 @@ module Parsers
       when /^ *Created commit ([a-f0-9]+): (.*)$/
         result[:rev] = $1
         result[:message] = $2
-      # Git 1.6.1+: [master 9bd94be] commit msg
+      # Git 1.6.1: [master]: created 9bd94be: "commit msg"
+      when /^ *\[.+?\]: created ([a-f0-9]+): "(.*)"$/
+        result[:rev] = $1
+        result[:message] = $2
+      # Git >1.6.1: [master 9bd94be] commit msg
       when /^ *\[\S+ ([a-f0-9]+)\] (.*)$/
         result[:rev] = $1
         result[:message] = $2
