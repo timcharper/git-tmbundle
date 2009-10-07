@@ -366,7 +366,7 @@ module SCM
     end
     
     def log(options = {})
-      params = ["log"]
+      params = ["log", "--date=default", "--format=medium"]
       params += ["-n", options[:limit]] if options[:limit]
       params << "-p" if options[:with_log]
       params << options[:branch]  if options[:branch]
