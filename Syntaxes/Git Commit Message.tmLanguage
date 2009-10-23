@@ -22,6 +22,63 @@
 					<key>name</key>
 					<string>punctuation.definition.comment.git-commit</string>
 				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>meta.git-commit.modified</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(^#\s*)(modified:.*)$</string>
+			<key>name</key>
+			<string>comment.line.number-sign.git-commit</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.git-commit</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>meta.git-commit.new</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(^#\s*)(new file:.*)$</string>
+			<key>name</key>
+			<string>comment.line.number-sign.git-commit</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.git-commit</string>
+				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>meta.git-commit.deleted</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(^#\s*)(deleted:.*)$</string>
+			<key>name</key>
+			<string>comment.line.number-sign.git-commit</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.git-commit</string>
+				</dict>
 			</dict>
 			<key>match</key>
 			<string>^\s*(#).*$\n?</string>
@@ -32,7 +89,7 @@
 			<key>begin</key>
 			<string>diff\ \-\-git</string>
 			<key>comment</key>
-			<string>diff presented at the end of the commit message when using commit -v. NB the end pattern is just something to be never matched so that the meta continues untill the end of the file. From Allan.</string>
+			<string>diff presented at the end of the commit message when using commit -v. NB the end pattern is just something to be never matched so that the meta continues until the end of the file.</string>
 			<key>end</key>
 			<string>(?=xxxxxx)123457</string>
 			<key>name</key>
