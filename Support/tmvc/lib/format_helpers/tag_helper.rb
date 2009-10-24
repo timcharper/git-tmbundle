@@ -54,7 +54,7 @@ module FormatHelpers
     end
     
     def htmlize_attr(str)
-      str.to_s.gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
+      str.to_s.gsub(/&/, "&amp;").gsub(/"/, "&quot;").gsub("<", "&lt;").gsub(">", "&gt;")
     end
 
     alias :escape_once :htmlize_attr
