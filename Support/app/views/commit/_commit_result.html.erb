@@ -10,7 +10,7 @@
 </ul>
 
 <h2>Using Message:</h2>
-<pre><%= htmlize(message) %></pre>
+<pre style="white-space: pre-wrap;"><%= htmlize_attr(message) %></pre>
   
 <% if result[:rev] %>
   <h2>Diff of committed changes:</h2>
