@@ -1,44 +1,58 @@
-The Git Textmate Bundle.
+h1. The Git Textmate Bundle.
+
 Release 1.8.0 [2009-07-31]
 
+James Conroy-Finn is the new maintainer of this bundle. If you have cloned the bundle from Tim Harper's repository, please update your git config settings to point to his repository:
 
-<h2>Installation</h2>
+<pre>
+  cd ~/Library/Application\ Support/TextMate/Bundles/Git.tmbundle        
+  git config remote.origin.url git://github.com/jcf/git-tmbundle.git
+</pre>
+
+Thanks -- the management
+
+h2. Installation
 
 * Run this:
  
 <pre>
-mkdir -p ~/Library/Application\ Support/TextMate/Bundles
-cd ~/Library/Application\ Support/TextMate/Bundles
-git clone git://github.com/timcharper/git-tmbundle.git Git.tmbundle
+  mkdir -p ~/Library/Application\ Support/TextMate/Bundles
+  cd ~/Library/Application\ Support/TextMate/Bundles
+  git clone git://github.com/jcf/git-tmbundle Git.tmbundle
 </pre>
 
 * In the TextMate preferences, advanced tab, shell variables, set the TM_GIT variable to point to your installation of git (ie <code>/usr/local/bin/git</code>)
 * Many shortcuts are available from the Git-shortcut (Ctrl-Shift-G).  Subversion commands are Command-Option-g.  Less frequent commands are accessed via the menu.
 * Update your bundle by running the "Update Git Bundle" command.
 
-<h2>Support</h2>
+h2. Support
 
-* "Issue tracker":http://github.com/timcharper/git-tmbundle/issues
+* "Issue tracker":http://github.com/jcf/git-tmbundle/issues
 * "Mailing list":http://groups.google.com/group/git-tmbundle
 * Repositories: 
-** "On Gitorious":http://gitorious.com/projects/git-tmbundle
-** "On GitHub":http://github.com/timcharper/git-tmbundle/
+** "On GitHub":http://github.com/jcf/git-tmbundle
 
 <hr />
 
-<h3>Maintainer, Lead Developer:</h3>
+h2. Who:
 
-* <a href="http://tim.theenchanter.com/">Tim Harper</a> (with <a href="http://leadmediapartners.com">Lead Media Partners</a>)
+h3. Maintainer, Lead Developer:
 
-<h2>The git bundle wouldn't be possible without the contributions of the following fine gentlemen:</h2>
+* January 2010 - present: "James Connor-Finn":http://logi.cl/ 
 
-<h3>Major Contributions</h3>
+h3. Previous Maintainers
 
-* <b>Allan Odgaard</b> - Started the bundle, got it rolling.
+* January 2008 - December 2009: "Tim Harper":http://tim.theenchanter.com/ ( with "Lead Media Partners":http://leadmediapartners.com ).
+
+h2. The Git-TextMate-Bundle wouldn't be possible without the contributions of the following fine gentlemen:
+
+h3. Major Contributions
+
+* <b>Allan Odgaard</b> - Started the bundle, got it rolling. Many patches. Oh, and TextMate :-).
 * <b>Sam Granieri</b> - GitK, Many of the git-svn commands, Git initialize repository command, menu layouting, create-tag.
-* <b>Johan S&oslash;rensen</b> - Contributing the CSS styling.  He made gitorious look so sexy I just couldn't think of a better design to implement for the bundle, so he's generously allowed me to utilize it.
+* <b>Johan S&oslash;rensen</b> - Contributing the CSS styling.
 
-<h3>Patches, etc</h3>
+h3. Patches, etc
 
 * <b>Tommi Asiala</b> - README file submission
 * <b>Lawrence Pit</b> - Performance Enhancements
