@@ -29,8 +29,7 @@ h2. Support
 
 * "Issue tracker":http://github.com/jcf/git-tmbundle/issues
 * "Mailing list":http://groups.google.com/group/git-tmbundle
-* Repositories: 
-** "On GitHub":http://github.com/jcf/git-tmbundle
+* "Repository":http://github.com/jcf/git-tmbundle
 
 <hr />
 
