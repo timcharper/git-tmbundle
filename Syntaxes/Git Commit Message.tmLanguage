@@ -79,6 +79,25 @@
 					<key>name</key>
 					<string>punctuation.definition.comment.git-commit</string>
 				</dict>
+				<key>2</key>
+				<dict>
+					<key>name</key>
+					<string>meta.git-commit.renamed</string>
+				</dict>
+			</dict>
+			<key>match</key>
+			<string>(^#\s*)(renamed:.*)$</string>
+			<key>name</key>
+			<string>comment.line.number-sign.git-commit</string>
+		</dict>
+		<dict>
+			<key>captures</key>
+			<dict>
+				<key>1</key>
+				<dict>
+					<key>name</key>
+					<string>punctuation.definition.comment.git-commit</string>
+				</dict>
 			</dict>
 			<key>match</key>
 			<string>^\s*(#).*$\n?</string>
