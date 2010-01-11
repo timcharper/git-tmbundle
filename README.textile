@@ -2,10 +2,10 @@ h1. The Git Textmate Bundle.
 
 Release 1.8.0 [2009-07-31]
 
-James Conroy-Finn is the new maintainer of this bundle. If you have cloned the bundle from Tim Harper's repository, please update your git config settings to point to his repository:
+("James Conroy-Finn":http://github.com/jcf) is the new maintainer of this bundle. If you have cloned the bundle from Tim Harper's repository, please update your git config settings to point to his repository:
 
 <pre>
-  cd ~/Library/Application\ Support/TextMate/Bundles/Git.tmbundle        
+  cd ~/Library/Application\ Support/TextMate/Bundles/Git.tmbundle
   git config remote.origin.url git://github.com/jcf/git-tmbundle.git
 </pre>
 
@@ -13,8 +13,6 @@ Thanks -- the management
 
 h2. Installation
 
-* Run this:
- 
 <pre>
   mkdir -p ~/Library/Application\ Support/TextMate/Bundles
   cd ~/Library/Application\ Support/TextMate/Bundles
@@ -28,22 +26,23 @@ h2. Installation
 h2. Support
 
 * "Issue tracker":http://github.com/jcf/git-tmbundle/issues
-* "Mailing list":http://groups.google.com/group/git-tmbundle
 * "Repository":http://github.com/jcf/git-tmbundle
 
-<hr />
+The "Mailing list":http://groups.google.com/group/git-tmbundle has now been closed. Please feel free to report issues using the "Issue tracker":http://github.com/jcf/git-tmbundle/issues.
 
 h2. Who:
 
 h3. Maintainer, Lead Developer:
 
-* January 2010 - present: "James Connor-Finn":http://logi.cl/ 
+* January 2010 - present: "James Conroy-Finn":http://jamesconroyfinn.com/
 
 h3. Previous Maintainers
 
-* January 2008 - December 2009: "Tim Harper":http://tim.theenchanter.com/ ( with "Lead Media Partners":http://leadmediapartners.com ).
+* January 2008 - December 2009: "Tim Harper":http://tim.theenchanter.com/ (with "Lead Media Partners":http://leadmediapartners.com).
 
-h2. The Git-TextMate-Bundle wouldn't be possible without the contributions of the following fine gentlemen:
+h2. Git-tmbundle superstars
+
+The Git TextMate Bundle wouldn't be possible without the contributions of the following fine gentlemen:
 
 h3. Major Contributions
 
@@ -64,3 +63,5 @@ h3. Patches, etc
 * <b>Thomas Aylott</b> - Git commit language folding
 * <b>Michael Sheets</b> - Usability improvements
 * <b>Henrik Nyh</b> - Spelling
+
+Please feel free to send a pull request if you've added any functionality to this bundle that you think the rest of the git-loving, TextMate-using world would appreciate!
