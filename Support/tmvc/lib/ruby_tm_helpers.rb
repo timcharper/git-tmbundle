@@ -1,8 +1,24 @@
+# -*- encoding: UTF-8 -*0
 # TextMate helpers
 # Author: Tim Harper with Lead Media Partners.
 # http://code.google.com/p/productivity-bundle/
 
-require "#{ENV["TM_SUPPORT_PATH"]}/lib/escape"
+if ENV.has_key? 'TM_SUPPORT_PATH'
+  require "#{ENV["TM_SUPPORT_PATH"]}/lib/escape"
+else
+  abort(<<-PLAIN.gsub(/^\s{0,4}/, ''))
+    
+    \e[31mFail whale detected!\e[0m
+    
+    TM_SUPPORT_PATH is not set. This is probably because you are running
+    specs from outside of TextMate.
+    
+    You can set TM_SUPPORT_PATH using something like...
+    
+      export TM_SUPPORT_PATH='/Library/Application Support/TextMate/Support'
+    
+  PLAIN
+end
 
 public
 
