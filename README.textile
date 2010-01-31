@@ -2,7 +2,7 @@ h1. The Git Textmate Bundle.
 
 Release 1.8.0 [2009-07-31]
 
-("James Conroy-Finn":http://github.com/jcf) is the new maintainer of this bundle. If you have cloned the bundle from Tim Harper's repository, please update your git config settings to point to his repository:
+"James Conroy-Finn":http://github.com/jcf is the new maintainer of this bundle. If you have cloned the bundle from Tim Harper's repository, please update your git config settings to point to his repository:
 
 <pre>
   cd ~/Library/Application\ Support/TextMate/Bundles/Git.tmbundle
