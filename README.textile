@@ -57,11 +57,11 @@ h3. Patches, etc
 * <b>Jay Soffian</b> - Bug report with patch (missing environment variables)
 * <b>Humberto Di&oacute;genes</b> - Git-svn fetch command
 * <b>Lee Marlow</b>
-* <b>Geoff Cheshire</b> - Textile'd the README to make it look good on GitHub.
-* <b>Martin Kühl</b> - Patch to allow committing into a git repository that's not the project root.
+* <b>Geoff Cheshire</b> - Textile'd the README to make it look good on GitHub
+* <b>Martin Kühl</b> - Patch to allow committing into a git repository that's not the project root
 * <b>Diego Barros</b> - new config options, usability improvements
 * <b>Thomas Aylott</b> - Git commit language folding
 * <b>Michael Sheets</b> - Usability improvements
-* <b>Henrik Nyh</b> - Spelling
+* <b>Henrik Nyh</b> - Git 1.6 commit message compatibilty and spelling corrections
 
 Please feel free to send a pull request if you've added any functionality to this bundle that you think the rest of the git-loving, TextMate-using world would appreciate!
