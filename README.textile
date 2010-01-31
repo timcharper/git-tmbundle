@@ -62,6 +62,6 @@ h3. Patches, etc
 * <b>Diego Barros</b> - new config options, usability improvements
 * <b>Thomas Aylott</b> - Git commit language folding
 * <b>Michael Sheets</b> - Usability improvements
-* <b>Henrik Nyh</b> - Git 1.6 commit message compatibilty and spelling corrections
+* <b>Henrik Nyh</b> - Git 1.6 commit message compatibility and spelling corrections
 
 Please feel free to send a pull request if you've added any functionality to this bundle that you think the rest of the git-loving, TextMate-using world would appreciate!
