@@ -120,13 +120,13 @@ module SCM
         end
         res
       elsif options[:fallback] == :project && ENV.has_key?('TM_PROJECT_DIRECTORY')
-        ENV['TM_PROJECT_DIRECTORY'].to_a
+        [ENV['TM_PROJECT_DIRECTORY']]
       elsif options[:fallback] == :current_file && ENV.has_key?('TM_FILEPATH')
-        ENV['TM_FILEPATH'].to_a
+        [ENV['TM_FILEPATH']]
       elsif ENV.has_key?('TM_DIRECTORY')
-        ENV['TM_DIRECTORY'].to_a
+        [ENV['TM_DIRECTORY']]
       elsif ENV.has_key?('TM_PROJECT_DIRECTORY')
-        ENV['TM_PROJECT_DIRECTORY'].to_a
+        [ENV['TM_PROJECT_DIRECTORY']]
       else
         raise "No selected files." # FIXME throw an object with more info
       end
