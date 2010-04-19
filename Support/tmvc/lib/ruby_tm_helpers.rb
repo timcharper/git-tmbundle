@@ -15,7 +15,7 @@ else
     
     You can set TM_SUPPORT_PATH using something like...
     
-      export TM_SUPPORT_PATH='/Library/Application Support/TextMate/Support'
+      export TM_SUPPORT_PATH='/Applications/TextMate.app/Contents/SharedSupport/Support'
     
   PLAIN
 end
