@@ -50,6 +50,7 @@ module Parsers
         else
           "?"
         end
+        filename = $1.gsub(/(\\\d{3})+/) { $&.scan(/\d{3}/).map { |str| str.oct }.pack("c*") } if filename =~ /^"(.*)"$/
         file_statuses[filename] ||= status
       end
 
